@@ -1,0 +1,454 @@
+:root {
+    --white: #FFF8DC;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+  
+  a {
+    text-decoration: none;
+    color: black;
+  }
+  
+  a:hover {
+    text-decoration: none;
+  }
+  
+  a:link a:visited {
+    color: var(--white)
+  }
+  .ROW{
+    display: flex;
+    flex-wrap: wrap;
+  }
+  /* #contener {
+    max-width: 1200px;
+    margin: 0 auto;
+  } */
+  
+  body {
+    background-color: #DEB887;
+  }
+  
+  header {
+    height: 80px;
+    padding: 7px;
+    color: #090505;
+    border-radius: 7px;
+    box-shadow: 0px 12px 9px -7px;
+    background-color: #fff8dc;
+    overflow: hidden;
+  }
+  #label{
+    margin-top: 7px;
+  }
+  /* 製作跑馬燈 */
+  #ad {
+    width: 80%;
+    white-space: nowrap;
+    /* overflow: hidden; */
+    text-align: center;
+  }
+  
+  #inad {
+    display: inline-block;
+    animation: ad 10s linear infinite;
+  }
+  
+  @keyframes ad {
+    0% {
+      transform: translateX(200%);
+    }
+  
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+  /* 跑馬燈碼至此 */
+  
+  #tool {
+    padding: 14px 3% 0px 3%;
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  #searchBar {
+    display: flex;
+    flex-direction: row;
+    /* 垂直排列内容 */
+    justify-content: center;
+    /* 垂直居中對齊 */
+    grid-gap: 7px;
+    margin-bottom: 15px;
+  }
+  
+  .icon{
+    height: 20px;
+    width: 20px;
+  }
+  .icon:hover{
+    height: 22px;
+    width: 22px;
+  }
+  #run {
+    font-size: 13px;
+  }
+  
+  #middbody {
+    /* padding: 0; */
+    display: flex;
+    /* grid-gap: 10px; */
+  }
+  
+  aside {
+    /* width: 15%; */
+    height: 100%;
+    margin: 15px 0 5px 0;
+    padding: 15px 10px;
+    border-radius: 7px;
+    background-color: #FFF8DC;
+    /* position: fixed;
+    left: 7px;
+    float: left; */
+  }
+  
+  @media(min-width: 0){
+    aside {
+      background-color: white;
+      /* display: none; */
+    }
+  }
+  .red{
+    background-color: red;
+  }
+  .show{
+    display: block;
+  }
+  
+  @media(min-width: 700px){
+    aside {
+      background-color:#fbeeba;
+      display: block;
+    }
+  }
+  @media (min-width: 1200px){
+    aside{
+      background-color: #FFF8DC;
+      display: block;
+    }
+  }
+  @media(min-width:0){
+    #aside_fold{
+      /* display: block; */
+      display: flex;
+      justify-content: center;
+      margin-top: 15px;
+      background-color: white;
+      border-radius: 7px;
+      padding: 5px;
+      width: 100%;
+      /* height: 50px; */
+    }
+  }
+  
+  @media(min-width:700px){
+    #aside_fold {
+      display: none;
+    }
+  }
+  
+  .info{
+    height: 26px;
+    background-color: #DEB887;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 7px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: small;
+    transition: 0.3s ease;
+  }
+  #info0{
+    height: 46px;
+    background-color: #e3d955;
+    transition: 0.3s ease;
+  }
+  .info:hover, #info0:hover{
+    height: auto;
+    padding-bottom: 25px;
+    /* overflow:visible; */
+    transition: 0.3s ease;
+  }
+  
+  #Products ul {
+    text-align: center;
+    padding: 0;
+    width: 80%;
+    list-style-type: none;
+  }
+  
+  #Products ul li {
+    margin: 10px 0px;
+    transition: 0.3s ease;
+  }
+  #Products ul li:hover {
+    margin: 10px 0px;
+    font-size: larger;
+    font-weight: bold;
+    transition: 0.3s ease;
+  }
+  
+  #contents {
+    padding-left: 10px;
+    /* width: 83%; */
+    /* overflow: hidden; */
+  }
+  #greatPromotion{
+    height: 260px;
+    overflow: hidden;
+    margin: 15px 0 10px 0;
+    /* border: 2px solid red; */
+  }
+  #interested {
+    /* margin-top: 15px; */
+    /* width: 90%; */
+    height: 330px;
+    border-radius: 7px;
+    padding-top: 10px;
+    background-color: #f71d62;
+  }
+  
+  #interested_title {
+    height: 50px;
+    width: 30%;
+    min-width: 230px;
+    /* padding: 1px 0 1px 0; */
+    display: flex;
+    /* 使用 Flexbox 布局 */
+    flex-direction: column;
+    /* 垂直排列内容 */
+    justify-content: center;
+    /* 垂直居中对齐 */
+    text-align: center;
+    border-radius: 40px 10px 40px 10px;
+    background-color: #e7ef02;
+    font-size: 20px;
+    font-weight: bolder;
+    font-style: oblique;
+  }
+  #interest_intems {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  #interest_intems>a {
+    margin: 20px;
+  }
+  #items {
+    height: 250px;
+    grid-gap: 10px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    overflow-x: auto;
+    /* overflow: hidden; */
+  }
+  
+  #item {
+    min-width: 180px;
+    height: 210px;
+    padding: 7px;
+    text-align: center;
+    background-color: #FFF8DC;
+    font-size: 13px;
+    border-radius: 7px;
+    overflow: hidden;
+    transition: 0.3s ease;
+  }
+  #item:hover{
+    box-shadow: 9px 12px 9px -7px;
+    transition: 0.3s ease;
+  }
+  
+  #level1,
+  #level2 {
+    display: flex;
+    justify-content: center;
+  }
+  
+  #price1 {
+    text-decoration-line: line-through;
+  }
+  
+  #normal {
+    margin-top: 15px;
+    width: 100%;
+    border-radius: 7px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    grid-gap: 10px;
+    background-color: #FFF8DC;
+    padding: 10px;
+  }
+  
+  #normal>div {
+    background-color: white;
+    text-align: center;
+    padding: 5px;
+  }
+  
+  #oneProduct {
+    height: 120px;
+    width: 240px;
+    margin-bottom: 5px;
+    overflow: hidden;
+    padding: 0px;
+    font-size: 13px;
+    text-align: justify;
+    display: flex;
+    border-radius: 7px;
+    border: 1px solid rgb(180, 180, 180);
+    transition: 0.3s ease;
+  
+  }
+  #oneProduct:hover{
+    height: 125px;
+    width: 250px;
+    padding: 0 -5px 0 -5px;
+    background-color: #e0faf9;
+    transition: 0.3s ease;
+  }
+  
+  #level {
+    display: flex;
+  }
+  
+  footer {
+    height: 30px;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    justify-content: space-around;
+    color: slategrey;
+    background-color: #DEB887;
+    font-size: 10px;
+  }
+  
+  #cont,
+  #editing_page {
+    padding-top: 10px;
+    color: slategrey;
+    text-decoration: none;
+    /* 超連結去除底線 */
+  }
+  
+  /* 以下五個都是for回溯鍵的 */
+  #toTop {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    background-color: rgb(228, 225, 225);
+    position: sticky;
+    bottom: 20px;
+    right: 20px;
+    float: right;
+    padding-top: 7px;
+    text-align: center;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+  }
+  
+  #toTop.active {
+    opacity: 1;
+  }
+  
+  #top {
+    top: 0;
+  }
+  
+  #top:target {
+    animation: toTop 5s ease;
+  }
+  
+  @keyframes toTop {
+    from {
+      top: -100%;
+    }
+  
+    to {
+      top: 0;
+    }
+  }
+  
+  /* 回溯鍵至此 */
+  
+  /* 手機 mobilephone */
+  @media only screen and (min-width: 0px) {
+    .col-mobile-0{
+      width: 0;
+    }
+    .col-mobile-12 {
+      width: 100.0%
+    }
+  }
+  
+  /* 桌機 desktop */
+  @media only screen and (min-width:700px) {
+    .col-pc-0 {
+      width: 0;
+    }
+    
+    .col-pc-1 {
+      width: 8.33%
+    }
+  
+    .col-pc-2 {
+      width: 16.66%
+    }
+  
+    .col-pc-3 {
+      width: 25.00%
+    }
+  
+    .col-pc-4 {
+      width: 33.33%
+    }
+  
+    .col-pc-5 {
+      width: 41.66%
+    }
+  
+    .col-pc-6 {
+      width: 50.00%
+    }
+  
+    .col-pc-7 {
+      width: 58.33%
+    }
+  
+    .col-pc-8 {
+      width: 66.66%
+    }
+  
+    .col-d-9 {
+      width: 75.00%
+    }
+  
+    .col-pc-10 {
+      width: 83.33%
+    }
+  
+    .col-pc-11 {
+      width: 91.66%
+    }
+  
+    .col-pc-12 {
+      width: 100.0%
+    }
+  }
+  

@@ -1,0 +1,389 @@
+  /* basic confiuration from here */
+  :root {
+    --white: #FFF8DC;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+  
+  a {
+    text-decoration: none;
+    color: black;
+  }
+  
+  a:hover {
+    text-decoration: none;
+  }
+  
+  a:link a:visited {
+    color: var(--white)
+  }
+  .ROW{
+    display: flex;
+    flex-wrap: wrap;
+  }
+  /* #contener {
+    max-width: 1200px;
+    margin: 0 auto;
+  } */
+  
+  body {
+    background-color: #DEB887;
+  }
+  
+  header {
+    height: 80px;
+    padding: 7px;
+    color: #090505;
+    border-radius: 7px;
+    box-shadow: 0px 12px 9px -7px;
+    background-color: #fff8dc;
+    overflow: hidden;
+  }
+  #label{
+    margin-top: 7px;
+  }
+  /* 製作跑馬燈 */
+  #ad {
+    width: 80%;
+    white-space: nowrap;
+    /* overflow: hidden; */
+    text-align: center;
+  }
+  
+  #inad {
+    display: inline-block;
+    animation: ad 10s linear infinite;
+  }
+  
+  @keyframes ad {
+    0% {
+      transform: translateX(200%);
+    }
+  
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+  /* 跑馬燈碼至此 */
+  
+  #tool {
+    padding: 14px 3% 0px 3%;
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  #searchBar {
+    display: flex;
+    flex-direction: row;
+    /* 垂直排列内容 */
+    justify-content: center;
+    /* 垂直居中對齊 */
+    grid-gap: 7px;
+    margin-bottom: 15px;
+  }
+  
+  .icon{
+    height: 20px;
+    width: 20px;
+  }
+  .icon:hover{
+    height: 22px;
+    width: 22px;
+  }
+  #run {
+    font-size: 13px;
+  }
+  
+  #middbody {
+    /* padding: 0; */
+    display: flex;
+    /* grid-gap: 10px; */
+  }
+  #minus:hover {background-color: var(--gray);}
+  #plus:hover{background-color: #4A5759;}
+  #choosing:hover{background-color: #4A5759;}
+  #search_more:hover{background-color: #4A5759;}
+  #delete:hover{background-color: #4A5759;}
+  #onsell_ticket_button:hover {background-color: #4A5759;}
+  #check:hover {background-color: #4A5759;}
+
+  #greatPromotion{
+    height: 260px;
+    overflow: hidden;
+    margin: 15px 0 10px 0;
+    /* border: 2px solid red; */
+  }
+  
+  /* item */
+  #items {
+    margin: 0 7px 0 7px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    /* display: flex;
+    flex-wrap: wrap; */
+  }
+
+  .item {
+    margin-bottom: 7px;
+    height: 280px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    overflow: hidden;
+    border-radius: 7px;
+    background-color: #FFF8DC;
+  }
+  #item > div {
+    width: 100%;
+  }
+  #item_money_top > button{
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+
+
+
+/* 以下有三個@media 0 700 1200 */
+  @media(min-width:0){
+
+
+    #item_pic {
+      width: 24%;
+      display: flex;
+      flex-direction: row;
+      /* 垂直排列内容 */
+      justify-content: center;
+    }
+  
+    #item_description {
+      display: none;
+    }
+  
+    #item_money {
+      width: 24%;
+      font-size: 20px;
+    }
+  
+    #item_money_top {
+      display: flex;
+      justify-content: space-around;
+      padding-top: 20px;
+    }
+  
+    .item_money_total {
+      display: flex;
+      justify-content: center;
+      padding-top: 20px;
+    }
+  
+    #item_tradding_item {
+      width: 24%;
+    }
+  
+    #item_tradding_item>button {
+      margin-top: 5px;
+      margin-left: 7%;
+      width: 86%;
+      height: 40px;
+      transition: background-color 0.3s ease;
+    }
+  
+    #choosing {
+      display: flex;
+      justify-content: center;
+      padding-top: 7px;
+      transition: background-color 0.3s ease;
+    }
+  
+    
+  }
+  @media(min-width: 700px){
+
+    #item_pic {
+      width: 24%;
+      display: flex;
+      flex-direction: row;
+      /* 垂直排列内容 */
+      justify-content: center;
+    }
+  
+    #item_description {
+      display: block;
+      width: 24%;
+    }
+  
+    #item_money {
+      width: 24%;
+      font-size: 17px;
+    }
+  
+    #item_money_top {
+      display: flex;
+      justify-content: space-around;
+      padding-top: 30px;
+    }
+  
+    #item_money_total {
+      display: flex;
+      justify-content: center;
+      padding-top: 20px;
+      font-size: 20px;
+    }
+    #minus #plus{
+      height:8px;
+      width: 8px;
+    }
+
+    #item_tradding_item {
+      width: 24%;
+    }
+  
+    #item_tradding_item>button {
+      margin-top: 5px;
+      margin-left: 0;
+      width: 100%;
+      height: 40px;
+    }
+  
+    #choosing {
+      display: flex;
+      justify-content: center;
+      padding-top: 7px;
+    }
+  
+  }
+  @media (min-width: 1200px){
+
+    #item_pic {
+    width: 22%;
+    display: flex;
+    flex-direction: row;
+    /* 垂直排列内容 */
+    justify-content: center;
+  }
+
+  #item_description {
+    width: 20%;
+  }
+
+  #item_money {
+    width: 20%;
+    font-size: 20px;
+  }
+
+  #item_money_top {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 20px;
+  }
+
+  #item_money_total {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+  }
+
+  #item_tradding_item {
+    width: 24%;
+  }
+
+  #item_tradding_item > button {
+    margin-top: 5px;
+    margin-left: 7%;
+    width: 86%;
+    height: 40px;
+  }
+
+  #choosing {
+    display: flex;
+    justify-content: center;
+    padding-top: 7px;
+  }
+
+  }
+
+
+  #items_bottom {
+    height: 160px;
+    width: 100%;
+  }
+
+  /* item to here */
+
+
+
+
+
+
+
+
+
+  /* Footer vv */
+  /* #bar {
+    border: 7px solid #DEB887;
+    height: 150px;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+  } */
+
+  #trading_bar {
+    height: 120px;
+    display: flex;
+    margin-bottom: 30px;
+    justify-content: space-around;
+    background-color: #4A5759;
+  }
+
+  #onsell_ticket_button {
+    margin-top: 20px;
+    height: 80px;
+    width: 250px;
+    display: flex;
+    justify-content: space-around;
+    border-radius: 7px;
+    transition: background-color 0.3s ease;
+  }
+
+  #ticketword {
+    margin-top: 10px;
+    font-size: 20px;
+    font-style: italic;
+    /* font: italic; This command useless */
+  }
+
+  #check {
+    margin-top: 20px;
+    padding-top: 5px;
+    height: 80px;
+    width: 250px;
+    background-color: #efefef;
+    border-bottom: 2px solid #090505;
+    border-right: 2px solid #090505;
+    display: flex;
+    /* justify-content: space-between; */
+    border-radius: 7px;
+    transition: background-color 0.3s ease;
+  }
+
+  #checkword {
+    margin-top: 12px;
+    font-size: 30px;
+    font-style: italic;
+    /* font: italic; This command useless */
+  }
+
+  footer {
+    height: 30px;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    justify-content: space-around;
+    color: slategrey;
+    background-color: #DEB887;
+    font-size: 10px;
+  }

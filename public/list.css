@@ -1,0 +1,279 @@
+:root {
+    --white: #FFF8DC;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+a:link a:visited {
+    color: var(--white)
+}
+
+.ROW {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* #contener {
+    max-width: 1200px;
+    margin: 0 auto;
+  } */
+
+body {
+    background-color: #DEB887;
+}
+
+header {
+    height: 80px;
+    padding: 7px;
+    color: #090505;
+    border-radius: 7px;
+    box-shadow: 0px 12px 9px -7px;
+    background-color: #fff8dc;
+    overflow: hidden;
+}
+
+#label {
+    margin-top: 7px;
+}
+
+/* 製作跑馬燈 */
+#ad {
+    width: 80%;
+    white-space: nowrap;
+    /* overflow: hidden; */
+    text-align: center;
+}
+
+#inad {
+    display: inline-block;
+    animation: ad 10s linear infinite;
+}
+
+@keyframes ad {
+    0% {
+        transform: translateX(200%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+/* 跑馬燈碼至此 */
+
+#tool {
+    padding: 14px 3% 0px 3%;
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+#searchBar {
+    display: flex;
+    flex-direction: row;
+    /* 垂直排列内容 */
+    justify-content: center;
+    /* 垂直居中对齐 */
+    grid-gap: 7px;
+    margin-bottom: 15px;
+}
+.icon{
+    height: 20px;
+    width: 20px;
+  }
+  .icon:hover{
+    height: 22px;
+    width: 22px;
+  }
+/* Main */
+main{
+    display: flex;
+    justify-content: center;
+
+}
+#outer{
+  width: 800px;
+  display: flex;
+  flex-wrap: wrap;  
+  padding: 40px;
+}
+#item{
+    margin-bottom: 25px ;
+    padding: 7px 0 7px 0;
+    width: 800px;
+    background-color: white;
+    border-radius: 7px;
+}
+#row_no_list, #row1, #row2, #row3, #product{
+    padding-top: 6px;
+    height: 35px;
+    background-color: #a7e7fe;
+    margin: 7px;
+    display: flex;
+    justify-content:space-around;
+}
+#row_no_list{
+    height: 80px;
+}
+#acount, #to_home, #to_shop{
+    width: 60%;
+
+}
+#done, #name, #user_id{
+    width: 30%;
+
+}
+#product{
+    background-color: white;
+    border-bottom: 2px solid gray;
+}
+#product_id, #product_price, #product_num, #product_sum{
+    width: 150px;
+}
+#product_name{
+    width: 200px;
+}
+
+
+
+/* Main to here*/
+
+
+
+
+
+
+
+
+
+
+
+
+footer {
+    height: 30px;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    justify-content: space-around;
+    color: slategrey;
+    background-color: #DEB887;
+    font-size: 10px;
+}
+
+/* 以下五個都是for回溯鍵的 */
+#toTop {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    background-color: rgb(228, 225, 225);
+    position: sticky;
+    bottom: 20px;
+    right: 20px;
+    float: right;
+    padding-top: 7px;
+    text-align: center;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+#toTop.active {
+    opacity: 1;
+}
+
+#top {
+    top: 0;
+}
+
+#top:target {
+    animation: toTop 5s ease;
+}
+
+@keyframes toTop {
+    from {
+        top: -100%;
+    }
+
+    to {
+        top: 0;
+    }
+}
+
+/* 回溯鍵至此 */
+
+/* 手機 mobilephone */
+@media only screen and (min-width: 0px) {
+    .col-mobile-0 {
+        width: 0;
+    }
+
+    .col-mobile-12 {
+        width: 100.0%
+    }
+}
+
+/* 桌機 desktop */
+@media only screen and (min-width:700px) {
+    .col-pc-0 {
+        width: 0;
+    }
+
+    .col-pc-1 {
+        width: 8.33%
+    }
+
+    .col-pc-2 {
+        width: 16.66%
+    }
+
+    .col-pc-3 {
+        width: 25.00%
+    }
+
+    .col-pc-4 {
+        width: 33.33%
+    }
+
+    .col-pc-5 {
+        width: 41.66%
+    }
+
+    .col-pc-6 {
+        width: 50.00%
+    }
+
+    .col-pc-7 {
+        width: 58.33%
+    }
+
+    .col-pc-8 {
+        width: 66.66%
+    }
+
+    .col-d-9 {
+        width: 75.00%
+    }
+
+    .col-pc-10 {
+        width: 83.33%
+    }
+
+    .col-pc-11 {
+        width: 91.66%
+    }
+
+    .col-pc-12 {
+        width: 100.0%
+    }
+}
