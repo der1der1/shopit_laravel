@@ -47,9 +47,6 @@ Route::middleware(['auth'])->group(function() {
     Route::post('/edit/edit_product_delete', [editCtlr::class, 'edit_product_delete'])->name('edit_product_delete');
 
 
-
-
-
 });
 
 Route::get('/contact', [contactCtlr::class, 'report_show'])->name('report_show');

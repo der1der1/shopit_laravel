@@ -83,6 +83,6 @@ class listController extends Controller
         $info_ori->info0 = $info_new;
         $info_ori->save();
 
-        return redirect()->route('list_show')->with('success', '儲存成功');
+        return redirect()->route('list_show')->with('success', '單號：'.$purchased->id.'  商品已寄出！');
     }
 }

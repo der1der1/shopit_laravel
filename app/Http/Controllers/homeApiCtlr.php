@@ -31,7 +31,7 @@ class homeApiCtlr extends Controller
                 $infos[] = $infoea;
             } 
         } 
-        
+
         // 返回結果，傳遞給 welcome.blade.php 視圖
         return view('welcome', compact('user', 'marqee', 'few_products', 'products_category','allProducts', 'infos'));
         // return view('welcome', compact( 'marqee', 'few_products', 'products_category','allProducts'));
@@ -50,32 +50,42 @@ class homeApiCtlr extends Controller
         $allProducts = productsModel::where('category', $search)->get();
         // dump($products);
         // dump($products_category);
+        $infos = array();
+        if ($user) {
+           $info = explode(';',$user->info0);
+            foreach ($info as $infoea) {
+                $infos[] = $infoea;
+            } 
+        } 
         // 返回結果，傳遞給 welcome.blade.php 視圖
-        return view('welcome', compact('user', 'marqee', 'few_products', 'products_category', 'allProducts'));
+        return view('welcome', compact('user', 'marqee', 'few_products', 'products_category', 'allProducts', 'infos'));
         // return view('welcome', compact( 'marqee', 'few_products', 'products_category', 'allProducts'));
 
     }
     public function toHome_words_search(Request $search)
     {
-        try {
-            // 其他應回傳
-            // $user = selectUserModel::all();
+        // 先查詢
+        $allProducts = productsModel::where('category', $search->search_word)->get();
+        if ($allProducts->isEmpty()) {
+            // 若無，報錯返回
+            return redirect()->route('home')->with('error', '找不到您搜尋的項目，將為您返回。');
+        } else {
+            // 若有，正常傳遞
             $user = Auth::user();
 
             $marqee = marqeeModel::getAllMarqee();
             $few_products = productsModel::limit(5)->get();
             $products_category = productsModel::select('category')->distinct()->get();
 
-            $allProducts = productsModel::where('category', $search->search_word)->get();
-            $allProducts = $allProducts->isEmpty() ? productsModel::all() : $allProducts;
-            return view('welcome', compact('user', 'marqee', 'few_products', 'products_category', 'allProducts'));
-            // return view('welcome', compact('marqee', 'few_products', 'products_category', 'allProducts'));
-
-        } catch (\Exception $e) {
-            // 記錄完整錯誤信息
-            return back()->with('error', '搜尋發生錯誤');
+            $infos = array();
+            if ($user) {
+               $info = explode(';',$user->info0);
+                foreach ($info as $infoea) {
+                    $infos[] = $infoea;
+                } 
+            } 
+            return view('welcome', compact('user', 'marqee', 'few_products', 'products_category', 'allProducts', 'infos'));
         }
-
     }
 
     public function toItemPage($id)

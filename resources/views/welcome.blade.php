@@ -6,15 +6,14 @@
 <body id="top">
     <!-- 先跑要給使用者的訊息 -->
     @if(session('error'))
-    <script>
-        alert("{{ session('error') }}");
-    </script>
+    <script>alert("{{ session('error') }}");</script>
+    @elseif(session(key: 'success'))
+    <script>alert("{{ session('success') }}");</script>
     @endif
 
     <div id="contener">
         
         @include('template.header_template')
-
 
         <main>
             @csrf
@@ -23,13 +22,17 @@
                 <aside id="aside" class="col-pc-2 col-mobile-12">
                     <div id="infos" style="margin:0 0 20px 0;">
                         @if ($user)
-          
                         <h5 style="margin:0 0 10px 0;">您的訊息：</h5>
+                        @if($infos[0] == null)
+                        <div id="info1" data-aos="fade-right" data-aos-duration="400" class="info">
+                            目前尚無新訊息喔! </div>
+                        @else
                         @foreach ( $infos as $info )
                         <div id="info1" data-aos="fade-right" data-aos-duration="400" class="info">
                             {{ $info }} </div>
                         @endforeach
-                        
+
+                        @endif
                         @endif
                     </div>
                     <!-- 訊息框結束 -->

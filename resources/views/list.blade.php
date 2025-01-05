@@ -21,18 +21,20 @@
         
         @include('template.header_template')
 
-        <form method="POST" action="{{ route('list_store') }}" enctype="multipart/form-data">
-        @csrf    
-            <main>
-                <div id="outer">
-                    
-                    @if (empty($new_lists))
-                    <div>目前尚無訂單需要處理！</div>
-                    @endif
+    
+        <main>
+            <div id="outer">
+                
+                @if (empty($new_lists))
+                <div>目前尚無訂單需要處理！</div>
+                @endif
 
-                    @foreach ($new_lists as $new_list)
+                @foreach ($new_lists as $new_list)
+                <form method="POST" action="{{ route('list_store') }}" enctype="multipart/form-data">
+                @csrf
                     <div id="item">
                         <div id="row1" class="row">
+                            <div id="acount">單號 :&nbsp;&nbsp; {{ $new_list['id'] }} </div>
                             <div id="acount">acount :&nbsp;&nbsp; {{ $new_list['account'] }} </div>
                             <input type="submit" id="done" value="done" title="完成此訂單，刪除。" style=" height:22px"></div>
                             <!-- 一些要傳遞回後端的訊息 -->
@@ -67,14 +69,15 @@
                             @endforeach
                         </div>
                     </div>
-                    @endforeach
-                </div>
-            </main>
-        </form>
+                </form>
+                @endforeach
+            </div>
+        </main>
+
     </div>
 
     @include('template.footer_template')
 
 </body>
-<span id="toTop"> <a href="#top"><img src="icon/arrow-up.svg" alt="" title="to top" height="35px" width="35px"></a></span>
+<span id="toTop"> <a href="#top"><img src="{{ asset('img/icon/arrow-up.svg') }}" alt="" title="to top" height="35px" width="35px"></a></span>
 </html>

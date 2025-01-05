@@ -34,9 +34,7 @@ class purchasedCtlr extends Controller
 
     public function pay_to_shop(Request $request) {
         $user = Auth::user()->account;
-        $marqee = marqeeModel::getAllMarqee();
         
-
         // 在他的to_shop欄位寫入
         $purchased = purchasedModel::where('account', $user)->orderBy('id', 'desc')->first();
         $user = User::where('account', $user)->first();
@@ -49,10 +47,13 @@ class purchasedCtlr extends Controller
         $purchased->save();
         $user->save();
 
-        return redirect()->route('pay_show')->with('success', '儲存成功');
+        return redirect()->route('pay_show')->with('success', '超商寄送到'.$request->store);
 
     }
     public function pay_to_home(Request $request) {
+        if (empty($request->address)) {
+            return redirect()->route('pay_show')->with('error', '住家地址不可空白');
+        }
         $user = Auth::user()->account;
 
         // 在他的to_address欄位寫入
@@ -66,10 +67,13 @@ class purchasedCtlr extends Controller
         $purchased->save();
         $user->save();
 
-        return redirect()->route('pay_show')->with('success', '儲存成功');
+        return redirect()->route('pay_show')->with('success', '宅配到：'.$request->address);
     }
 
     public function pay_name(Request $request) {
+        if (empty($request->name_input)) {
+            return redirect()->route('pay_show')->with('error', '請輸入姓名');
+        }
         $user = Auth::user()->account;
 
         // 在他的user table 的name欄位寫入
@@ -82,10 +86,13 @@ class purchasedCtlr extends Controller
         $purchased->name = $request->name_input;
         $purchased->save();
 
-        return redirect()->route('pay_show')->with('success', '儲存成功');
+        return redirect()->route('pay_show')->with('success', '取貨大名：'.$request->name_input);
     }
 
     public function pay_account(Request $request) {
+        if (empty($request->account_input)) {
+            return redirect()->route('pay_show')->with('error', '請輸入正確的扣款帳號');
+        }
         $user = Auth::user()->account;
 
         // 在他的bank_account欄位寫入
@@ -98,12 +105,17 @@ class purchasedCtlr extends Controller
         $purchased->save();
         $user->save();
 
-        return redirect()->route('pay_show')->with('success', '儲存成功');
+        return redirect()->route('pay_show')->with('success', '扣款帳號：'.$request->account_input);
     }
-    public function pay_confirm() {
+    public function pay_confirm(Request $request) {
+        // 防禦性，所有欄位檢查不可空白
+        if (empty($request->name)||empty($request->bank_account)||empty($request->shop1_addr2)) {
+            return redirect()->route('pay_show')->with('error', '資料未填寫完整');
+        }
         $user = Auth::user()->account;
-        // 更新顯示在訂購清單上 show = 1
         $purchased = purchasedModel::where('account', $user)->orderBy('id', 'desc')->first();
+
+        // 更新顯示在訂購清單上 show = 1
         $purchased->show = "1";
         $purchased->save();
 
@@ -125,6 +137,6 @@ class purchasedCtlr extends Controller
         $info_ori->info0 = $info_new;
         $info_ori->save();
 
-        return redirect()->route('home')->with('success', '購買成功');
+        return redirect()->route('home')->with('success', '購買成功，訂單id：'.$purchased->id);
     }
 }

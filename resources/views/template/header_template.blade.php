@@ -26,15 +26,18 @@
                 <!-- 購物車 -->
                 <div id="cart">
                     <form method="POST" action="{{ route('logout') }}">
-                        <a href="{{route('check_show')}}"><img src="{{ asset('img/icon/cart-shopping-solid.svg') }}" class="icon" alt="cart icon" title="購物車">
-                        </a>
+                    @csrf
+                        <a href="{{route('check_show')}}"><img src="{{ asset('img/icon/cart-shopping-solid.svg') }}" class="icon" alt="cart icon" title="購物車"></a>
                         @if($user)
                             &nbsp; Hi! &nbsp; {{ $user->name }}&nbsp;
+                            <input type="submit" name="logout" value="登出" title="登出">
+
                         @else
                             &nbsp; Hi! &nbsp; 來賓             &nbsp;
+                            <button>
+                                <a href="{{route('login')}}">登入</a>
+                            </button>
                         @endif
-                        @csrf
-                        <input type="submit" name="logout" value="登出" title="登出">
                     </form>
                 </div>
             </nav>

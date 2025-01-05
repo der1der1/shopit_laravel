@@ -76,20 +76,9 @@ class editCtlr extends Controller
     public function edit_product_add(Request $request) {
         try {
             // 取得上傳的圖片
-            \Log::debug('1');
             $image = $request->file('pic_dir');
-            \Log::debug('2');
             // 移動新圖片到目標位置
             $image->move(public_path('img/pictureTarget'), $image);
-            \Log::debug('3');
-
-            \Log::debug($request->pic_name);
-            \Log::debug($request->product_name);
-            \Log::debug($image->getClientOriginalName());
-            \Log::debug($request->description);
-            \Log::debug($request->price);
-            \Log::debug($request->ori_price);
-            \Log::debug($request->category);
 
 
             // $new_product = productsModel::create([
@@ -102,7 +91,6 @@ class editCtlr extends Controller
                 'ori_price' => $request->ori_price,
                 'category' => $request->category,
             ]);
-            \Log::debug('4');
             // $new_product->save();
 
             return redirect()->route('edit_show')->with('success', '新增成功');

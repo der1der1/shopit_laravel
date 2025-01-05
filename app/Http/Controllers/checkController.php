@@ -43,10 +43,17 @@ class checkController extends Controller
         // 處裡要購買的項目
         // 取得物件id
         $itemIds = $request->input('selected_items', []);
-        // 取得數量，刪除數量為0者
+        // if user seleced nothing
+        if (empty($itemIds)) {
+            return redirect()->route('check_show')->with('error', '請選擇商品');
+        }
+        // 取得數量
         $quantity = $request->input('quantity', []);
+        // 如果有商品數量為0則報錯返回
         foreach ($quantity as $quantitys) {
-            $quantitys = $quantitys == 0 ?? null;
+            if ($quantitys == 0) {
+                return redirect()->route('check_show')->with('error', '選取的商品數量不可為 0 喔!');
+            }
         }
         // 取得數量，並過濾空值
         $quantity = array_filter($quantity);

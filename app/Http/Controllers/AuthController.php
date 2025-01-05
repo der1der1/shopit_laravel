@@ -17,17 +17,31 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         try {
+            // 先判別是否是管理員註冊
+            $prvilige = str_starts_with($request->account, "admin./") ? "A" : "B";
+            // 如果前綴是 admin./ 要幫他拿掉
+            if ($prvilige == "A") {
+                $head_away = explode("admin./", $request->account);
+                $request->account = $head_away[1];
+            }
+
+            // 寫入資料庫
             $user = User::create(
                 [
                     'name' => $request->name,
                     'account' => $request->account,
                     'password' => Hash::make($request->password),
+                    'prvilige' => $prvilige,
                 ]
             );
-
             Auth::login($user);
 
-            return redirect()->route('home')->with('success', '註冊成功');
+            // 看是不是管理員做不同的歡迎語
+            if ($prvilige == "A") {
+                return redirect()->route('home')->with('success', '管理員'.$request->name.'註冊成功，您有權限進入訂單及編輯系統。');
+            } else {
+                return redirect()->route('home')->with('success', '恭喜'.$request->name.'！註冊成功！');
+            }
         } catch (\Exception $e) {
 
             return back()->withErrors(['msg' => $e->getMessage()]);

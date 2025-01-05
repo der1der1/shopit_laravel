@@ -16,6 +16,13 @@
 </head>
 
 <body>
+    <!-- 先跑要給使用者的訊息 -->
+    @if(session('error'))
+    <script>alert("{{ session('error') }}");</script>
+    @elseif(session(key: 'success'))
+    <script>alert("{{ session('success') }}");</script>
+    @endif
+
     <div id="contener">
 
         @include('template.header_template')
@@ -120,15 +127,18 @@
             <div id="trading" data-aos="fade-left" data-aos-duration="700">
 
                 <table id="check_list"> 購買確認清單
-                    <tr><td>收件姓名：</td><td> {{ $ppl_info->name ??'' }} </td></tr>
-                    <tr><td>訂購帳號：</td><td> {{ $ppl_info->account ??'' }} </td></tr>
-                    <tr><td>扣款帳號：</td><td> {{ $ppl_info->bank_account ??'' }} </td></tr>
+                    <tr><td>收件姓名：</td><td> {{ $purchased->name ??'' }} </td></tr>
+                    <tr><td>訂購帳號：</td><td> {{ $purchased->account ??'' }} </td></tr>
+                    <tr><td>扣款帳號：</td><td> {{ $purchased->bank_account ??'' }} </td></tr>
 
                     @if ( $purchased->shop1_addr2 == "1" )
                     <tr><td>貨運方式：</td><td>超商取貨(位置以下)</td></tr>
                     <tr><td>收件商店：</td><td>{{ $purchased->to_shop }}</td></tr>
-                    @else
+                    @elseif ( $purchased->shop1_addr2 == "2" )
                     <tr><td>貨運方式：</td><td>快遞到家(位置以下)</td></tr>
+                    <tr><td>收件地址：</td><td>{{ $purchased->to_address }}</td></tr>
+                    @else
+                    <tr><td>貨運方式：</td><td style="color:gray;">請在左側選擇</td></tr>
                     <tr><td>收件地址：</td><td>{{ $purchased->to_address }}</td></tr>
                     @endif
 
@@ -145,6 +155,13 @@
                 
                     <form method="POST" action="{{ route('pay_confirm') }}" enctype="multipart/form-data">
                     @csrf
+                    <!-- 送回後端要存在訂單的 -->
+                    <input type="text" name="name" value="{{$purchased->name ??''}}" style="display:none;">
+                    <input type="text" name="bank_account" value="{{$purchased->bank_account ??''}}" style="display:none;">
+                    <input type="text" name="shop1_addr2" value="{{$purchased->shop1_addr2}}" style="display:none;">
+                    <input type="text" name="to_shop" value="{{$purchased->to_shop}}" style="display:none;">
+                    <input type="text" name="to_address" value="{{$purchased->to_address}}" style="display:none;">
+
                         <button title="結帳" type="submit" id="checkit">
                             <h3>結帳</h3>
                             <img src="{{ asset('img/icon/bill.png') }}" alt="pay for it" width="50x" height="50px">

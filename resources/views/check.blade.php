@@ -15,6 +15,13 @@
 </head>
 
 <body>
+    <!-- 先跑要給使用者的訊息 -->
+    @if(session('error'))
+    <script>alert("{{ session('error') }}");</script>
+    @elseif(session(key: 'success'))
+    <script>alert("{{ session('success') }}");</script>
+    @endif
+    
     @include('template.header_template')
     
     <main>
@@ -88,19 +95,15 @@
                             </div>
 
                             <div id="item_tradding_item">
-
-                                <!-- 此處是試用claude程式碼需修改 -->
-                                <input type="checkbox" 
-                                    name="selected_items[]" 
-                                    value="{{ $wanted_products->id??''  }}" 
-                                    class="item-checkbox"
-                                    data-quantity-input="quantity-{{ $wanted_products->id??'' }}">
-                                <!-- 此處是試用claude程式碼需修改 -->
-
-                                <button id="choosing" name="choosing_' . $id . '" onclick="check_or_not' . $id . '()">
-                                    <img src="{{ asset('img/icon/check.png') }}" title="I Want" height="25px" width="25px" id="check_icon' . $id . '">
-                                    <p id="select">Select! / or not</p>
-                                </button>
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" 
+                                        name="selected_items[]" 
+                                        value="{{ $wanted_products->id??'' }}" 
+                                        class="item-checkbox"
+                                        data-quantity-input="quantity-{{ $wanted_products->id??'' }}">
+                                    <span class="checkbox-btn"></span>
+                                </label>
+                                <p>選擇!</p>
                             </div>
                         </div>
                         @endif
