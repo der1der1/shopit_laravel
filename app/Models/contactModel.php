@@ -11,7 +11,7 @@ class contactModel extends Authenticatable
 {
     use Notifiable;
 
-    protected $table = 'shopit_laravel.contact';
+    protected $table = 'contact';
 
     protected $fillable = [
         'name',

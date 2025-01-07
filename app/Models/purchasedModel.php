@@ -14,7 +14,7 @@ class purchasedModel extends Model
     use Notifiable;
 
 
-    protected $table = 'shopit_laravel.purchased';
+    protected $table = 'purchased';
 
     protected $fillable = [
         'account',

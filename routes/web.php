@@ -44,8 +44,8 @@ Route::middleware(['auth'])->group(function() {
     Route::post('/edit/edit_product_store', [editCtlr::class, 'edit_product_store'])->name('edit_product_store');
     Route::post('/edit/edit_product_add', [editCtlr::class, 'edit_product_add'])->name('edit_product_add');
     
-    Route::post('/edit/edit_product_delete', [editCtlr::class, 'edit_product_delete'])->name('edit_product_delete');
 
+    Route::post('/edit/edit_product_delete', [editCtlr::class, 'edit_product_delete'])->name('edit_product_delete');
 
 });
 

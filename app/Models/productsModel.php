@@ -9,7 +9,7 @@ class productsModel extends Authenticatable
 {
     use HasFactory;
     
-    protected $table = 'shopit_laravel.products';
+    protected $table = 'products';
 
     // 篩選的邏輯應該寫在controller中
 
