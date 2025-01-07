@@ -224,6 +224,20 @@
   /* 回溯鍵至此 */
   
   /* 手機 mobilephone */
+@media(max-width:426px){
+  header {
+    height: 110px;
+    padding: 7px;
+    /* background-color: #fff8dc; */
+    background-color: red;
+  }
+  #label {
+    display: none;
+  }
+  #search {
+    width: 70px;
+  }
+}
   @media only screen and (min-width: 0px) {
     .col-mobile-0{
       width: 0;

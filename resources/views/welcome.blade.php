@@ -178,6 +178,7 @@
         AOS.init({
             duration: 500,
         });
+
     </script>
 
 </body>

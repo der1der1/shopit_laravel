@@ -31,7 +31,6 @@
                         @if($user)
                             &nbsp; Hi! &nbsp; {{ $user->name }}&nbsp;
                             <input type="submit" name="logout" value="登出" title="登出">
-
                         @else
                             &nbsp; Hi! &nbsp; 來賓             &nbsp;
                             <button>

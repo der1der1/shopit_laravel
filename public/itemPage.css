@@ -261,3 +261,54 @@ footer {
     text-decoration: none;
     /* 超連結去除底線 */
 }
+@media(max-width:680px){
+    header {
+      font-size: 12px;
+      height: 110px;
+      padding: 7px;
+      background-color: #fff8dc; 
+    }
+    #label {
+      display: none;
+    }
+    #search {
+      width: 70px;
+    }
+
+    #interested_product {
+        height: 400px;
+        width: 100%;
+        border-radius: 7px;
+        background-color: #fff8dc;
+        margin-bottom: 7px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+    }
+    #main_pic{
+        height: 220px;
+        width: 220px;
+    }
+    #info {
+        height: 300px;
+        width: 80%;
+        font-size: 15px;
+    }
+    #select {
+        min-width: 80px;
+    }
+
+    #may_interesteds {
+        height: 250px; 
+        /* 將設計要異動的 */
+        width: 100%;
+        border-radius: 7px;
+        background-color: #fff8dc;
+        padding: 15px;
+        display: flex;
+        justify-content: space-around;
+        overflow: scroll;
+        font-size: 15px;
+    }
+  }

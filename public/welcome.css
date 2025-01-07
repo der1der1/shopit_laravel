@@ -103,7 +103,7 @@
   }
   
   aside {
-    /* width: 15%; */
+    width: 15%;
     height: 100%;
     margin: 15px 0 5px 0;
     padding: 15px 10px;
@@ -113,50 +113,11 @@
     left: 7px;
     float: left; */
   }
-  
-  @media(min-width: 0){
-    aside {
-      background-color: white;
-      /* display: none; */
-    }
-  }
   .red{
     background-color: red;
   }
   .show{
     display: block;
-  }
-  
-  @media(min-width: 700px){
-    aside {
-      background-color:#fbeeba;
-      display: block;
-    }
-  }
-  @media (min-width: 1200px){
-    aside{
-      background-color: #FFF8DC;
-      display: block;
-    }
-  }
-  @media(min-width:0){
-    #aside_fold{
-      /* display: block; */
-      display: flex;
-      justify-content: center;
-      margin-top: 15px;
-      background-color: white;
-      border-radius: 7px;
-      padding: 5px;
-      width: 100%;
-      /* height: 50px; */
-    }
-  }
-  
-  @media(min-width:700px){
-    #aside_fold {
-      display: none;
-    }
   }
   
   .info{
@@ -181,7 +142,12 @@
     /* overflow:visible; */
     transition: 0.3s ease;
   }
-  
+  .block {
+    display: block;
+  }
+  .none {
+    display: none;
+  }
   #Products ul {
     text-align: center;
     padding: 0;
@@ -240,9 +206,12 @@
   }
   #interest_intems {
     width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+      display: flex;
+      flex-wrap: nowrap;
+      flex-direction: row;
+      align-items: center;
+      overflow: scroll;
+      justify-content: flex-start;
   }
   #interest_intems>a {
     margin: 20px;
@@ -258,7 +227,7 @@
   }
   
   #item {
-    min-width: 180px;
+    width: 180px;
     height: 210px;
     padding: 7px;
     text-align: center;
@@ -299,28 +268,6 @@
     background-color: white;
     text-align: center;
     padding: 5px;
-  }
-  
-  #oneProduct {
-    height: 120px;
-    width: 240px;
-    margin-bottom: 5px;
-    overflow: hidden;
-    padding: 0px;
-    font-size: 13px;
-    text-align: justify;
-    display: flex;
-    border-radius: 7px;
-    border: 1px solid rgb(180, 180, 180);
-    transition: 0.3s ease;
-  
-  }
-  #oneProduct:hover{
-    height: 125px;
-    width: 250px;
-    padding: 0 -5px 0 -5px;
-    background-color: #e0faf9;
-    transition: 0.3s ease;
   }
   
   #level {
@@ -388,6 +335,54 @@
   /* 回溯鍵至此 */
   
   /* 手機 mobilephone */
+
+
+  @media(max-width:700px){
+    header {
+      font-size: 12px;
+      height: 110px;
+      padding: 7px;
+      background-color: #fff8dc; 
+    }
+    #label {
+      display: none;
+    }
+    #search {
+      width: 70px;
+    }
+
+
+    #interested {
+      height: 270px;
+    }
+    #interested_title {
+      height: 30px;
+      padding-top: 15px;
+      margin-bottom: 5px;
+    }
+    #interest_intems {
+      width: 100%;
+      display: flex;
+      flex-wrap: nowrap;
+      flex-direction: row;
+      align-items: center;
+      overflow: scroll;
+      justify-content: flex-start;
+    }
+    #interest_intems>a {
+      margin: 2px;
+    }
+
+
+    #item {
+      width: 130px;
+    }
+  }
+
+
+
+
+
   @media only screen and (min-width: 0px) {
     .col-mobile-0{
       width: 0;

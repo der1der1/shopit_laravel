@@ -12,16 +12,15 @@
 
 <body id="top">
     <div id="contener">
+
         @include('template.header_template')
+
         <main>
             <form method="POST" action="{{ route('want') }}" enctype="multipart/form-data">
                 @csrf
-
                 <div id="interested_product">
-                    
-
                     <div id="picture1">
-                        <img src="{{ asset($products->pic_dir) }}" alt="" height="340px" width="340px   ">
+                        <img id="main_pic" src="{{ asset($products->pic_dir) }}" alt="" height="340px" width="340px">
                     </div>
                     <div id="info">
                         <div id="title_select">
@@ -30,12 +29,7 @@
                         </div>
                         <div id="paragraph">{{ $products->description }} </div>
                     </div>
-                    
-
                     <input type="text" name="product_id" value="{{ $products->id }}" style="display: none;">
-
-
-                    
                 </div>
             </form>
 

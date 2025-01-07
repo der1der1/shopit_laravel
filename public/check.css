@@ -136,8 +136,17 @@
     border-radius: 7px;
     background-color: #FFF8DC;
   }
+  .quantity {
+    width: 120px;
+    height: 40px;
+  }
   #item > div {
     width: 100%;
+  }
+  #item_money_top {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 20px;
   }
   #item_money_top > button{
     border: none;
@@ -210,12 +219,6 @@
       font-size: 20px;
     }
   
-    #item_money_top {
-      display: flex;
-      justify-content: space-around;
-      padding-top: 20px;
-    }
-  
     .item_money_total {
       display: flex;
       justify-content: center;
@@ -262,13 +265,6 @@
       width: 24%;
       font-size: 17px;
     }
-  
-    #item_money_top {
-      display: flex;
-      justify-content: space-around;
-      padding-top: 30px;
-    }
-  
     #item_money_total {
       display: flex;
       justify-content: center;
@@ -317,12 +313,6 @@
     font-size: 20px;
   }
 
-  #item_money_top {
-    display: flex;
-    justify-content: space-around;
-    padding-top: 20px;
-  }
-
   #item_money_total {
     display: flex;
     justify-content: center;
@@ -356,22 +346,6 @@
 
   /* item to here */
 
-
-
-
-
-
-
-
-
-  /* Footer vv */
-  /* #bar {
-    border: 7px solid #DEB887;
-    height: 150px;
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-  } */
 
   #trading_bar {
     height: 120px;
@@ -430,3 +404,41 @@
     background-color: #DEB887;
     font-size: 10px;
   }
+  @media(max-width:700px){
+      header {
+        font-size: 12px;
+        height: 110px;
+        padding: 7px;
+        background-color: #fff8dc;
+      }
+      #label {
+        display: none;
+      }
+      #search {
+        width: 70px;
+      }
+      #item_money {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      #item_pic {
+        margin: 20px;
+      }
+      .item_money_total, #items {
+        font-size: 15px;
+      }
+      #item_money_top {
+        /* display: flex;
+        justify-content: space-around;
+        padding-top: 20px; */
+        flex-direction: column;
+      }
+      .quantity {
+        width: 60px;
+        height: 30px;
+      }
+      #ticketword, #checkword {
+        font-size: 17px;
+      }
+    }

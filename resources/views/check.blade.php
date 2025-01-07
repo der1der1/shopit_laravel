@@ -86,10 +86,10 @@
                                 <p id="p">{{ $wanted_products->product_name ?? '' }}</br></br>{{ $wanted_products->description ?? '' }}</p>
                             </div>
                             <div id="item_money">
-                                <div id="item_money_total_{{ $wanted_products->id??'' }}" data-price="{{ $wanted_products->price??'' }}class="item_money_total">Price $ = {{ $wanted_products->price ?? '' }}</div>
+                                <div id="item_money_total_{{ $wanted_products->id??'' }}" data-price="{{ $wanted_products->price??'' }}" class="item_money_total">Price $ = {{ $wanted_products->price ?? '' }}</div>
                                 <div id="item_money_top">
                                     <p> number: &nbsp;</p>
-                                    <input type="number" id="quantity-{{ $wanted_products->id??'' }}" min="0" value="0" name="quantity[]" style="width:120px;height:40px;backgroung-color: grey;">
+                                    <input type="number" class="quantity" id="quantity-{{ $wanted_products->id??'' }}" min="0" value="0" name="quantity[]" style="backgroung-color: grey;">
                                 </div>
                                 <div id="item_sum_total_{{ $wanted_products->id??'' }}" class="item_money_total"> SUM $ = _______</div>
                             </div>
