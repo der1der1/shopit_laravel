@@ -4,5 +4,6 @@
     <div id="author">
         <p>本網站由德斯貿易公司(Desmo co.,lmt.)所有 Copy Right &copy; 2023</p>
     </div>
+    <div>賣家資訊：謝德一 deniel87deniel87@gmail.com 0970890556</div>
     <div id="cont"><a href="{{route('report_show')}}">Contact Us</a> </div>
 </footer>
