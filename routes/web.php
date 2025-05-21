@@ -9,10 +9,12 @@ use App\Http\Controllers\purchasedCtlr;
 use App\Http\Controllers\payController;
 use App\Http\Controllers\listController;
 use App\Http\Controllers\editCtlr;
+use App\Http\Controllers\MailTestController;
 
 
-// 123
-
+// gmail SMTP test
+Route::get('/send-test-mail', [MailTestController::class, 'send']);
+Route::get('/test-mail', [MailTestController::class, 'test']);
 
 Route::middleware(['guest'])->group(function() {
     Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
@@ -56,6 +58,10 @@ Route::get('/', [homeApiCtlr::class, 'tohome'] )->name('home');
 Route::get('/{search}', [homeApiCtlr::class, 'toHome_with_search'] )->name('home_with_search');
 Route::post('/', [homeApiCtlr::class, 'toHome_words_search'] )->name('toHome_words_search');
 Route::get('/itemPage/{id}', [homeApiCtlr::class, 'toItemPage'])->name('itemPage');
+
+
+
+
 
 
 
