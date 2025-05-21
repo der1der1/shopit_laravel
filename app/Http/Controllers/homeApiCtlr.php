@@ -21,7 +21,7 @@ class homeApiCtlr extends Controller
         $user = Auth::user();
         $marqee = marqeeModel::getAllMarqee();
         $allProducts = productsModel::all();
-        $few_products = productsModel::limit(5)->get();
+        $few_products = productsModel::inRandomOrder()->limit(5)->get();
         $products_category = productsModel::select('category')->distinct()->get();
 
         $infos = array();
@@ -44,7 +44,7 @@ class homeApiCtlr extends Controller
         $user = Auth::user();
 
         $marqee = marqeeModel::getAllMarqee();
-        $few_products = productsModel::limit(5)->get();
+        $few_products = productsModel::inRandomOrder()->limit(5)->get();
         $products_category = productsModel::select('category')->distinct()->get();
         // $search = strval($search);
         $allProducts = productsModel::where('category', $search)->get();
@@ -74,7 +74,7 @@ class homeApiCtlr extends Controller
             $user = Auth::user();
 
             $marqee = marqeeModel::getAllMarqee();
-            $few_products = productsModel::limit(5)->get();
+            $few_products = productsModel::inRandomOrder()->limit(5)->get();
             $products_category = productsModel::select('category')->distinct()->get();
 
             $infos = array();
