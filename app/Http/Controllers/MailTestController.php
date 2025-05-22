@@ -13,22 +13,30 @@ class MailTestController extends Controller
         // 測試收件者，可寫在 URL 如：/send-test-mail?email=test@example.com
         $to = $request->input('email', 'test@example.com');
 
-        // 發送信件，in vivo content
-        Mail::raw('這是一封來自 Laravel 的測試信件！', function ($message) use ($to) {
-            $message->to($to)
-                    ->subject('Laravel 測試信件');
-        });
-
-        // 發送信件，in virro test.blade.php
-        // Mail::send('emails.test', [], function ($message) use ($to) {
+        /* 發送信件，in vivo content */
+        // Mail::raw('這是一封來自 Laravel 的測試信件！', function ($message) use ($to) {
         //     $message->to($to)
         //             ->subject('Laravel 測試信件');
         // });
+
+        /* 發送信件，in vitro test.blade.php
+        resources/views/emails/test_mail_html.blade.php */
+        Mail::send('emails.test_mail_html', [], function ($message) use ($to) {
+            $message->to($to)
+                    ->subject('Laravel 測試信件')
+                    
+                    /* 附件 */
+                    ->attach(public_path('shopit_update.docx'))
+                    ;
+        });
+
+
 
         return '郵件已發送至：' . $to;
     }
     public function test()
     {
+        // 測試用
         $to = 'deniel87deniel87@gmail.com';
         // $to = 'serlina0504@gmail.com';
         // $to = 'deniel@photonic.com.tw';
