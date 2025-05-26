@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
             $table->string('account', 255)->unique()->nullable();
+            $table->string('email', 255)->unique()->nullable();
             $table->string('password',  255)->nullable();
             $table->string('prvilige', 45)->nullable();
             $table->string('name', 45)->nullable();
