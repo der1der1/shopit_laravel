@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 
 
-class User extends Authenticatable
+class User extends Authenticatable 
+// class User extends Authenticatable implements FilamentUser
 {
     use Notifiable;
     protected $table = 'users';
@@ -33,6 +36,12 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    // required by Filament
+    // public function canAccessPanel(Panel $panel): bool
+    // {
+    //     return str_ends_with($this->email, '@gmail.com') && $this->hasVerifiedEmail();
+    // }
 
 
 }

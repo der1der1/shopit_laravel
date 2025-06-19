@@ -11,6 +11,11 @@ class marqeeModel extends Authenticatable
 
     protected $table = 'marqee';
 
+    protected $fillable = [
+        'texts',
+        'updated_at'
+    ];
+
     // 可以添加更多的方法來處理查詢邏輯
     public static function getAllMarqee()
     { 
