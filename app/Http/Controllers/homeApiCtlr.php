@@ -21,6 +21,9 @@ class homeApiCtlr extends Controller
         $user = Auth::user();
         $marqee = marqeeModel::getAllMarqee();
         $allProducts = productsModel::all();
+        foreach ($allProducts as $product) {
+            $product->pic_dir = asset('storage/' . $product->pic_dir);
+        }        
         $few_products = productsModel::inRandomOrder()->limit(5)->get();
         $products_category = productsModel::select('category')->distinct()->get();
 
@@ -46,10 +49,11 @@ class homeApiCtlr extends Controller
         $marqee = marqeeModel::getAllMarqee();
         $few_products = productsModel::inRandomOrder()->limit(5)->get();
         $products_category = productsModel::select('category')->distinct()->get();
-        // $search = strval($search);
         $allProducts = productsModel::where('category', $search)->get();
-        // dump($products);
-        // dump($products_category);
+        // foreach ($allProducts as $product) {
+        //     $product->pic_dir = asset('storage/app/public/' . $product->pic_dir);
+        // }
+
         $infos = array();
         if ($user) {
            $info = explode(';',$user->info0);
