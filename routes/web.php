@@ -22,6 +22,9 @@ Route::middleware(['guest'])->group(function() {
     
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'authenticate']);
+
+    Route::get('/verification', [AuthController::class, 'verification'])->name('verification');
+    Route::post('/verification_check', [AuthController::class, 'verification_check'])->name('verification_check');
 });
 Route::middleware(['auth'])->group(function() {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

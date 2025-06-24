@@ -55,13 +55,16 @@ body {
     
 }
 
-#back {
+#back, #back_verification {
     height: 300px;
     width: 1000px;
     display: flex;
     justify-content:center;
     background-color: #383838;
     position:relative;
+}
+#back_verification {
+    height: 350px;
 }
 
 #login_words,
@@ -81,6 +84,24 @@ body {
 #sighup_words_h3 {
     margin: 40px 0 55px 0;
     color: #ffffffc7;
+}
+
+#verification_code_input {
+    width: 60%;
+    border-radius: 7px;
+    background-color: #ffffffc7;
+    height: 40px;
+    border: none;
+    margin-bottom: 50px;
+}
+
+#verification_code_input:focus {
+    background-color: white;
+    outline: none;
+}
+
+#remember_me_box {
+    display: flex;
 }
 
 button {

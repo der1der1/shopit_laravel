@@ -49,7 +49,7 @@
                     <div id="choser_sign" class="none">
                         <h2 id="panel_signup" class="panel_login">Sign Up</h2>
                         <input type="text" id="name_input" name="name" placeholder="Name">
-                        <input type="email" id="account_input" name="account" placeholder="e-mail">
+                        <input type="email" id="account_input" name="account" placeholder="e-mail" title="please provide a valid email for account activation.">
                         <input type="password" id="password_input" name="password" placeholder="password">
                         <div id="choice">
                             <input type="submit" id="choice_login" name="signup" value="Sign Up" class="choice_login_signup">
