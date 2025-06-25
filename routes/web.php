@@ -25,6 +25,8 @@ Route::middleware(['guest'])->group(function() {
 
     Route::get('/verification', [AuthController::class, 'verification'])->name('verification');
     Route::post('/verification_check', [AuthController::class, 'verification_check'])->name('verification_check');
+    Route::post('/verification_resend', [AuthController::class, 'verification_resend'])->name('verification_resend');
+    Route::post('/verification_to_admin', [AuthController::class, 'verification_to_admin'])->name('verification_to_admin');
 });
 Route::middleware(['auth'])->group(function() {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

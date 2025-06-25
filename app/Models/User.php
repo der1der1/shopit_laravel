@@ -22,6 +22,7 @@ class User extends Authenticatable implements FilamentUser
         'account',
         'email',
         'veri_code',
+        'veri_expire',
         'status',
         'password',
         'prvilige',
@@ -45,6 +46,4 @@ class User extends Authenticatable implements FilamentUser
     {
         return str_ends_with($this->email, '@gmail.com');
     }
-
-
 }
