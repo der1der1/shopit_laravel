@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
@@ -18,6 +19,10 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        if (!$this->validateTurnstile($request->input('cf-turnstile-response'))) {
+            return back()->withErrors(['msg' => '請完成真人驗證']);
+        }
+
         try {
             // 先判別是否是管理員註冊
             $prvilige = str_starts_with($request->account, "admin./") ? "A" : "B";
@@ -65,6 +70,11 @@ class AuthController extends Controller
 
     public function authenticate(Request $request)
     {
+        // dd($request->all());
+        if (!$this->validateTurnstile($request->input('cf-turnstile-response'))) {
+            return back()->withErrors(['msg' => '請完成真人驗證']);
+        }
+
         $credentials = $request->validate([
             'account' => 'required|email',
             'password' => 'required'
@@ -165,6 +175,25 @@ class AuthController extends Controller
                 ->subject('Shopit 註冊驗證信');
         });
         return redirect()->route('verification')->with('user', $request->email);
+    }
+
+    private function validateTurnstile($token)
+    {
+        /* 一般使用環境 */
+        $response = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+            'secret' => env('CLOUDFLARE_TURNSTILE_SECRET_KEY'),
+            'response' => $token,
+        ]);
+
+        /* 本地測試環境 */
+        // $response = Http::withOptions([
+        //     'verify' => false, // 禁用 SSL 驗證
+        // ])->asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+        //     'secret' => env('CLOUDFLARE_TURNSTILE_SECRET_KEY'),
+        //     'response' => $token,
+        // ]);
+
+        return $response->json()['success'] ?? false;
     }
 
     public function verification_to_admin(Request $request) {}

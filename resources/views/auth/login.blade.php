@@ -42,6 +42,14 @@
                             <input type="submit" id="choice_login" name="login" value="Log In" class="choice_login_signup">
                         </div>
                     </div>
+                    <div class="cf-turnstile" data-sitekey="{{ env('CLOUDFLARE_TURNSTILE_SITE_KEY') }}"data-callback="javascriptCallback"></div>
+                    <!-- <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script> -->
+
+                    <script
+                    src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback"
+                    defer
+                    ></script>
+
                 </form>
 
                 <form method="POST" action="{{ route('register') }}">
@@ -55,6 +63,12 @@
                             <input type="submit" id="choice_login" name="signup" value="Sign Up" class="choice_login_signup">
                         </div>
                     </div>
+                    <div class="cf-turnstile" data-sitekey="{{ env('CLOUDFLARE_TURNSTILE_SITE_KEY') }}"data-callback="javascriptCallback"></div>
+                    <!-- <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script> -->
+                    <script
+                    src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback"
+                    defer
+                    ></script>
                 </form>
             </div>
 
@@ -75,6 +89,13 @@
 
         </div>
     </div>
+
+    <!-- 顯示錯誤訊息 -->
+    @if ($errors->has('msg'))
+    <script>
+        alert("{{ $errors->first('msg') }}");
+    </script>
+    @endif
 </body>
 @include('template.footer_template')
 
