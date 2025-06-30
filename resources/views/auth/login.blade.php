@@ -41,15 +41,9 @@
                         <div id="choice">
                             <input type="submit" id="choice_login" name="login" value="Log In" class="choice_login_signup">
                         </div>
+                        <div class="cf-turnstile" data-sitekey="{{ env('CLOUDFLARE_TURNSTILE_SITE_KEY') }}"data-callback="javascriptCallback"  style="margin: 0 0 0 10px;"></div>
+                        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback" defer></script>
                     </div>
-                    <div class="cf-turnstile" data-sitekey="{{ env('CLOUDFLARE_TURNSTILE_SITE_KEY') }}"data-callback="javascriptCallback"></div>
-                    <!-- <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script> -->
-
-                    <script
-                    src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback"
-                    defer
-                    ></script>
-
                 </form>
 
                 <form method="POST" action="{{ route('register') }}">
@@ -62,13 +56,9 @@
                         <div id="choice">
                             <input type="submit" id="choice_login" name="signup" value="Sign Up" class="choice_login_signup">
                         </div>
+                        <div class="cf-turnstile" data-sitekey="{{ env('CLOUDFLARE_TURNSTILE_SITE_KEY') }}"data-callback="javascriptCallback" style="margin: -25px 0 0 10px;"></div>
+                        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback" defer></script>
                     </div>
-                    <div class="cf-turnstile" data-sitekey="{{ env('CLOUDFLARE_TURNSTILE_SITE_KEY') }}"data-callback="javascriptCallback"></div>
-                    <!-- <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script> -->
-                    <script
-                    src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback"
-                    defer
-                    ></script>
                 </form>
             </div>
 
