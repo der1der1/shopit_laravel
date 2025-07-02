@@ -19,8 +19,11 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        if (!$this->validateTurnstile($request->input('cf-turnstile-response'))) {
-            return back()->withErrors(['msg' => '請完成真人驗證']);
+        /* the Cloudflare certification conducts only in real web */
+        if (config('app.url') === 'https://desmoco.com.tw') {
+            if (!$this->validateTurnstile($request->input('cf-turnstile-response'))) {
+                return back()->withErrors(['msg' => '請完成真人驗證']);
+            }
         }
 
         try {
@@ -70,9 +73,12 @@ class AuthController extends Controller
 
     public function authenticate(Request $request)
     {
-        // dd($request->all());
-        if (!$this->validateTurnstile($request->input('cf-turnstile-response'))) {
-            return back()->withErrors(['msg' => '請完成真人驗證']);
+
+       /* the Cloudflare certification conducts only in real web */
+        if (config('app.url') === 'https://desmoco.com.tw') {
+            if (!$this->validateTurnstile($request->input('cf-turnstile-response'))) {
+                return back()->withErrors(['msg' => '請完成真人驗證']);
+            }
         }
 
         $credentials = $request->validate([
