@@ -1,0 +1,177 @@
+body {
+    font-family: sans-serif;
+    color: white;
+    margin: 0;
+    padding: 0;
+    background-color: #cecece;
+    height: 100vh;
+    overflow-y: scroll;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+}
+
+.card {
+    border: 2px solid black;
+    padding: 1rem;
+    background-color: #383838;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+h2,
+h3 {
+    text-align: center;
+}
+
+.flex-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.avatar {
+    width: 150px;
+    height: 150px;
+    background-color: light-dark;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.info-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+}
+
+.input-group {
+    height: 50px;
+    padding: 0.5rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.5rem;
+    background-color: light-dark;
+    color: #383838;
+    border: none;
+    border-radius: 7px;
+}
+
+.input-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.input-row label {
+    width: 100px;
+}
+
+.input-row input {
+    flex: 1;
+    padding: 0.5rem;
+    background-color: light-dark;
+    color: #383838;
+    border: none;
+    border-radius: 7px;
+}
+
+.btn-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.btn-row.single {
+    justify-content: center;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 7px;
+}
+
+.btn.cease,
+.btn.delete,
+.btn.google,
+.btn.favorite {
+    background-color: light-dark;
+    border-radius: 7px;
+    color: #383838;
+}
+
+.favorite {
+    margin-left: 30%;
+    width: 40%;
+}
+
+.btn.go,
+.btn.save,
+.btn.logout,
+.btn.home {
+    background-color: green;
+    min-width: 50px;
+    border-radius: 7px;
+}
+
+.query-row {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem 0;
+    gap: 0.5rem;
+}
+
+.query-row label {
+    width: 100px;
+}
+
+.query-row input {
+    flex: 1;
+    padding: 0.5rem;
+    background-color: light-dark;
+    color: #383838;
+    border: none;
+    border-radius: 7px;
+}
+
+.result-table {
+    background-color: white;
+    height: 300px;
+    color: #383838;
+    margin-top: 1rem;
+    border: 1px solid black;
+    overflow: scroll;
+}
+
+.result-table td {
+    border-bottom: 1px solid gray;
+}
+
+.custom-upload-button {
+    display: inline-block;
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.custom-upload-button:hover {
+    background-color: #0056b3;
+}

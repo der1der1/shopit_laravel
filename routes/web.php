@@ -54,6 +54,9 @@ Route::middleware(['auth'])->group(function() {
 
     Route::post('/edit/edit_product_delete', [editCtlr::class, 'edit_product_delete'])->name('edit_product_delete');
 
+    Route::get('/member_edit', [AuthController::class, 'member_edit'])->name('member_edit');
+    Route::post('/member_edit_save', [AuthController::class, 'member_edit_save'])->name('member_edit_save');
+    Route::get('/order_query', [AuthController::class, 'order_query'])->name('order_query');
 });
 
 Route::get('/contact', [contactCtlr::class, 'report_show'])->name('report_show');

@@ -9,6 +9,8 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
+use App\Models\purchasedModel as Order;
+use App\Models\productsModel as Product;
 
 class AuthController extends Controller
 {
@@ -74,7 +76,7 @@ class AuthController extends Controller
     public function authenticate(Request $request)
     {
 
-       /* the Cloudflare certification conducts only in real web */
+        /* the Cloudflare certification conducts only in real web */
         if (config('app.url') === 'https://desmoco.com.tw') {
             if (!$this->validateTurnstile($request->input('cf-turnstile-response'))) {
                 return back()->withErrors(['msg' => '請完成真人驗證']);
@@ -203,4 +205,87 @@ class AuthController extends Controller
     }
 
     public function verification_to_admin(Request $request) {}
+
+    public function member_edit(Request $request)
+    {
+        $user = User::find(Auth::id());
+        return view('auth.member_edit', compact('user'));
+    }
+
+    public function member_edit_save(Request $request)
+    {
+        // 獲取當前用戶
+        $user = User::find(Auth::id());
+
+        // 更新用戶資料
+        try {
+            $user->name = $request->input('name');
+            $user->nickname = $request->input('nickname');
+            $user->phone = $request->input('phone');
+            $user->to_address = $request->input('address');
+            $user->email = $request->input('email');
+
+            // If a new password is provided, update it
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->input('password'));
+            }
+
+            // Save changes
+            $user->save();
+
+            return redirect()->route('member_edit')->with('success', '會員資料已更新成功！');
+        } catch (\Exception $e) {
+            // return redirect()->route('member_edit')->withErrors(['msg' => '更新失敗：' . $e->getMessage()]);
+            return redirect()->route('member_edit')->withErrors(['msg' => '更新失敗']);
+        }
+
+        return redirect()->route('member_edit')->with('success', '會員資料已更新成功！');
+    }
+
+    public function order_query(Request $request)
+    {
+        $order_query = $request->input('order_query');
+        $user = User::find(Auth::id());
+
+        // 無輸入單號:搜尋全部
+        if (empty($order_query)) {
+            $orders = Order::where('account', $user->account)->get();
+        } else {
+            // 有輸入單號:搜尋單一
+            $orders = Order::where('account', $user->account)->where('id', $order_query)->get();
+        }
+        if (empty($orders)) {
+            return response()->json(['error' => '沒有找到相關訂單'], 404);
+        }
+
+        // 整理訂單資料 (找到訂單)
+        foreach ($orders as $order) {
+            $purchaseds = $order->purchased;
+            if (!$purchaseds) {
+                $order->purchased = [];
+                continue;
+            }
+
+            $purchaseds = explode(';', $purchaseds);
+            $ordered_purchaseds = [];
+            foreach ($purchaseds as $purchased) {
+                $purchased = explode(',', $purchased);
+                if (count($purchased) < 3) {
+                    continue; // 跳過格式不正確的資料
+                }
+                $product = Product::where('id', $purchased[0])->first();
+                if (!$product) {
+                    continue; // 跳過找不到商品的資料
+                }
+                $ordered_purchaseds[] = [
+                    'product_name' => $product->product_name,
+                    'number' => $purchased[1],
+                    'price' => $purchased[2]
+                ];
+            }
+            $order->purchased = $ordered_purchaseds;
+        }
+
+        return response()->json(['orders' => $orders]);
+    }
 }
