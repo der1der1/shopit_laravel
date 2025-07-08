@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
 use App\Models\purchasedModel as Order;
 use App\Models\productsModel as Product;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -287,5 +288,40 @@ class AuthController extends Controller
         }
 
         return response()->json(['orders' => $orders]);
+    }
+
+    // 重定向到 Google 登入頁面
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    // Google 回調處理
+    public function handleGoogleCallback()
+    {
+        try {
+            $googleUser = Socialite::driver('google')->stateless()->user();
+
+            // 查詢是否已有該 Google 帳號的使用者
+            $user = User::where('email', $googleUser->getEmail())->first();
+
+            if (!$user) {
+                // 如果使用者不存在，則創建新使用者
+                $user = User::create([
+                    'name' => $googleUser->getName(),
+                    'email' => $googleUser->getEmail(),
+                    'google_id' => $googleUser->getId(),
+                    'password' => bcrypt('default_password'), // 可選，或設置為隨機密碼
+                ]);
+            }
+
+            // 登入該使用者
+            Auth::login($user);
+
+            // 重定向到首頁或其他頁面
+            return redirect()->route('home');
+        } catch (\Exception $e) {
+            return redirect()->route('login')->withErrors(['msg' => 'Google 登入失敗，請稍後再試。']);
+        }
     }
 }

@@ -23,6 +23,10 @@ Route::middleware(['guest'])->group(function() {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'authenticate']);
 
+    // google login
+    Route::get('/google/redirect', [AuthController::class, 'redirectToGoogle'])->name('google.redirect');
+    Route::get('/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('google.callback');
+
     Route::get('/verification', [AuthController::class, 'verification'])->name('verification');
     Route::post('/verification_check', [AuthController::class, 'verification_check'])->name('verification_check');
     Route::post('/verification_resend', [AuthController::class, 'verification_resend'])->name('verification_resend');
