@@ -311,7 +311,8 @@ class AuthController extends Controller
                     'name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
                     'google_id' => $googleUser->getId(),
-                    'password' => bcrypt('default_password'), // 可選，或設置為隨機密碼
+                    'password' => null,
+                    'phone' => '0',
                 ]);
             }
 

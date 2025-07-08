@@ -23,6 +23,8 @@ class User extends Authenticatable implements FilamentUser
         'want',
         'account',
         'email',
+        'google_id',
+        'phone',
         'veri_code',
         'veri_expire',
         'status',
