@@ -29,7 +29,6 @@ class purchasedCtlr extends Controller
         $user->save();
 
         return redirect()->route('home')->with('success', '加入成功');
-
     }
 
     public function pay_to_shop(Request $request) {
@@ -109,6 +108,7 @@ class purchasedCtlr extends Controller
     }
     public function pay_confirm(Request $request) {
         // 防禦性，所有欄位檢查不可空白
+
         if (empty($request->name)||empty($request->bank_account)||empty($request->shop1_addr2)) {
             return redirect()->route('pay_show')->with('error', '資料未填寫完整');
         }
