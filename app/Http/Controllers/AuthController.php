@@ -188,20 +188,11 @@ class AuthController extends Controller
 
     private function validateTurnstile($token)
     {
-        /* 一般使用環境 */
         $response = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
             'secret' => env('CLOUDFLARE_TURNSTILE_SECRET_KEY'),
             'response' => $token,
         ]);
-
-        /* 本地測試環境 */
-        // $response = Http::withOptions([
-        //     'verify' => false, // 禁用 SSL 驗證
-        // ])->asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
-        //     'secret' => env('CLOUDFLARE_TURNSTILE_SECRET_KEY'),
-        //     'response' => $token,
-        // ]);
-
+        
         return $response->json()['success'] ?? false;
     }
 

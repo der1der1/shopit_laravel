@@ -39,10 +39,17 @@
                         <input type="password" id="password_input" name="password" placeholder="password">
                         <input type="checkbox" id="remember" name="remember"> Remember Me
                         <div id="choice">
-                            <input ty pe="submit" id="choice_login" name="login" value="Log In" class="choice_login_signup">
+                            <input type="submit" id="choice_login" name="login" value="Log In" class="choice_login_signup">
                         </div>
                         <div class="cf-turnstile" data-sitekey="{{ env('CLOUDFLARE_TURNSTILE_SITE_KEY') }}"data-callback="javascriptCallback"  style="margin: 0 0 0 10px;"></div>
                         <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback" defer></script>
+                        
+                        <div id="google-login">
+                            <a href="{{ route('google.redirect') }}" class="btn google-login">
+                                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" style="width: 20px; margin-right: 10px;">
+                                使用 Google 登入
+                            </a>
+                        </div>
                     </div>
                 </form>
 
@@ -67,7 +74,6 @@
                     document.getElementById("panel").className = "panel_log";
                     document.getElementById("choser_login").className = 'show';
                     document.getElementById("choser_sign").className = "none";
-
                 }
             
                 function goto_signup() {
@@ -76,30 +82,6 @@
                     document.getElementById("choser_sign").className = "show";
                 }
             </script>
-            <div id="google-login">
-                <a href="{{ route('google.redirect') }}" class="btn google-login">
-                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" style="width: 20px; margin-right: 10px;">
-                    使用 Google 登入
-                </a>
-            </div>
-            <style>
-                .google-login {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background-color: #4285F4;
-                    color: white;
-                    padding: 10px 20px;
-                    border-radius: 5px;
-                    text-decoration: none;
-                    font-size: 16px;
-                    font-weight: bold;
-                }
-
-                .google-login:hover {
-                    background-color: #357ae8;
-                }
-            </style>
         </div>
     </div>
 
