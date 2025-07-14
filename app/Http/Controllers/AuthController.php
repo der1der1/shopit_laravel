@@ -84,19 +84,34 @@ class AuthController extends Controller
             }
         }
 
-        $credentials = $request->validate([
-            'account' => 'required|email',
-            'password' => 'required'
-        ]);
+        try {
+            $credentials = $request->validate([
+                'account' => 'required|email',
+                'password' => 'required'
+            ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended('home');
+            $user = User::where('email', $credentials['account'])->first();
+
+            if (!$user) {
+                return back()->withErrors(['msg' => '此帳號不存在']);
+            }
+
+            if (!Hash::check($credentials['password'], $user->password)) {
+                return back()->withErrors(['msg' => '密碼錯誤']);
+            }
+
+            if (Auth::attempt($credentials, $request->boolean('remember'))) {
+                $request->session()->regenerate();
+                return redirect()->intended('home');
+            }
+
+            throw ValidationException::withMessages([
+                'account' => ['登入失敗，請檢查您的帳號和密碼是否正確']
+            ]);
+        } catch (\Exception $e) {
+
+            return back()->withErrors(['msg' => '系統錯誤，請稍後再試：' . $e->getMessage()]);
         }
-
-        throw ValidationException::withMessages([
-            'account' => [trans('auth.failed')]
-        ]);
     }
 
     public function logout(Request $request)
@@ -192,7 +207,7 @@ class AuthController extends Controller
             'secret' => env('CLOUDFLARE_TURNSTILE_SECRET_KEY'),
             'response' => $token,
         ]);
-        
+
         return $response->json()['success'] ?? false;
     }
 
