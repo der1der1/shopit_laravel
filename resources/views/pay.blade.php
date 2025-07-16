@@ -79,9 +79,9 @@
 
                         <label for="deliver to your home">輸入住址：</label>
                         @if ( empty($ppl_info->to_address) )
-                        <input type="text"   name="address"  value="eg. 台南市善化區小新里">
+                        <input type="text" id="address-input" placeholder="請輸入地址..." name="address" >
                         @else 
-                        <input type="text"   name="address"  value= {{ $ppl_info->to_address ??''}}>
+                        <input type="text" id="address-input" name="address" value= {{ $ppl_info->to_address ??''}}>
                         @endif
                         <input type="submit" value="選擇宅配到家">
                     </div>
@@ -118,8 +118,9 @@
                 </form>
 
                 <!-- 5. 地圖API -->
-                <div id="LocationMap">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13321.760098507479!2d120.21569612878777!3d22.998651853240307!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1szh-TW!2stw!4v1705164389576!5m2!1szh-TW!2stw" width="100%" height="255px" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <div id="locationMap">
+                    <div id="map"></div>
+                    <!-- <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13321.760098507479!2d120.21569612878777!3d22.998651853240307!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1szh-TW!2stw!4v1705164389576!5m2!1szh-TW!2stw" width="100%" height="255px" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> -->
                 </div>
             </div>
 
@@ -176,6 +177,10 @@
     <script>
         AOS.init();
     </script>
+
+    <!-- 引入google map api 相關設定 -->
+    @include('template.map_api')
+    
 </body>
 
 </html>
