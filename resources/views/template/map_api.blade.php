@@ -23,14 +23,14 @@
             draggable: true,
             title: "拖動我來選擇位置"
         });
-        const input = document.getElementById("address-input");
+        const input = document.getElementById("map-address-input");
         autocomplete = new google.maps.places.Autocomplete(input);
         autocomplete.bindTo('bounds', map);
         setupEventListeners();
     }
 
     function setupEventListeners() {
-        const input = document.getElementById("address-input");
+        const input = document.getElementById("map-address-input");
         autocomplete.addListener('place_changed', () => {
             const place = autocomplete.getPlace();
             if (!place.geometry || !place.geometry.location) {
@@ -69,7 +69,7 @@
             if (status === 'OK' && results[0]) {
                 const location = results[0].geometry.location;
                 updateMapAndMarker(location);
-                document.getElementById("address-input").value = results[0].formatted_address;
+                document.getElementById("map-address-input").value = results[0].formatted_address;
             } else {
                 alert('找不到該地址: ' + status);
             }
@@ -81,7 +81,7 @@
             location: location
         }, (results, status) => {
             if (status === 'OK' && results[0]) {
-                document.getElementById("address-input").value = results[0].formatted_address;
+                document.getElementById("map-address-input").value = results[0].formatted_address;
             } else {
                 console.log('反向地理編碼失敗: ' + status);
             }
