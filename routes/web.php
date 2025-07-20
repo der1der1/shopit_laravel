@@ -61,6 +61,9 @@ Route::middleware(['auth'])->group(function() {
     Route::get('/member_edit', [AuthController::class, 'member_edit'])->name('member_edit');
     Route::post('/member_edit_save', [AuthController::class, 'member_edit_save'])->name('member_edit_save');
     Route::get('/order_query', [AuthController::class, 'order_query'])->name('order_query');
+
+    Route::get('/map', [payController::class, 'map'])->name('map');
+
 });
 
 Route::get('/contact', [contactCtlr::class, 'report_show'])->name('report_show');

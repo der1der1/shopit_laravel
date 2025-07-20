@@ -44,5 +44,8 @@ class payController extends Controller
         return view('pay', compact('user', 'marqee', 'products', 'ppl_info', 'purchased' ));
     }
 
+    public function map() {
+        return view('map');
+    }
 
 }
