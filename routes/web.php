@@ -41,7 +41,7 @@ Route::middleware(['auth'])->group(function() {
     Route::get('/check', [checkController::class, 'check_show'])->name('check_show');
     Route::post('/check/store', [checkController::class, 'check_store']) ->name('check_store');
 
-    Route::get('/pay', [payController::class, 'pay_show'])->name('pay_show');
+    Route::get('/pay', [purchasedCtlr::class, 'pay_show'])->name('pay_show');
     Route::post('/pay/1', [purchasedCtlr::class, 'pay_to_shop'])->name('pay_to_shop');
     Route::post('/pay/2', [purchasedCtlr::class, 'pay_to_home'])->name('pay_to_home');
     Route::post('/pay/3', [purchasedCtlr::class, 'pay_name'])->name('pay_name');
