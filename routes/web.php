@@ -15,6 +15,7 @@ use App\Http\Controllers\MailTestController;
 // gmail SMTP test
 Route::get('/send-test-mail', [MailTestController::class, 'send']);
 Route::get('/test-mail', [MailTestController::class, 'test']);
+Route::get('/view_mail', [purchasedCtlr::class, 'view_mail'])->name('view_mail');
 
 Route::middleware(['guest'])->group(function() {
     Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');

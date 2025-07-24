@@ -189,4 +189,31 @@ class purchasedCtlr extends Controller
 
         return redirect()->route('home')->with('success', '購買成功，訂單id：' . $purchased->id);
     }
+
+    public function view_mail(Request $request)
+    {
+        $purchased = new \stdClass();
+        $purchased->name         = 'deniel';
+        $purchased->account      = 'deniel@gmail';
+        $purchased->bank_account = '0191227';
+        $purchased->shop1_addr2  = '2';
+        $purchased->to_address   = '台南市善化區';
+        $purchased->bill         = '7788';
+        $products = [
+            [
+                'product_name' => '商品名稱',
+                'id'           => '商品ID',
+                'num'          => 2,
+                'price'        => 500,
+            ],
+            
+            [
+                'product_name' => '商品名稱2',
+                'id'           => '商品ID2',
+                'num'          => 5,
+                'price'        => 650,
+            ]
+        ];
+        return view('emails.confirm_buy_mail', compact('request', 'products', 'purchased'));
+    }
 }
