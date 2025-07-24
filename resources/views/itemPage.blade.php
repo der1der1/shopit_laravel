@@ -20,7 +20,7 @@
                 @csrf
                 <div id="interested_product">
                     <div id="picture1">
-                        <img id="main_pic" src="{{ asset($products->pic_dir) }}" alt="" height="340px" width="340px">
+                        <img id="main_pic" src="{{ asset('storage/' . $products->pic_dir) }}" alt="" height="340px" width="340px">
                     </div>
                     <div id="info">
                         <div id="title_select">
@@ -37,7 +37,7 @@
                 @foreach ($few_products as $few_productss)
                     <a href="{{ route('itemPage', ['id' => $few_productss->id]) }}">
                         <div id="title2">{{ $few_productss->product_name }}</div>
-                        <div id="picture2"><img src="{{ asset($few_productss->pic_dir) }}" height=100px width=100px></div>
+                        <div id="picture2"><img src="{{ asset('storage/' . $few_productss->pic_dir) }}" height=100px width=100px></div>
                         <div id="paragraph2">{{ $few_productss->description }}</div>
                     </a>
                 @endforeach

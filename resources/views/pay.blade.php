@@ -37,7 +37,7 @@
             <div id="items" data-aos="fade-right" data-aos-duration="500">
                 @foreach ($products as $product)
                     <div id="item">
-                        <div id="picture"><img src="{{ $product['pic_dir'] ??'' }}" alt="{{ $product['pic_dir'] ??'' }}" title="{{ $product['product_name'] ??'' }}" width="120px" height="120px"></div>
+                        <div id="picture"><img src="{{ asset('storage/' . $product['pic_dir']) }}" alt="{{ $product['pic_dir'] ??'' }}" title="{{ $product['product_name'] ??'' }}" width="120px" height="120px"></div>
                         <div id="info">
                             <div id="infoName">{{ $product['product_name'] ??'' }}</div>
                             <div id="infoPrice">${{ $product['price'] ??'' }} x {{ $product['num'] ??'' }} = ${{ $product['price'] * $product['num'] }} </div>

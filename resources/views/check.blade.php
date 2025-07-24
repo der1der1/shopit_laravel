@@ -79,7 +79,7 @@
                         @else
                         <div id="' . $id . '" class="item">
                             <div id="item_pic">
-                                <img src="{{ $wanted_products->pic_dir ?? '' }}" alt="{{ $wanted_products->product_name ?? '' }}"  width="140px" height="140px">
+                                <img src="{{ asset('storage/' . $wanted_products->pic_dir) }}" alt="{{ $wanted_products->product_name ?? '' }}"  width="140px" height="140px">
                             </div>
 
                             <div id="item_description">
