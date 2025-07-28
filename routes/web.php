@@ -10,12 +10,17 @@ use App\Http\Controllers\payController;
 use App\Http\Controllers\listController;
 use App\Http\Controllers\editCtlr;
 use App\Http\Controllers\MailTestController;
+use App\Http\Controllers\AiApiCtlr;
 
 
 // gmail SMTP test
 Route::get('/send-test-mail', [MailTestController::class, 'send']);
 Route::get('/test-mail', [MailTestController::class, 'test']);
 Route::get('/view_mail', [purchasedCtlr::class, 'view_mail'])->name('view_mail');
+
+// test openAI
+Route::get('/testApi_show', [AiApiCtlr::class, 'testApi_show'])->name('testApi_show');
+Route::post('/testApi_request', [AiApiCtlr::class, 'testApi_request'])->name('testApi_request');
 
 Route::middleware(['guest'])->group(function() {
     Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
