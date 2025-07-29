@@ -182,5 +182,6 @@
     </script>
 
 </body>
+<a id="chatbot" href="{{ route('testApi_show') }}" title="AI chat"><img id="chatbot_img" src="{{ asset('img/icon/chatbot.png') }}" alt="AI chatta!"></a>
 <span id="toTop"> <a href="#top"><img src="{{ asset('img/icon/arrow-up.svg') }}" alt="" title="to top" height="35px" width="35px"></a></span>
 </html>

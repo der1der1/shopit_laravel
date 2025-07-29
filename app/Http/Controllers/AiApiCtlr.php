@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
+use App\Models\marqeeModel;
 
 class AiApiCtlr extends Controller
 {
@@ -17,12 +19,17 @@ class AiApiCtlr extends Controller
     
     public function testApi_show(Request $request)
     {
-        // Example of using OpenAI API
+
+        $user = Auth::user();
+        $marqee = marqeeModel::getAllMarqee();
+
         if (!$this->apiKey) {
             return response()->json(['error' => 'OpenAI API key not configured'], 500);
         }
 
         
+
+        return view('openAiApi', compact('user', 'marqee'));
         return view('openAiApi', [
             'message' => 'OpenAI API is ready to use.'
         ]);
@@ -31,6 +38,9 @@ class AiApiCtlr extends Controller
     public function testApi_request(Request $request)
     {
         $input = $request->input('query');
+        
+        $user = Auth::user();
+        $marqee = marqeeModel::getAllMarqee();
         
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $this->apiKey,
@@ -48,6 +58,8 @@ class AiApiCtlr extends Controller
         return view('openAiApi', [
             'input' => $input,
             'output' => $output,
+            'user' => $user,
+            'marqee' => $marqee,
         ]);
     }
 }

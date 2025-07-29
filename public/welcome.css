@@ -294,6 +294,19 @@
     /* 超連結去除底線 */
   }
   
+  #chatbot {
+    position: sticky;
+    bottom: 20px;
+    right: 120px;
+    float: right;
+    cursor: pointer;
+  }
+
+  #chatbot_img {
+    height: 50px;
+    width: 50px;
+  }
+
   /* 以下五個都是for回溯鍵的 */
   #toTop {
     height: 50px;
