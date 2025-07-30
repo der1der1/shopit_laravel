@@ -30,9 +30,7 @@ class AiApiCtlr extends Controller
         
 
         return view('openAiApi', compact('user', 'marqee'));
-        return view('openAiApi', [
-            'message' => 'OpenAI API is ready to use.'
-        ]);
+
     }
 
     public function testApi_request(Request $request)

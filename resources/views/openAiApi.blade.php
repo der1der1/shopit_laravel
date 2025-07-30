@@ -128,24 +128,27 @@
             <form action="{{ route('testApi_request') }}" method="POST">
                 @csrf
                 <div class="input-group">
-                    <input type="text" name="query" placeholder="在此輸入您的問題..." value="{{ session('input', '') }}" required>
+                    <input type="text" name="query" placeholder="在此輸入您的問題..." value="" required>
                     <button type="submit">發送</button>
                 </div>
             </form>
         </div>
 
-        @if (session('input') && session('output'))
+        @if (isset($input) && isset($output))
             <div class="chat-container">
-                <h2 style="color: #8B4513; margin-bottom: 20px;">💬 對話記錄</h2>
+                <h2 style="color: #8B4513; margin-bottom: 20px;">我的回應</h2>
                 
                 <div class="message user-message">
                     <div class="message-label">👤 您的問題：</div>
-                    <div class="message-content">{{ session('input') }}</div>
+                    <div class="message-content">{{ $input }}</div>
                 </div>
                 
                 <div class="message ai-message">
-                    <div class="message-label">🤖 AI 回應：</div>
-                    <div class="message-content">{{ session('output') }}</div>
+                    <div class="message-label">
+                        <img  src="{{ asset('img/icon/chatbot.png') }}" alt="AI chatta!" style="width: 15px; height: 15px;">
+                        AI 回應：
+                    </div>
+                    <div class="message-content">{{ $output }}</div>
                 </div>
             </div>
         @endif
