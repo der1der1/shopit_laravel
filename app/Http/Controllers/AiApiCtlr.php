@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use App\Models\marqeeModel;
+use App\Models\productsModel;
+
 
 class AiApiCtlr extends Controller
 {
@@ -36,7 +38,15 @@ class AiApiCtlr extends Controller
     public function testApi_request(Request $request)
     {
         $input = $request->input('query');
-        
+
+        $products_category = productsModel::select('category')->distinct()->get();
+        $std_prompt = 
+        "I'm the administrator of the shopping website, 
+        plz provide my customer some product based on the following categories: "
+         . $products_category . ", if needed, plz prvide some link for my categories of product,
+        https://desmoco.com.tw/[here is the category you suggested] 
+        .And the demands post by customer are below: ". $input;
+
         $user = Auth::user();
         $marqee = marqeeModel::getAllMarqee();
         
@@ -45,7 +55,7 @@ class AiApiCtlr extends Controller
             'Content-Type' => 'application/json'
         ])->post('https://api.openai.com/v1/responses', [
             'model' => 'gpt-4o-mini',
-            'input' => $input,
+            'input' => $std_prompt,
         ]);
 
         // 提取 API 回應內容
