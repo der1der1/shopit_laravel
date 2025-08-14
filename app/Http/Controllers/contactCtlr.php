@@ -1,28 +1,26 @@
-<?PHP
+<?php
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Contact\ContactRequest;
+use App\Services\ContactService;
 use Illuminate\Support\Facades\Auth;
-use App\Models\contactModel;
-use Illuminate\Http\Request;
 
 class contactCtlr extends Controller
 {
-    public function reporting(Request $request)
+    protected $contactService;
+
+    public function __construct(ContactService $contactService)
+    {
+        $this->contactService = $contactService;
+    }
+
+    public function reporting(ContactRequest $request)
     {
         try {
-            // $theuser = !empty(Auth::user()) ?: $request->name ;
-
-            $user = contactModel::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'information' => $request->information,
-            ]);
-
+            $this->contactService->createContact($request->validated());
             return redirect()->route('home')->with('success', '送出成功');
         } catch (\Exception $e) {
-
             return back()->withErrors(['msg' => $e->getMessage()]);
         }
     }

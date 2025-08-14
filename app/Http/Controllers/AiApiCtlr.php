@@ -2,72 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Services\AiService;
+use App\Services\ProductService;
+use App\Services\MarqueeService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
-use App\Models\marqeeModel;
-use App\Models\productsModel;
-
 
 class AiApiCtlr extends Controller
 {
-    protected $apiKey;
+    protected $aiService;
+    protected $productService;
+    protected $marqueeService;
 
-    public function __construct()
-    {
-        $this->apiKey = env('OPENAI_API_KEY');
+    public function __construct(
+        AiService $aiService,
+        ProductService $productService,
+        MarqueeService $marqueeService
+    ) {
+        $this->aiService = $aiService;
+        $this->productService = $productService;
+        $this->marqueeService = $marqueeService;
     }
     
     public function testApi_show(Request $request)
     {
+        try {
+            if (!$this->aiService->isApiKeyConfigured()) {
+                return response()->json(['error' => 'OpenAI API key not configured'], 500);
+            }
 
-        $user = Auth::user();
-        $marqee = marqeeModel::getAllMarqee();
+            $user = Auth::user();
+            $marqee = $this->marqueeService->getAllMarquees();
 
-        if (!$this->apiKey) {
-            return response()->json(['error' => 'OpenAI API key not configured'], 500);
+            return view('openAiApi', compact('user', 'marqee'));
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        
-
-        return view('openAiApi', compact('user', 'marqee'));
-
     }
 
     public function testApi_request(Request $request)
     {
-        $input = $request->input('query');
+        try {
+            $input = $request->input('query');
+            $user = Auth::user();
+            $marqee = $this->marqueeService->getAllMarquees();
 
-        $products_category = productsModel::select('category')->distinct()->get();
-        $std_prompt = 
-        "I'm the administrator of the shopping website, 
-        plz provide my customer some product based on the following categories: "
-         . $products_category . ", if needed, plz prvide some link for my categories of product,
-        https://desmoco.com.tw/[here is the category you suggested] 
-        .And the demands post by customer are below: ". $input;
+            $output = $this->aiService->generateProductRecommendations($input);
 
-        $user = Auth::user();
-        $marqee = marqeeModel::getAllMarqee();
-        
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $this->apiKey,
-            'Content-Type' => 'application/json'
-        ])->post('https://api.openai.com/v1/responses', [
-            'model' => 'gpt-4o-mini',
-            'input' => $std_prompt,
-        ]);
-
-        // 提取 API 回應內容
-        $responseData = $response->json();
-        $output = $responseData['output'][0]['content'][0]['text'] ?? 'No response from OpenAI';
-
-        // 將回應傳遞給 Blade 模板
-        return view('openAiApi', [
-            'input' => $input,
-            'output' => $output,
-            'user' => $user,
-            'marqee' => $marqee,
-        ]);
+            return view('openAiApi', [
+                'input' => $input,
+                'output' => $output,
+                'user' => $user,
+                'marqee' => $marqee,
+            ]);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 }

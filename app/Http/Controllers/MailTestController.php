@@ -2,78 +2,70 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+use App\Http\Requests\Mail\SendMailRequest;
+use App\Services\EmailService;
 use Illuminate\Support\Facades\Log;
-use App\Models\mailListModel;
 
 class MailTestController extends Controller
 {
-    public function send(Request $request)
+    protected $emailService;
+
+    public function __construct(EmailService $emailService)
     {
-        // 測試收件者，可寫在 URL 如：/send-test-mail?email=test@example.com
-        $to = $request->input('email', 'test@example.com');
-
-        /* 發送信件，in vivo content */
-        // Mail::raw('這是一封來自 Laravel 的測試信件！', function ($message) use ($to) {
-        //     $message->to($to)
-        //             ->subject('Laravel 測試信件');
-        // });
-
-        /* 發送信件，in vitro test.blade.php
-        resources/views/emails/test_mail_html.blade.php */
-        Mail::send('emails.test_mail_html', [], function ($message) use ($to) {
-            $message->to($to)
-                ->subject('Laravel 測試信件')
-
-                /* 附件 */
-                ->attach(public_path('shopit_update.docx'))
-            ;
-        });
-
-        return '郵件已發送至：' . $to;
+        $this->emailService = $emailService;
     }
+
+    public function send(SendMailRequest $request)
+    {
+        try {
+            $validated = $request->validated();
+            
+            switch ($validated['type']) {
+                case 'test':
+                    $this->emailService->sendTestEmail($validated['email']);
+                    break;
+                
+                case 'test_with_attachment':
+                    $this->emailService->sendTestEmail($validated['email'], true);
+                    break;
+                
+                case 'purchase_confirmation':
+                    $this->emailService->sendPurchaseConfirmation(
+                        $validated['email'],
+                        $validated['products'],
+                        $validated['purchased']
+                    );
+                    break;
+            }
+
+            return '郵件已發送至：' . $validated['email'];
+        } catch (\Exception $e) {
+            Log::error('發信失敗：' . $e->getMessage());
+            return response()->json(['error' => '郵件發送失敗：' . $e->getMessage()], 500);
+        }
+    }
+
     public function test()
     {
-        // 測試用
-        $to = 'deniel87deniel87@gmail.com';
-        // $to = 'serlina0504@gmail.com';
-        // $to = 'deniel@photonic.com.tw';
-
         try {
-            Mail::raw('這是一封來自 deniel Desmoco 的測試信件！', function ($message) use ($to) {
-                $message->to($to)
-                    ->subject('Laravel 測試信件');
-            });
-
-            return '✅ 郵件已發送至：' . $to;
-        } catch (Exception $e) {
+            $email = 'deniel87deniel87@gmail.com';
+            $this->emailService->sendTestEmail($email);
+            
+            return '✅ 郵件已發送至：' . $email;
+        } catch (\Exception $e) {
             Log::error('❌ 發信失敗：' . $e->getMessage());
             return '❌ 發信失敗：' . $e->getMessage();
         }
     }
 
-    public function buy_confirm_mail($to, $products, $purchased)
+    public function buy_confirm_mail($to, array $products, array $purchased)
     {
-        $admin_emails = mailListModel::where('onoff', 1)
-            ->where('id', '!=', 1)
-            ->pluck('email');
-        $bcc = [];
-        $bcc[] = config('mail.from.address');
-        if ($admin_emails != null) {
-
-            foreach ($admin_emails as $key => $admin_email) {
-                $bcc[] = $admin_email;
-            }
+        try {
+            $this->emailService->sendPurchaseConfirmation($to, $products, $purchased);
+            return '郵件已發送至：' . $to;
+        } catch (\Exception $e) {
+            Log::error('購買確認郵件發送失敗：' . $e->getMessage());
+            return response()->json(['error' => '郵件發送失敗：' . $e->getMessage()], 500);
         }
-
-        Mail::send('emails.confirm_buy_mail', ['products' => $products, 'purchased' => $purchased], function ($message) use ($to, $bcc) {
-            $message->to($to)
-                ->bcc($bcc)
-                ->subject(config('mail.from.name') . '確認購買通知')
-            ;
-        });
-
-        return '郵件已發送至：' . $to;
     }
 }
