@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Http;
 use App\Models\purchasedModel as Order;
 use App\Models\productsModel as Product;
 use Laravel\Socialite\Facades\Socialite;
+use App\Service\RealHumanService;
+use App\Service\CreateUserService;
+use App\Repository\CreateUserRepository;
+use App\Repository\MailRepository;
 
 class AuthController extends Controller
 {
@@ -22,51 +26,32 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        $realHumanService = app(RealHumanService::class);
+        $createUserService = app(CreateUserService::class);
+        $createUserRepository = app(CreateUserRepository::class);
+        $mailRepository = app(MailRepository::class);
+
+
         /* the Cloudflare certification conducts only in real web */
-        if (config('app.url') === 'https://desmoco.com.tw') {
-            if (!$this->validateTurnstile($request->input('cf-turnstile-response'))) {
-                return back()->withErrors(['msg' => '請完成真人驗證']);
-            }
-        }
+        $realHumanService->realHuman($request);
+    
+        // 處理新帳戶
+        $prvilige = $createUserService->classifyUserType($request);
+        $veri_code = strval(rand(100000, 999999));  // 生成驗證碼
 
         try {
-            // 先判別是否是管理員註冊
-            $prvilige = str_starts_with($request->account, "admin./") ? "A" : "B";
-            // 如果前綴是 admin./ 要幫他拿掉
-            if ($prvilige == "A") {
-                $head_away = explode("admin./", $request->account);
-                $request->account = $head_away[1];
-            }
-
-            $veri_code = strval(rand(100000, 999999));  // 生成驗證碼
             // 寫入資料庫
-            $user = User::create(
-                [
-                    'name' => $request->name,
-                    'account' => $request->account,
-                    'email' => $request->account,
-                    'password' => Hash::make($request->password),
-                    'prvilige' => $prvilige,
-                    'status' => 'inactive',  // 預設狀態為 inactive
-                    'veri_code' => $veri_code,
-                    'veri_expire' => now()->addMinutes(7),
-                ]
-            );
-            $user->email = $request->account;
-
+            $createUserRepository->createUserDB($request, $prvilige, $veri_code);
+            
             // 發送驗證郵件
-            $to = $request->account;
-            /* 發送信件，in vivo content */
-            Mail::raw('感謝您註冊本站帳號，您的驗證碼為：' . $veri_code . '；請在7分鐘內回到網站進行驗證。', function ($message) use ($to) {
-                $message->to($to)
-                    ->subject('Shopit 註冊驗證信');
-            });
+            $mailRepository->sendVerificationEmail($request, $prvilige, $veri_code);
 
             return view('auth.verification', compact('user'));
         } catch (\Exception $e) {
 
             return back()->withErrors(['msg' => $e->getMessage()]);
         }
+        
     }
 
     public function showLoginForm()
@@ -78,11 +63,13 @@ class AuthController extends Controller
     {
 
         /* the Cloudflare certification conducts only in real web */
-        if (config('app.url') === 'https://desmoco.com.tw') {
-            if (!$this->validateTurnstile($request->input('cf-turnstile-response'))) {
-                return back()->withErrors(['msg' => '請完成真人驗證']);
-            }
-        }
+        $realHumanService = app(RealHumanService::class);
+        $realHumanService->realHuman($request);
+        // if (config('app.url') === 'https://desmoco.com.tw') {
+        //     if (!$this->validateTurnstile($request->input('cf-turnstile-response'))) {
+        //         return back()->withErrors(['msg' => '請完成真人驗證']);
+        //     }
+        // }
 
         try {
             $credentials = $request->validate([
@@ -201,15 +188,15 @@ class AuthController extends Controller
         return redirect()->route('verification')->with('user', $request->email);
     }
 
-    private function validateTurnstile($token)
-    {
-        $response = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
-            'secret' => env('CLOUDFLARE_TURNSTILE_SECRET_KEY'),
-            'response' => $token,
-        ]);
+    // private function validateTurnstile($token)
+    // {
+    //     $response = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+    //         'secret' => env('CLOUDFLARE_TURNSTILE_SECRET_KEY'),
+    //         'response' => $token,
+    //     ]);
 
-        return $response->json()['success'] ?? false;
-    }
+    //     return $response->json()['success'] ?? false;
+    // }
 
     public function verification_to_admin(Request $request) {}
 
