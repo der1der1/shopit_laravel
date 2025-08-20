@@ -39,12 +39,16 @@ class AuthController extends Controller
         $prvilige = $createUserService->classifyUserType($request);
         $veri_code = strval(rand(100000, 999999));  // 生成驗證碼
 
+        // 產出email需要的內容
+        $context = '感謝您註冊本站帳號，您的驗證碼為：' . $veri_code . '；請在7分鐘內回到網站進行驗證。';
+        $title = 'Shopit 註冊驗證信';
+
         try {
             // 寫入資料庫
             $createUserRepository->createUserDB($request, $prvilige, $veri_code);
             
             // 發送驗證郵件
-            $mailRepository->sendVerificationEmail($request, $prvilige, $veri_code);
+            $mailRepository->sendVerificationEmail($request, $prvilige, $context, $title);
 
             return view('auth.verification', compact('user'));
         } catch (\Exception $e) {
