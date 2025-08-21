@@ -8,7 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 
-class CreateUserRepository
+class UserRepository
 {
 
     public function createUserDB($request, $prvilige, $veri_code)
@@ -28,7 +28,9 @@ class CreateUserRepository
         );
     }
 
+    public function findUserByEmail($email)
+    {
+        return User::where('email', $email)->first();
+    }
 
-
-    
 }

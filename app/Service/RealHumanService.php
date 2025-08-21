@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 
 class RealHumanService
 {
+    /* the Cloudflare certification conducts only in real web */
     private function validateTurnstile($token)
     {
         $response = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [

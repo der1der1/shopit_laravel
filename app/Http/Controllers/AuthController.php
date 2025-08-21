@@ -14,8 +14,10 @@ use App\Models\productsModel as Product;
 use Laravel\Socialite\Facades\Socialite;
 use App\Service\RealHumanService;
 use App\Service\CreateUserService;
-use App\Repository\CreateUserRepository;
+use App\Repository\UserRepository;
 use App\Repository\MailRepository;
+use App\Service\ValidateUserService;
+use App\Service\AuthService;
 
 class AuthController extends Controller
 {
@@ -46,19 +48,17 @@ class AuthController extends Controller
         // 驗證不是機器人
         $this->realHumanService->realHuman($request);
         // 處理新帳戶
-        $prvilige = $createUserService->classifyUserType($request);
+        $prvilige = $this->createUserService->classifyUserType($request);
         $veri_code = strval(rand(100000, 999999));  // 生成驗證碼
-
         // 產出email需要的內容
         $context = '感謝您註冊本站帳號，您的驗證碼為：' . $veri_code . '；請在7分鐘內回到網站進行驗證。';
         $title = 'Shopit 註冊驗證信';
 
         try {
-            // 寫入資料庫
-            $createUserRepository->createUserDB($request, $prvilige, $veri_code);
-            
-            // 發送驗證郵件
-            $mailRepository->sendVerificationEmail($request, $prvilige, $context, $title);
+            // 寫資料庫
+            $this->UserRepository->createUserDB($request, $prvilige, $veri_code);
+            // 寄驗證郵件
+            $this->mailRepository->sendVerificationEmail($request, $prvilige, $context, $title);
 
             return view('auth.verification', compact('user'));
         } catch (\Exception $e) {
@@ -76,35 +76,17 @@ class AuthController extends Controller
     public function authenticate(Request $request)
     {
 
-        /* the Cloudflare certification conducts only in real web */
-        $realHumanService = app(RealHumanService::class);
-        $realHumanService->realHuman($request);
-        // if (config('app.url') === 'https://desmoco.com.tw') {
-        //     if (!$this->validateTurnstile($request->input('cf-turnstile-response'))) {
-        //         return back()->withErrors(['msg' => '請完成真人驗證']);
-        //     }
-        // }
+        // 驗證不是機器人
+        $this->realHumanService->realHuman($request);
 
         try {
-            $credentials = $request->validate([
-                'account' => 'required|email',
-                'password' => 'required'
-            ]);
-
-            $user = User::where('email', $credentials['account'])->first();
-
-            if (!$user) {
-                return back()->withErrors(['msg' => '此帳號不存在']);
-            }
-
-            if (!Hash::check($credentials['password'], $user->password)) {
-                return back()->withErrors(['msg' => '密碼錯誤']);
-            }
-
-            if (Auth::attempt($credentials, $request->boolean('remember'))) {
-                $request->session()->regenerate();
-                return redirect()->intended('home');
-            }
+            
+            // 驗證輸入內容:信箱、密碼
+            $credentials = $this->validateUserService->ValidateInput($request);
+            // 查詢user
+            $user = $this->UserRepository->findUserByEmail($credentials['account']);
+            // 檢查使用者是否通關
+            $this->validateUserService->ValidateUser($user, $credentials, $request);
 
             throw ValidationException::withMessages([
                 'account' => ['登入失敗，請檢查您的帳號和密碼是否正確']
@@ -117,9 +99,8 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $this->authService->Logout($request);
+        
         return redirect()->route('home');
     }
 
