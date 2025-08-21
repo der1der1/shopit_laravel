@@ -19,6 +19,23 @@ use App\Repository\MailRepository;
 
 class AuthController extends Controller
 {
+    protected $authService;
+    protected $realHumanService;
+    protected $createUserService;
+    protected $UserRepository;
+    protected $mailRepository;
+    protected $validateUserService;
+
+    public function __construct()
+    {
+        $this->authService = app(AuthService::class);
+        $this->realHumanService = app(RealHumanService::class);
+        $this->createUserService = app(CreateUserService::class);
+        $this->UserRepository = app(UserRepository::class);
+        $this->mailRepository = app(MailRepository::class);
+        $this->validateUserService = app(ValidateUserService::class);
+    }
+
     public function showRegistrationForm()
     {
         return view('auth.register');
@@ -26,15 +43,8 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $realHumanService = app(RealHumanService::class);
-        $createUserService = app(CreateUserService::class);
-        $createUserRepository = app(CreateUserRepository::class);
-        $mailRepository = app(MailRepository::class);
-
-
-        /* the Cloudflare certification conducts only in real web */
-        $realHumanService->realHuman($request);
-    
+        // 驗證不是機器人
+        $this->realHumanService->realHuman($request);
         // 處理新帳戶
         $prvilige = $createUserService->classifyUserType($request);
         $veri_code = strval(rand(100000, 999999));  // 生成驗證碼
