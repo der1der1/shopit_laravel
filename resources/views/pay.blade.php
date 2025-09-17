@@ -24,11 +24,11 @@
 
 <body>
     <!-- 先跑要給使用者的訊息 -->
-    @if(session('error'))
+    <!-- @if(session('error'))
     <script>alert("{{ session('error') }}");</script>
     @elseif(session(key: 'success'))
     <script>alert("{{ session('success') }}");</script>
-    @endif
+    @endif -->
 
     <div id="contener">
 

@@ -89,7 +89,14 @@
                                 <div id="item_money_total_{{ $wanted_products->id??'' }}" data-price="{{ $wanted_products->price??'' }}" class="item_money_total">Price $ = {{ $wanted_products->price ?? '' }}</div>
                                 <div id="item_money_top">
                                     <p> number: &nbsp;</p>
-                                    <input type="number" class="quantity" id="quantity-{{ $wanted_products->id??'' }}" min="0" value="0" name="quantity[]" style="backgroung-color: grey;">
+                                    <input type="number" 
+                                        class="quantity" 
+                                        id="quantity-{{ $wanted_products->id??'' }}" 
+                                        min="1" 
+                                        value="1" 
+                                        name="quantity[{{ $wanted_products->id??'' }}]" 
+                                        disabled
+                                        style="background-color: grey;">
                                 </div>
                                 <div id="item_sum_total_{{ $wanted_products->id??'' }}" class="item_money_total"> SUM $ = _______</div>
                             </div>
@@ -169,19 +176,44 @@ $(document).ready(function() {
         // 當checkbox被勾選時，數量input啟用；取消勾選時禁用
         quantityInput.disabled = !this.checked;
         
-        // 如果取消勾選，重置數量為1
+        // 如果取消勾選，重置數量為1；如果勾選，確保至少為1
         if (!this.checked) {
             quantityInput.value = 1;
+        } else if (quantityInput.value === '' || quantityInput.value < 1) {
+            quantityInput.value = 1;
         }
+        
+        // 觸發數量變更事件來更新總價
+        $(quantityInput).trigger('input');
     });
 });
-//     //防止都沒有勾選就提交
-// document.getElementById('check').addEventListener('click', function(e) {
-//     const checkboxes = document.querySelectorAll('.item-checkbox:checked');
-    
-//     if (checkboxes.length === 0) {
-//         e.preventDefault();
-//         alert('請至少選擇一項商品');
-//     }
-// });
+
+    // 防止都沒有勾選就提交
+    document.getElementById('check').addEventListener('click', function(e) {
+        const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+        
+        if (checkboxes.length === 0) {
+            e.preventDefault();
+            alert('請至少選擇一項商品');
+            return false;
+        }
+        
+        // 確保所有已勾選商品的數量都大於0
+        let hasInvalidQuantity = false;
+        checkboxes.forEach(checkbox => {
+            const quantityInputId = checkbox.getAttribute('data-quantity-input');
+            const quantityInput = document.getElementById(quantityInputId);
+            const quantity = parseInt(quantityInput.value) || 0;
+            
+            if (quantity <= 0) {
+                hasInvalidQuantity = true;
+            }
+        });
+        
+        if (hasInvalidQuantity) {
+            e.preventDefault();
+            alert('請確保所選商品的數量都大於0');
+            return false;
+        }
+    });
 </script>

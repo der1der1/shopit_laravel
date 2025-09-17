@@ -178,8 +178,11 @@
             </div>
 
             <div class="btn-row">
-                <button class="btn home" title="回到首頁">Home</button>
-                <button class="btn logout" title="登出">Log out</button>
+                <button class="btn home" title="回到首頁" onclick="window.location.href='{{ route('home') }}'">Home</button>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <input type="submit" class="btn home" name="logout" value="登出" title="登出">
+                </form>
             </div>
 
             <div class="btn-row"></div>

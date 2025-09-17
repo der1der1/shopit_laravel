@@ -18,6 +18,7 @@ use App\Repository\UserRepository;
 use App\Repository\MailRepository;
 use App\Service\ValidateUserService;
 use App\Service\AuthService;
+use App\Service\OrderService;
 
 class AuthController extends Controller
 {
@@ -27,6 +28,7 @@ class AuthController extends Controller
     protected $UserRepository;
     protected $mailRepository;
     protected $validateUserService;
+    protected $orderService;
 
     public function __construct()
     {
@@ -36,6 +38,7 @@ class AuthController extends Controller
         $this->UserRepository = app(UserRepository::class);
         $this->mailRepository = app(MailRepository::class);
         $this->validateUserService = app(ValidateUserService::class);
+        $this->orderService = app(OrderService::class);
     }
 
     public function showRegistrationForm()
@@ -107,7 +110,7 @@ class AuthController extends Controller
     public function verification()
     {
         // 如果輸錯或過期甚麼的會由route回到這，就得重新傳遞user mail不然就要報錯
-        $user = new \stdClass(); // 或者使用一個空的物件
+        $user = new \stdClass(); // 建立使用一個空的物件
         $user->email = session('user');
 
         return view('auth.verification', compact('user'));
@@ -118,26 +121,28 @@ class AuthController extends Controller
         // dd($request->all());
         $verification_code = $request->verification_code;
 
+        // 驗證碼檢查
+        $user = User::where('email', $request->email)->first();
+
+        // 驗證
+        if ($verification_code != $user->veri_code) {
+            return redirect()->route('verification')->withErrors(['msg' => '驗證碼錯誤，請重新輸入'])->with('user', $request->email);
+        }
+        if (now() > $user->veri_expire) {
+            return redirect()->route('verification')->withErrors(['msg' => '驗證碼過期，請點擊重新寄送'])->with('user', $request->email);
+        }
+
+        // 如果驗證碼正確，則更新使用者狀態為 active
+        $user->status = 'active';
         try {
-            // 驗證碼檢查
-            $user = User::where('email', $request->email)->first();
 
-            // 驗證
-            if ($verification_code != $user->veri_code) {
-                return redirect()->route('verification')->withErrors(['msg' => '驗證碼錯誤，請重新輸入'])->with('user', $request->email);
-            }
-            if (now() > $user->veri_expire) {
-                return redirect()->route('verification')->withErrors(['msg' => '驗證碼過期，請點擊重新寄送'])->with('user', $request->email);
-            }
-
-            // 如果驗證碼正確，則更新使用者狀態為 active
-            $user->status = 'active';
             $user->save();
-
             // 如果使用者狀態 active，則登入使用者
             if ($user->status == 'active') {
-                // 登入使用者 (檢查是否勾選暫存)
-                $request->remember_me ? Auth::login($user, true) : Auth::login($user, false);
+                // 登入使用者 (檢查是否勾選9暫存)
+                $request->remember_me ? $remember_me = true : $remember_me = false;
+                $this->authService->Login($user, $remember_me);
+
 
                 // 看是不是管理員做不同的歡迎語
                 if ($user->prvilige == "A") {
@@ -158,7 +163,7 @@ class AuthController extends Controller
     public function verification_resend(Request $request)
     {
 
-        $user = User::where('email', $request->email)->first();
+        $user = $this->UserRepository->findUserByEmail($request->email);
 
         // 如果找到路由來到這
         if (!$user) {
@@ -175,23 +180,12 @@ class AuthController extends Controller
 
         // 重新發送驗證郵件
         $to = $request->email;
-        Mail::raw('重新發送驗證碼，您的驗證碼為：' . $veri_code . '；請在7分鐘內回到網站進行驗證。
-        <\br> 注意，若您多次重新發送仍無法成功登入，請聯絡系統管理員', function ($message) use ($to) {
-            $message->to($to)
-                ->subject('Shopit 註冊驗證信');
-        });
+        $context = '重新發送驗證碼，您的驗證碼為：' . $veri_code . '；請在7分鐘內回到網站進行驗證。
+        <\br> 注意，若您多次重新發送仍無法成功登入，請聯絡系統管理員';
+        $this->mailRepository->sendVerificationEmail2($request, $veri_code, $context);
+        
         return redirect()->route('verification')->with('user', $request->email);
     }
-
-    // private function validateTurnstile($token)
-    // {
-    //     $response = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
-    //         'secret' => env('CLOUDFLARE_TURNSTILE_SECRET_KEY'),
-    //         'response' => $token,
-    //     ]);
-
-    //     return $response->json()['success'] ?? false;
-    // }
 
     public function verification_to_admin(Request $request) {}
 
@@ -208,74 +202,23 @@ class AuthController extends Controller
 
         // 更新用戶資料
         try {
-            $user->name = $request->input('name');
-            $user->nickname = $request->input('nickname');
-            $user->phone = $request->input('phone');
-            $user->to_address = $request->input('address');
-            $user->email = $request->input('email');
-
-            // If a new password is provided, update it
-            if ($request->filled('password')) {
-                $user->password = Hash::make($request->input('password'));
-            }
-
-            // Save changes
-            $user->save();
+            $this->UserRepository->updateUser($user, $request);
 
             return redirect()->route('member_edit')->with('success', '會員資料已更新成功！');
         } catch (\Exception $e) {
-            // return redirect()->route('member_edit')->withErrors(['msg' => '更新失敗：' . $e->getMessage()]);
             return redirect()->route('member_edit')->withErrors(['msg' => '更新失敗']);
         }
-
-        return redirect()->route('member_edit')->with('success', '會員資料已更新成功！');
     }
 
     public function order_query(Request $request)
     {
-        $order_query = $request->input('order_query');
-        $user = User::find(Auth::id());
-
-        // 無輸入單號:搜尋全部
-        if (empty($order_query)) {
-            $orders = Order::where('account', $user->account)->get();
-        } else {
-            // 有輸入單號:搜尋單一
-            $orders = Order::where('account', $user->account)->where('id', $order_query)->get();
+        $result = $this->orderService->getUserOrders($request);
+        
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['status']);
         }
-        if (empty($orders)) {
-            return response()->json(['error' => '沒有找到相關訂單'], 404);
-        }
-
-        // 整理訂單資料 (找到訂單)
-        foreach ($orders as $order) {
-            $purchaseds = $order->purchased;
-            if (!$purchaseds) {
-                $order->purchased = [];
-                continue;
-            }
-
-            $purchaseds = explode(';', $purchaseds);
-            $ordered_purchaseds = [];
-            foreach ($purchaseds as $purchased) {
-                $purchased = explode(',', $purchased);
-                if (count($purchased) < 3) {
-                    continue; // 跳過格式不正確的資料
-                }
-                $product = Product::where('id', $purchased[0])->first();
-                if (!$product) {
-                    continue; // 跳過找不到商品的資料
-                }
-                $ordered_purchaseds[] = [
-                    'product_name' => $product->product_name,
-                    'number' => $purchased[1],
-                    'price' => $purchased[2]
-                ];
-            }
-            $order->purchased = $ordered_purchaseds;
-        }
-
-        return response()->json(['orders' => $orders]);
+        
+        return response()->json(['orders' => $result['orders']]);
     }
 
     // 重定向到 Google 登入頁面

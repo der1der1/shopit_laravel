@@ -29,7 +29,7 @@
                     @csrf
                         <a href="{{route('check_show')}}"><img src="{{ asset('img/icon/cart-shopping-solid.svg') }}" class="icon" alt="cart icon" title="購物車"></a>
                         @if($user)
-                            &nbsp; Hi! &nbsp; {{ $user->name }}&nbsp;
+                            <a href="{{route('member_edit')}}" title="會員資料">&nbsp; Hi! &nbsp; {{ $user->name }}&nbsp;</a>
                             <input type="submit" name="logout" value="登出" title="登出">
                         @else
                             &nbsp; Hi! &nbsp; 來賓             &nbsp;

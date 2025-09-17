@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthService
 {
-    public function Login(Request $request)
-    {}
+    public function Login($user, $remember)
+    {
+        Auth::login($user, $remember);
+    }
 
     public function Logout(Request $request)
     {

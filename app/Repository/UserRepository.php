@@ -33,4 +33,24 @@ class UserRepository
         return User::where('email', $email)->first();
     }
 
+    public function updateUser($user, $request)
+    {
+        // Update user data
+        $user->name = $request->input('name');
+        $user->nickname = $request->input('nickname');
+        $user->phone = $request->input('phone');
+        $user->to_address = $request->input('address');
+        $user->email = $request->input('email');
+
+        // If a new password is provided, update it
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->input('password'));
+        }
+
+        // Save changes
+        $user->save();
+        
+        return $user;
+    }
+
 }

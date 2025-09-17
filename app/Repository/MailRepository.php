@@ -26,6 +26,15 @@ class MailRepository
         });
     }
 
+    public function sendVerificationEmail2($request, $veri_code, $context)
+    {
+        $to = $request->email;
+        Mail::raw($context, function ($message) use ($to) {
+            $message->to($to)
+                ->subject('Shopit 註冊驗證信');
+        });
+    }
+
 
 
 }
