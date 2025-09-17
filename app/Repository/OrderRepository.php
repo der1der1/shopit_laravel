@@ -22,4 +22,17 @@ class OrderRepository
     {
         return Product::where('id', $productId)->first();
     }
+
+    public function createPurchaseOrder($userAccount, $purchasedItems, $totalBill)
+    {
+        return Order::create([
+            'account' => $userAccount,
+            'purchased' => $purchasedItems,
+            'bill' => $totalBill,
+            'payed' => "0",
+            'delivered' => "0",
+            'recieved' => "0",
+            'show' => "0",
+        ]);
+    }
 }
