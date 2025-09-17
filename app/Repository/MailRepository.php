@@ -3,8 +3,7 @@
 namespace App\Repository;
 
 use Illuminate\Support\Facades\Mail;
-
-
+use App\Models\mailListModel;
 
 class MailRepository
 {
@@ -35,6 +34,26 @@ class MailRepository
         });
     }
 
+    public function getActiveAdminEmails()
+    {
+        return mailListModel::where('onoff', 1)
+            ->where('id', '!=', 1)
+            ->pluck('email')
+            ->toArray();
+    }
 
-
+    public function getBccEmailList()
+    {
+        $bcc = [];
+        $bcc[] = config('mail.from.address');
+        
+        $adminEmails = $this->getActiveAdminEmails();
+        if (!empty($adminEmails)) {
+            foreach ($adminEmails as $adminEmail) {
+                $bcc[] = $adminEmail;
+            }
+        }
+        
+        return $bcc;
+    }
 }

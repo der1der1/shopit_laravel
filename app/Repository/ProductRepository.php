@@ -44,4 +44,29 @@ class ProductRepository
     {
         return marqeeModel::getAllMarqee();
     }
+
+    public function getAllProducts()
+    {
+        return Product::all();
+    }
+
+    public function getRandomProducts($limit = 5)
+    {
+        return Product::inRandomOrder()->limit($limit)->get();
+    }
+
+    public function getProductCategories()
+    {
+        return Product::select('category')->distinct()->get();
+    }
+
+    public function getProductsByCategory($category)
+    {
+        return Product::where('category', $category)->get();
+    }
+
+    public function searchProductsByCategory($searchWord)
+    {
+        return Product::where('category', $searchWord)->get();
+    }
 }

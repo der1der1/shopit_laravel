@@ -35,4 +35,38 @@ class OrderRepository
             'show' => "0",
         ]);
     }
+
+    public function getOrdersForAdmin()
+    {
+        return Order::where('show', "1")->get();
+    }
+
+    public function getLatestOrderByAccount($userAccount)
+    {
+        return Order::where('account', $userAccount)->orderBy('id', 'desc')->first();
+    }
+
+    public function updateOrderStatus($orderId, $updates)
+    {
+        $order = Order::where('id', $orderId)->first();
+        if ($order) {
+            foreach ($updates as $field => $value) {
+                $order->$field = $value;
+            }
+            $order->save();
+        }
+        return $order;
+    }
+
+    public function updateOrderDeliveryInfo($userAccount, $deliveryData)
+    {
+        $order = $this->getLatestOrderByAccount($userAccount);
+        if ($order) {
+            foreach ($deliveryData as $field => $value) {
+                $order->$field = $value;
+            }
+            $order->save();
+        }
+        return $order;
+    }
 }
