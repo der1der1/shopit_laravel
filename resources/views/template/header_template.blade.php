@@ -9,7 +9,7 @@
     </nav>
     <nav id="tool">
         <div id="home">
-            <a href="{{route('home')}}"><img src="{{ asset('img/logo.png') }}" class="logo" title="home page" alt="go to homepage"></a>
+            <a href="{{route('home')}}"><img src="{{ asset('img/logo1.png') }}" class="logo" title="home page" alt="go to homepage"></a>
         </div>
         <div id="check_list">
             <a href="{{route('list_show')}}"><img src="{{ asset('img/icon/check-list.png') }}" class="icon" alt="go to check list" width="20px" height="20px" title="訂單清單。管理者登入才會顯示"></a>
