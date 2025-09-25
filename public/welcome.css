@@ -1,14 +1,26 @@
 :root {
     --white: #FFF8DC;
+    --background: #FFFFFF;
+    --box:        #F6F6F6;
+    --box2:       #FBE0C5;
+    --text:       #40210F;
+    --text2:      #2A2A2A;
+    --line:       #40210F;
+    --btnline:    #FFFFFF;
+    --background2:#FBE0C5;
+    --btn:        #2A2A2A;
+    --btnhover:   #D96253;
   }
   
   * {
     box-sizing: border-box;
+    /* background-color: var(--background);
+    color: var(--text); */
   }
   
   a {
     text-decoration: none;
-    color: black;
+    color: var(--text);
   }
   
   a:hover {
@@ -19,26 +31,28 @@
     color: var(--white)
   }
   .ROW{
-    display: flex;
-    flex-wrap: wrap;
+    display: block;
   }
-  /* #contener {
-    max-width: 1200px;
-    margin: 0 auto;
-  } */
+  #contener {
+    margin-top: 80px;
+  }
   
   body {
-    background-color: #DEB887;
+    background-color: var(--box);
   }
   
   header {
-    height: 80px;
-    padding: 7px;
-    color: #090505;
-    border-radius: 7px;
-    box-shadow: 0px 12px 9px -7px;
-    background-color: #fff8dc;
-    overflow: hidden;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 80px;
+      padding: 7px;
+      color: var(--text);
+      /* box-shadow: 0px 12px 9px -7px; */
+      background-color: var(--background);
+      overflow: hidden;
+      z-index: 9999;
   }
   #label{
     margin-top: 7px;
@@ -81,9 +95,13 @@
     justify-content: center;
     /* 垂直居中對齊 */
     grid-gap: 7px;
-    margin-bottom: 15px;
+    margin-top: -8px;
   }
-  
+  .logo{
+    height: 40px;
+    width: 115px;
+    margin-top: -10px;
+  }
   .icon{
     height: 20px;
     width: 20px;
@@ -94,32 +112,31 @@
   }
   #run {
     font-size: 13px;
+    width: 120%;
+    margin-left: -1%;
+    background-color: var(--box);
   }
   
-  #middbody {
-    /* padding: 0; */
-    display: flex;
-    /* grid-gap: 10px; */
-  }
   
-  aside {
-    width: 15%;
-    height: 100%;
-    margin: 15px 0 5px 0;
-    padding: 15px 10px;
+  #nav {
+    width: 100%;
+    height: 30px;
+    margin-top: 10px;
     border-radius: 7px;
-    background-color: #FFF8DC;
-    /* position: fixed;
-    left: 7px;
-    float: left; */
-  }
-  .red{
-    background-color: red;
+    display: flex;
+    justify-content: center;
+    font-size: small;
   }
   .show{
     display: block;
   }
   
+  #middbody {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
   .info{
     height: 26px;
     background-color: #DEB887;
@@ -148,18 +165,21 @@
   .none {
     display: none;
   }
-  #Products ul {
-    text-align: center;
+
+  .products_ul {
     padding: 0;
     width: 80%;
     list-style-type: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
   }
-  
-  #Products ul li {
+
+  .products_li {
     margin: 10px 0px;
     transition: 0.3s ease;
   }
-  #Products ul li:hover {
+  .products_li:hover {
     margin: 10px 0px;
     font-size: larger;
     font-weight: bold;
@@ -168,51 +188,53 @@
   
   #contents {
     padding-left: 10px;
-    /* width: 83%; */
-    /* overflow: hidden; */
   }
   #greatPromotion{
     height: 260px;
     overflow: hidden;
     margin: 15px 0 10px 0;
-    /* border: 2px solid red; */
   }
   #interested {
-    /* margin-top: 15px; */
-    /* width: 90%; */
     height: 330px;
     border-radius: 7px;
     padding-top: 10px;
-    background-color: #f71d62;
   }
   
   #interested_title {
-    height: 50px;
+    margin: -10px 0 -10px 0;
+    height: 10px;
     width: 30%;
     min-width: 230px;
-    /* padding: 1px 0 1px 0; */
     display: flex;
-    /* 使用 Flexbox 布局 */
     flex-direction: column;
     /* 垂直排列内容 */
     justify-content: center;
-    /* 垂直居中对齐 */
+    /* 垂直居中對齊 */
     text-align: center;
     border-radius: 40px 10px 40px 10px;
-    background-color: #e7ef02;
+    background-color: var(--box2);
     font-size: 20px;
     font-weight: bolder;
     font-style: oblique;
   }
-  #interest_intems {
-    width: 100%;
-      display: flex;
-      flex-wrap: nowrap;
-      flex-direction: row;
-      align-items: center;
-      overflow: scroll;
-      justify-content: flex-start;
+
+  #likeGuyIcon {
+    margin-bottom: -20px;
   }
+  #interest_intems {
+    display: flex;
+    justify-content: center;
+    overflow-x: scroll;
+    /* 隱藏滾動條但保留滾動功能 */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+  }
+  
+  /* 隱藏 Webkit 瀏覽器（Chrome, Safari, Edge）的滾動條 */
+  #interest_intems::-webkit-scrollbar {
+    display: none;
+  }
+
   #interest_intems>a {
     margin: 20px;
   }
@@ -260,12 +282,17 @@
     flex-wrap: wrap;
     justify-content: center;
     grid-gap: 10px;
-    background-color: #FFF8DC;
     padding: 10px;
+  }
+
+  .product-row {
+    width: 65%;
+    display: flex;
+    margin-bottom: 20px;
+    justify-content: space-evenly;
   }
   
   #normal>div {
-    background-color: white;
     text-align: center;
     padding: 5px;
   }
@@ -275,14 +302,14 @@
   }
   
   footer {
-    height: 30px;
+    margin-bottom: -50px;
+    height: 150px;
     width: 100%;
-    position: fixed;
-    bottom: 0;
+    padding-top: 40px;
     display: flex;
     justify-content: space-around;
-    color: slategrey;
-    background-color: #DEB887;
+    color: var(--text);
+    background-color: var(--background2);
     font-size: 10px;
   }
   
@@ -346,7 +373,23 @@
   }
   
   /* 回溯鍵至此 */
-  
+
+  /* 各種中間要大不小的版本 */
+  @media(max-width:1350px){
+    #interest_intems {
+        display: flex;
+        justify-content: flex-start;
+        overflow-x: scroll;
+        /* 隱藏滾動條但保留滾動功能 */
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* Internet Explorer 10+ */
+      }
+      
+      /* 隱藏 Webkit 瀏覽器（Chrome, Safari, Edge）的滾動條 */
+      #interest_intems::-webkit-scrollbar {
+        display: none;
+      }
+  }
   /* 手機 mobilephone */
 
 
@@ -354,8 +397,6 @@
     header {
       font-size: 12px;
       height: 110px;
-      padding: 7px;
-      background-color: #fff8dc; 
     }
     #label {
       display: none;
@@ -364,6 +405,11 @@
       width: 70px;
     }
 
+    #middbody {
+    }
+
+    #normal {
+      margin-left: -15%;}
 
     #interested {
       height: 270px;
@@ -381,6 +427,14 @@
       align-items: center;
       overflow: scroll;
       justify-content: flex-start;
+      /* 隱藏滾動條但保留滾動功能 */
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* Internet Explorer 10+ */
+    }
+    
+    /* 隱藏 Webkit 瀏覽器（Chrome, Safari, Edge）的滾動條 */
+    #interest_intems::-webkit-scrollbar {
+      display: none;
     }
     #interest_intems>a {
       margin: 2px;

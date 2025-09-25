@@ -9,7 +9,7 @@
     </nav>
     <nav id="tool">
         <div id="home">
-            <a href="{{route('home')}}"><img src="{{ asset('img/icon/house-solid.svg') }}" class="icon" title="home page" alt="go to homepage"></a>
+            <a href="{{route('home')}}"><img src="{{ asset('img/logo.png') }}" class="logo" title="home page" alt="go to homepage"></a>
         </div>
         <div id="check_list">
             <a href="{{route('list_show')}}"><img src="{{ asset('img/icon/check-list.png') }}" class="icon" alt="go to check list" width="20px" height="20px" title="訂單清單。管理者登入才會顯示"></a>
@@ -18,9 +18,14 @@
         <div id="searchBar">
             <form action="{{ route('toHome_words_search') }}" method="post" enctype="multipart/form-data">
                 @csrf
-                <label id="label">搜索Bar:</label>
                 <input type="text" id="search" name="search_word" value="{{ request('search') }}" placeholder="我想看看...冰箱?" height="10px" title="搜尋商品名與種類">
-                <input type="submit" value="搜索" title="可搜尋商品名與種類">
+                <button type="submit" title="可搜尋商品名與種類" style="border: none; background: none; padding: 0; cursor: pointer;">
+                    <img src="{{ asset('img/search.png') }}"
+                        alt="search icon"
+                        width="20px"
+                        height="20px"
+                        style="margin-top: -3px">
+                </button>
             </form>
         </div>
         <!-- 購物車 -->
