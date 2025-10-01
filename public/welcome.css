@@ -1,466 +1,517 @@
 :root {
-    --white: #FFF8DC;
-    --background: #FFFFFF;
-    --box:        #F6F6F6;
-    --box2:       #FBE0C5;
-    --text:       #40210F;
-    --text2:      #2A2A2A;
-    --line:       #40210F;
-    --btnline:    #FFFFFF;
-    --background2:#FBE0C5;
-    --btn:        #2A2A2A;
-    --btnhover:   #D96253;
-  }
-  
-  * {
-    box-sizing: border-box;
-    /* background-color: var(--background);
+  --white: #FFF8DC;
+  --background: #FFFFFF;
+  --box: #F6F6F6;
+  --box2: #FBE0C5;
+  --text: #40210F;
+  --text2: #2A2A2A;
+  --line: #40210F;
+  --btnline: #FFFFFF;
+  --background2: #FBE0C5;
+  --btn: #2A2A2A;
+  --btnhover: #D96253;
+}
+
+* {
+  box-sizing: border-box;
+  /* background-color: var(--background);
     color: var(--text); */
-  }
-  
-  a {
-    text-decoration: none;
-    color: var(--text);
-  }
-  
-  a:hover {
-    text-decoration: none;
-  }
-  
-  a:link a:visited {
-    color: var(--white)
-  }
-  .ROW{
-    display: block;
-  }
-  #contener {
-    margin-top: 80px;
-  }
-  
-  body {
-    background-color: var(--box);
-  }
-  
-  header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 80px;
-      padding: 7px;
-      color: var(--text);
-      /* box-shadow: 0px 12px 9px -7px; */
-      background-color: var(--background);
-      overflow: hidden;
-      z-index: 9999;
-  }
-  #label{
-    margin-top: 7px;
-  }
-  /* 製作跑馬燈 */
-  #ad {
-    width: 80%;
-    white-space: nowrap;
-    /* overflow: hidden; */
-    text-align: center;
-  }
-  
-  #inad {
-    display: inline-block;
-    animation: ad 10s linear infinite;
-  }
-  
-  @keyframes ad {
-    0% {
-      transform: translateX(200%);
-    }
-  
-    100% {
-      transform: translateX(-100%);
-    }
-  }
-  /* 跑馬燈碼至此 */
-  
-  #tool {
-    padding: 14px 3% 0px 3%;
-    height: 100%;
-    display: flex;
-    justify-content: space-around;
-  }
-  
-  #searchBar {
-    display: flex;
-    flex-direction: row;
-    /* 垂直排列内容 */
-    justify-content: center;
-    /* 垂直居中對齊 */
-    grid-gap: 7px;
-    margin-top: -8px;
-  }
-  .logo{
-    height: 40px;
-    width: 115px;
-    margin-top: -10px;
-  }
-  .icon{
-    height: 20px;
-    width: 20px;
-  }
-  .icon:hover{
-    height: 22px;
-    width: 22px;
-  }
-  #run {
-    font-size: 13px;
-    width: 120%;
-    margin-left: -1%;
-    background-color: var(--box);
-  }
-  
-  
-  #nav {
-    width: 100%;
-    height: 30px;
-    margin-top: 10px;
-    border-radius: 7px;
-    display: flex;
-    justify-content: center;
-    font-size: small;
-  }
-  .show{
-    display: block;
-  }
-  
-  #middbody {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+}
+
+a {
+  text-decoration: none;
+  color: var(--text);
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+a:link a:visited {
+  color: var(--white)
+}
+
+main {
+  margin-top: 80px;
+  padding-left: 10px;
+  border: 1px solid blue;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+body {
+  background-color: var(--box);
+}
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 80px;
+  padding: 7px;
+  color: var(--text);
+  /* box-shadow: 0px 12px 9px -7px; */
+  background-color: var(--background);
+  overflow: hidden;
+  z-index: 9999;
+}
+
+#label {
+  margin-top: 7px;
+}
+
+/* 製作跑馬燈 */
+#ad {
+  width: 80%;
+  white-space: nowrap;
+  /* overflow: hidden; */
+  text-align: center;
+}
+
+#inad {
+  display: inline-block;
+  animation: ad 10s linear infinite;
+}
+
+@keyframes ad {
+  0% {
+    transform: translateX(200%);
   }
 
-  .info{
-    height: 26px;
-    background-color: #DEB887;
-    margin-bottom: 5px;
-    padding: 5px;
-    border-radius: 7px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: small;
-    transition: 0.3s ease;
+  100% {
+    transform: translateX(-100%);
   }
-  #info0{
-    height: 46px;
-    background-color: #e3d955;
-    transition: 0.3s ease;
+}
+
+/* 跑馬燈碼至此 */
+
+#tool {
+  padding: 14px 3% 0px 3%;
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+#searchBar {
+  display: flex;
+  flex-direction: row;
+  /* 垂直排列内容 */
+  justify-content: center;
+  /* 垂直居中對齊 */
+  grid-gap: 7px;
+  margin-top: -8px;
+}
+
+.logo {
+  height: 40px;
+  width: 115px;
+  margin-top: -10px;
+}
+
+.icon {
+  height: 20px;
+  width: 20px;
+}
+
+.icon:hover {
+  height: 22px;
+  width: 22px;
+}
+
+#nav {
+  /* width: 100%; */
+  height: 30px;
+  padding: 0;
+  margin-top: 85px;
+  border-radius: 7px;
+  display: flex;
+  font-size: small;
+  list-style-type: none;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.info {
+  height: 26px;
+  background-color: #DEB887;
+  margin-bottom: 5px;
+  padding: 5px;
+  border-radius: 7px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: small;
+  transition: 0.3s ease;
+}
+
+#info0 {
+  height: 46px;
+  background-color: #e3d955;
+  transition: 0.3s ease;
+}
+
+.info:hover,
+#info0:hover {
+  height: auto;
+  padding-bottom: 25px;
+  /* overflow:visible; */
+  transition: 0.3s ease;
+}
+
+.block {
+  display: block;
+}
+
+.none {
+  display: none;
+}
+
+.products_ul {
+  border: 3px solid red;
+  width: auto;
+}
+
+#greatPromotion {
+  height: 260px;
+  width: 100%;
+  overflow: hidden;
+  margin: 15px 0 10px 0;
+}
+
+.carousel-item>img {
+  height: 255px;
+}
+
+#interested {
+  height: 330px;
+  border-radius: 7px;
+  padding-top: 10px;
+}
+
+#interested_title {
+  margin: -10px 0 -10px 0;
+  height: 10px;
+  width: 30%;
+  min-width: 230px;
+  display: flex;
+  flex-direction: column;
+  /* 垂直排列内容 */
+  justify-content: center;
+  /* 垂直居中對齊 */
+  text-align: center;
+  border-radius: 40px 10px 40px 10px;
+  background-color: var(--box2);
+  font-size: 20px;
+  font-weight: bolder;
+  font-style: oblique;
+}
+
+#likeGuyIcon {
+  margin-bottom: -20px;
+}
+
+#interest_intems {
+  display: flex;
+  justify-content: center;
+  overflow-x: scroll;
+  /* 隱藏滾動條但保留滾動功能 */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+}
+
+/* 隱藏 Webkit 瀏覽器（Chrome, Safari, Edge）的滾動條 */
+#interest_intems::-webkit-scrollbar {
+  display: none;
+}
+
+#interest_intems>a {
+  margin: 20px;
+}
+
+#items {
+  height: 250px;
+  grid-gap: 10px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  overflow-x: auto;
+  /* overflow: hidden; */
+}
+
+button {
+  border: none;
+}
+
+#item,
+#item_interested {
+  width: 180px;
+  height: 210px;
+  padding: 7px;
+  text-align: center;
+  background-color: var(--background);
+  font-size: 13px;
+  overflow: hidden;
+  transition: 0.3s ease;
+}
+
+#item>img {
+  height: 210px;
+  width: 180px;
+}
+
+#item:hover,
+#item_interested:hover {
+  box-shadow: 9px 12px 9px -7px;
+  transition: 0.3s ease;
+}
+
+#item_interested {
+  border: 1px solid var(--line);
+  padding-top: 0px;
+}
+
+
+#level1,
+#level2 {
+  display: flex;
+  justify-content: center;
+}
+
+#price1 {
+  text-decoration-line: line-through;
+}
+
+#normal {
+  margin-top: 15px;
+  width: 100%;
+  border-radius: 7px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  grid-gap: 10px;
+  padding: 10px;
+}
+
+#normal_for_cellphone {
+  display: none;
+}
+
+.product-row {
+  width: 65%;
+  display: flex;
+  margin-bottom: 20px;
+  justify-content: space-evenly;
+}
+
+#normal>div {
+  text-align: center;
+  padding: 5px;
+}
+
+#level {
+  display: flex;
+}
+
+footer {
+  margin-bottom: -50px;
+  height: 150px;
+  width: 100%;
+  padding-top: 40px;
+  display: flex;
+  justify-content: space-around;
+  color: var(--text);
+  background-color: var(--background2);
+  font-size: 10px;
+}
+
+#cont,
+#editing_page {
+  padding-top: 10px;
+  color: slategrey;
+  text-decoration: none;
+  /* 超連結去除底線 */
+}
+
+#chatbot {
+  position: sticky;
+  bottom: 20px;
+  right: 120px;
+  float: right;
+  cursor: pointer;
+}
+
+#chatbot_img {
+  height: 50px;
+  width: 50px;
+}
+
+/* 以下五個都是for回溯鍵的 */
+#toTop {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  background-color: rgb(228, 225, 225);
+  position: sticky;
+  bottom: 20px;
+  right: 20px;
+  float: right;
+  padding-top: 7px;
+  text-align: center;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+#toTop.active {
+  opacity: 1;
+}
+
+#top {
+  top: 0;
+}
+
+#top:target {
+  animation: toTop 5s ease;
+}
+
+@keyframes toTop {
+  from {
+    top: -100%;
   }
-  .info:hover, #info0:hover{
-    height: auto;
-    padding-bottom: 25px;
-    /* overflow:visible; */
-    transition: 0.3s ease;
+
+  to {
+    top: 0;
   }
-  .block {
-    display: block;
+}
+
+/* 回溯鍵至此 */
+
+/* 各種中間要大不小的版本 */
+@media(max-width:1350px) {
+  #interest_intems {
+    display: flex;
+    justify-content: flex-start;
+    overflow-x: scroll;
+    /* 隱藏滾動條但保留滾動功能 */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* Internet Explorer 10+ */
   }
-  .none {
+
+  /* 隱藏 Webkit 瀏覽器（Chrome, Safari, Edge）的滾動條 */
+  #interest_intems::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* 手機 mobilephone */
+
+
+@media(max-width:700px) {
+  header {
+    font-size: 12px;
+    height: 80px;
+  }
+
+  #label {
     display: none;
   }
 
-  .products_ul {
-    padding: 0;
-    width: 80%;
-    list-style-type: none;
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
+  #search {
+    width: 70px;
   }
 
-  .products_li {
-    margin: 10px 0px;
-    transition: 0.3s ease;
+  .carousel-item>img {
+    height: 100px;
   }
-  .products_li:hover {
-    margin: 10px 0px;
-    font-size: larger;
-    font-weight: bold;
-    transition: 0.3s ease;
+
+  #normal {
+    display: none;
   }
-  
-  #contents {
-    padding-left: 10px;
+
+  #normal_for_cellphone {
+    display: block;
+    margin-top: -130px;
+    margin-bottom: 60px;
+    margin-left: 5%;
   }
-  #greatPromotion{
-    height: 260px;
-    overflow: hidden;
-    margin: 15px 0 10px 0;
+
+  .product-row {
+    margin-bottom: 30px;
   }
+
   #interested {
-    height: 330px;
-    border-radius: 7px;
-    padding-top: 10px;
-  }
-  
-  #interested_title {
-    margin: -10px 0 -10px 0;
-    height: 10px;
-    width: 30%;
-    min-width: 230px;
-    display: flex;
-    flex-direction: column;
-    /* 垂直排列内容 */
-    justify-content: center;
-    /* 垂直居中對齊 */
-    text-align: center;
-    border-radius: 40px 10px 40px 10px;
-    background-color: var(--box2);
-    font-size: 20px;
-    font-weight: bolder;
-    font-style: oblique;
+    height: 270px;
   }
 
-  #likeGuyIcon {
-    margin-bottom: -20px;
+  #interested_title {
+    height: 30px;
+    padding-top: 15px;
+    margin-bottom: 5px;
   }
+
   #interest_intems {
+    width: 100%;
     display: flex;
-    justify-content: center;
-    overflow-x: scroll;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
+    overflow: scroll;
+    justify-content: flex-start;
     /* 隱藏滾動條但保留滾動功能 */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* Internet Explorer 10+ */
   }
-  
+
   /* 隱藏 Webkit 瀏覽器（Chrome, Safari, Edge）的滾動條 */
   #interest_intems::-webkit-scrollbar {
     display: none;
   }
 
   #interest_intems>a {
-    margin: 20px;
+    margin: 2px;
   }
-  #items {
-    height: 250px;
-    grid-gap: 10px;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    overflow-x: auto;
-    /* overflow: hidden; */
-  }
-  
+
+
   #item {
-    width: 180px;
-    height: 210px;
-    padding: 7px;
-    text-align: center;
-    background-color: #FFF8DC;
-    font-size: 13px;
-    border-radius: 7px;
-    overflow: hidden;
-    transition: 0.3s ease;
-  }
-  #item:hover{
-    box-shadow: 9px 12px 9px -7px;
-    transition: 0.3s ease;
-  }
-  
-  #level1,
-  #level2 {
-    display: flex;
-    justify-content: center;
-  }
-  
-  #price1 {
-    text-decoration-line: line-through;
-  }
-  
-  #normal {
-    margin-top: 15px;
-    width: 100%;
-    border-radius: 7px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    grid-gap: 10px;
-    padding: 10px;
+    height: 90px;
+    width: 80px;
+    background-color: var(--background);
+    margin: 0 0 -40px -10px;
   }
 
-  .product-row {
-    width: 65%;
-    display: flex;
-    margin-bottom: 20px;
-    justify-content: space-evenly;
-  }
-  
-  #normal>div {
-    text-align: center;
-    padding: 5px;
-  }
-  
-  #level {
-    display: flex;
-  }
-  
-  footer {
-    margin-bottom: -50px;
-    height: 150px;
-    width: 100%;
-    padding-top: 40px;
-    display: flex;
-    justify-content: space-around;
-    color: var(--text);
-    background-color: var(--background2);
-    font-size: 10px;
-  }
-  
-  #cont,
-  #editing_page {
-    padding-top: 10px;
-    color: slategrey;
-    text-decoration: none;
-    /* 超連結去除底線 */
-  }
-  
-  #chatbot {
-    position: sticky;
-    bottom: 20px;
-    right: 120px;
-    float: right;
-    cursor: pointer;
+  #item>img {
+    height: 70px;
+    width: 60px;
   }
 
-  #chatbot_img {
-    height: 50px;
-    width: 50px;
-  }
-
-  /* 以下五個都是for回溯鍵的 */
-  #toTop {
-    height: 50px;
-    width: 50px;
-    border-radius: 50%;
-    background-color: rgb(228, 225, 225);
-    position: sticky;
-    bottom: 20px;
-    right: 20px;
-    float: right;
-    padding-top: 7px;
-    text-align: center;
-    cursor: pointer;
-    transition: opacity 0.3s ease;
-  }
-  
-  #toTop.active {
-    opacity: 1;
-  }
-  
-  #top {
-    top: 0;
-  }
-  
-  #top:target {
-    animation: toTop 5s ease;
-  }
-  
-  @keyframes toTop {
-    from {
-      top: -100%;
-    }
-  
-    to {
-      top: 0;
+  @media(max-width:580px) {
+    #nav {
+      font-size: x-small;
     }
   }
-  
-  /* 回溯鍵至此 */
-
-  /* 各種中間要大不小的版本 */
-  @media(max-width:1350px){
-    #interest_intems {
-        display: flex;
-        justify-content: flex-start;
-        overflow-x: scroll;
-        /* 隱藏滾動條但保留滾動功能 */
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* Internet Explorer 10+ */
-      }
-      
-      /* 隱藏 Webkit 瀏覽器（Chrome, Safari, Edge）的滾動條 */
-      #interest_intems::-webkit-scrollbar {
-        display: none;
-      }
-  }
-  /* 手機 mobilephone */
-
-
-  @media(max-width:700px){
-    header {
-      font-size: 12px;
-      height: 110px;
-    }
-    #label {
-      display: none;
-    }
-    #search {
-      width: 70px;
-    }
-
-    #middbody {
-    }
-
-    #normal {
-      margin-left: -15%;}
-
-    #interested {
-      height: 270px;
-    }
-    #interested_title {
-      height: 30px;
-      padding-top: 15px;
-      margin-bottom: 5px;
-    }
-    #interest_intems {
-      width: 100%;
-      display: flex;
-      flex-wrap: nowrap;
-      flex-direction: row;
-      align-items: center;
-      overflow: scroll;
-      justify-content: flex-start;
-      /* 隱藏滾動條但保留滾動功能 */
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* Internet Explorer 10+ */
-    }
-    
-    /* 隱藏 Webkit 瀏覽器（Chrome, Safari, Edge）的滾動條 */
-    #interest_intems::-webkit-scrollbar {
-      display: none;
-    }
-    #interest_intems>a {
-      margin: 2px;
-    }
-
-
-    #item {
-      width: 130px;
-    }
-  }
-
 
 
 
 
   @media only screen and (min-width: 0px) {
-    .col-mobile-0{
+    .col-mobile-0 {
       width: 0;
     }
+
     .col-mobile-12 {
       width: 100.0%
     }
   }
-  
+
   /* 桌機 desktop */
-  @media only screen and (min-width:700px) {
+  /* @media only screen and (min-width:700px) {
     .col-pc-0 {
       width: 0;
     }
@@ -512,5 +563,4 @@
     .col-pc-12 {
       width: 100.0%
     }
-  }
-  
+  } */
