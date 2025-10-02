@@ -24,7 +24,8 @@
                         alt="search icon"
                         width="20px"
                         height="20px"
-                        style="margin-top: -3px">
+                        style="margin-top: -3px"
+                        cursor="pointer">
                 </button>
             </form>
         </div>
