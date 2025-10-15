@@ -1,5 +1,15 @@
 :root {
     --white: #FFF8DC;
+    --background: #FFFFFF;
+    --box: #F6F6F6;
+    --box2: #FBE0C5;
+    --text: #40210F;
+    --text2: #2A2A2A;
+    --line: #40210F;
+    --btnline: #FFFFFF;
+    --background2: #FBE0C5;
+    --btn: #2A2A2A;
+    --btnhover: #D96253;
 }
 
 * {
@@ -24,12 +34,9 @@ a:link a:visited {
     flex-wrap: wrap;
 }
 
-/* #contener {
-      max-width: 1200px;
-      margin: 0 auto;
-    } */
 body {
-    background-color: #DEB887;
+    margin-top: 100px;
+    background-color: var(--background);
 }
 
 header {
@@ -38,7 +45,7 @@ header {
     color: #090505;
     border-radius: 7px;
     box-shadow: 0px 12px 9px -7px;
-    background-color: #fff8dc;
+    background-color: var(--background);
     overflow: hidden;
     margin-bottom: 10px;
 }
@@ -63,14 +70,16 @@ header {
     grid-gap: 7px;
     margin-bottom: 15px;
 }
-.icon{
+
+.icon {
     height: 20px;
     width: 20px;
-  }
-  .icon:hover{
+}
+
+.icon:hover {
     height: 22px;
     width: 22px;
-  }
+}
 
 #run {
     font-size: 13px;
@@ -84,23 +93,24 @@ header {
 
 
 #interested_product {
-    height: 400px; 
+    height: 400px;
     /* 將設計要異動的 */
     width: 100%;
     border-radius: 7px;
-    background-color: #fff8dc;
+    background-color: var(--background);
     margin-bottom: 7px;
     display: flex;
     align-items: center;
     /* justify-content: space-between; */
 }
+
 #info {
     height: 400px;
     width: 50%;
     font-size: 20px;
 }
 
-#picture1{
+#picture1 {
     height: 400px;
     width: 50%;
     display: flex;
@@ -111,8 +121,8 @@ header {
 #title_select {
     height: 90px;
     width: 100%;
-    margin-top: 30px ;
-    padding-right: 20px ;
+    margin-top: 30px;
+    padding-right: 20px;
     display: flex;
     justify-content: space-around;
     border-bottom: 1px solid grey;
@@ -125,7 +135,7 @@ header {
     justify-content: center;
     align-items: center;
     border-radius: 7px;
-    background-color: white;
+    background-color: var(--background);
 }
 
 #select {
@@ -135,6 +145,7 @@ header {
     border-radius: 7px;
     transition: 0.3s ease;
 }
+
 #select:hover {
     font-size: large;
     transition: 0.3s ease;
@@ -148,49 +159,53 @@ header {
 }
 
 #may_interesteds {
-    height: 250px; 
+    height: 250px;
     /* 將設計要異動的 */
     width: 100%;
     border-radius: 7px;
-    background-color: #fff8dc;
+    background-color: var(--background);
     padding: 15px;
     display: flex;
     justify-content: space-around;
     font-size: 15px;
-    
+
 }
-#item2{
+
+#item2 {
     height: 200px;
     width: 25%;
     /* border-right: 1px solid grey; */
     border-radius: 7px;
-    display: flex;  
+    display: flex;
     justify-content: center;
     flex-wrap: wrap;
     transition: 0.3s ease;
 }
-#item2:hover{
+
+#item2:hover {
     height: 200px;
     width: 27%;
-    padding:0 1% 0 1%;
-    background-color: #fffd8d;
+    padding: 0 1% 0 1%;
     transition: 0.3s ease;
 }
-#title2{
+
+#title2 {
     height: 30px;
     width: 90%;
-    display: flex;  
+    display: flex;
     justify-content: center;
     /* border: 2px solid black; */
 }
-#picture2{
+
+#picture2 {
     height: 120px;
     width: 120px;
-    display: flex;  
+    display: flex;
     justify-content: center;
     /* border: 2px solid red; */
 }
-#paragraph2{
+
+#paragraph2 {
     height: 50px;
     width: 90%;
     /* border: 2px solid black; */
@@ -250,7 +265,6 @@ footer {
     display: flex;
     justify-content: space-around;
     color: slategrey;
-    background-color: #DEB887;
     font-size: 10px;
 }
 
@@ -261,54 +275,60 @@ footer {
     text-decoration: none;
     /* 超連結去除底線 */
 }
-@media(max-width:680px){
+
+@media(max-width:680px) {
     header {
-      font-size: 12px;
-      height: 110px;
-      padding: 7px;
-      background-color: #fff8dc; 
+        font-size: 12px;
+        height: 110px;
+        padding: 7px;
+        background-color: var(--background);
     }
+
     #label {
-      display: none;
+        display: none;
     }
+
     #search {
-      width: 70px;
+        width: 70px;
     }
 
     #interested_product {
         height: 400px;
         width: 100%;
         border-radius: 7px;
-        background-color: #fff8dc;
+        background-color: var(--background);
         margin-bottom: 7px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
     }
-    #main_pic{
+
+    #main_pic {
         height: 220px;
         width: 220px;
     }
+
     #info {
         height: 300px;
         width: 80%;
         font-size: 15px;
     }
+
     #select {
         min-width: 80px;
     }
 
     #may_interesteds {
-        height: 250px; 
+        height: 250px;
         /* 將設計要異動的 */
         width: 100%;
         border-radius: 7px;
-        background-color: #fff8dc;
+        background-color: var(--background);
         padding: 15px;
         display: flex;
         justify-content: space-around;
         overflow: scroll;
         font-size: 15px;
     }
-  }
+}

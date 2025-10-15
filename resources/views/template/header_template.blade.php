@@ -47,3 +47,134 @@
         </div>
     </nav>
 </header>
+
+<style>
+    :root {
+  --white: #FFF8DC;
+  --background: #FFFFFF;
+  --box: #F6F6F6;
+  --box2: #FBE0C5;
+  --text: #40210F;
+  --text2: #2A2A2A;
+  --line: #40210F;
+  --btnline: #FFFFFF;
+  --background2: #FBE0C5;
+  --btn: #2A2A2A;
+  --btnhover: #D96253;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: var(--text);
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 80px;
+  padding: 7px;
+  color: var(--text);
+  background-color: var(--background);
+  overflow: hidden;
+  z-index: 9999;
+}
+
+#tool {
+  padding: 14px 3% 0px 3%;
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+#searchBar {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  grid-gap: 7px;
+  margin-top: -8px;
+}
+
+.logo {
+  height: 40px;
+  width: 115px;
+  margin-top: -10px;
+}
+
+.icon {
+  height: 20px;
+  width: 20px;
+}
+
+.icon:hover {
+  height: 22px;
+  width: 22px;
+}
+
+button {
+  border: none;
+}
+
+@media(max-width:700px) {
+  header {
+    font-size: 12px;
+    height: 80px;
+  }
+
+  #tool {
+    padding: 14px 0% 0px 0%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .logo {
+    height: 35px;
+    width: 85px;
+    margin-top: -10px;
+  }
+
+  .icon {
+    height: 15px;
+    width: 15px;
+  }
+
+  .icon:hover,
+  .icon:focus {
+    height: 16px;
+    width: 16px;
+  }
+
+  #searchBar {
+    margin-top: 0;
+  }
+
+  #search {
+    width: 70px;
+    font-size: x-small;
+  }
+}
+
+  @media(max-width:321px) {
+    .logo {
+      margin-left: -10px;
+    }
+  }
+
+  @media only screen and (min-width: 0px) {
+    .col-mobile-12 {
+      width: 100.0%
+    }
+  }
+
+</style>
