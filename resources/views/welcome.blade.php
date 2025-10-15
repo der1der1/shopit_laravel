@@ -17,6 +17,9 @@
 
     @include('template.header_template')
 
+    <!-- Modal for Storage Link Error -->
+    @include('template.error_msg')
+
     <!-- 普通螢幕，顯示的aside(小螢幕點開顯示) -->
     <div id="nav">
         <!-- 第一個分類是回到主頁 -->
