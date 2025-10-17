@@ -22,6 +22,8 @@
     </style>
 </head>
 
+@include('template.header_template')
+
 <body>
     <!-- 先跑要給使用者的訊息 -->
     <!-- @if(session('error'))
@@ -32,7 +34,6 @@
 
     <div id="contener">
 
-        @include('template.header_template')
         <main>
             <div id="items" data-aos="fade-right" data-aos-duration="500">
                 @foreach ($products as $product)
@@ -47,16 +48,22 @@
             </div>
 
             <div id="where" data-aos="fade-down" data-aos-duration="900">
-                <!-- 本div中有5個部分 1. toStore; 2. toHome; 3. 收貨姓名; 4. 付款帳號; 5. 地圖API-->
-                    
-                <form method="POST" action="{{ route('pay_to_shop') }}" enctype="multipart/form-data">
-                    @csrf
+                <!-- 本div中有5個部分 1. 配送方式選擇; 2. 收貨姓名; 3. 付款帳號; 4. 地圖API-->
+                
+                <!-- 1. 配送方式選擇按鈕 -->
+                <div id="deliveryButtons">
+                    <button id="market" title="market" type="button" onclick="showDeliveryOption('store')">
+                        <img src="{{ asset('img/icon/shop.png') }}" alt="to store" height="50px" width="50px">
+                    </button>
+                    <button id="express" title="express" type="button" onclick="showDeliveryOption('home')">
+                        <img src="{{ asset('img/icon/home.png') }}" alt="to home" height="50px" width="50px">
+                    </button>
+                </div>
 
-                    <!-- 1. toStore -->
+                <!-- 超商取貨表單 -->
+                <form method="POST" action="{{ route('pay_to_shop') }}" enctype="multipart/form-data" id="storeForm" style="display: none;">
+                    @csrf
                     <div id="toStore">
-                        <button id="market" title="market">
-                            <img src="{{ asset('img/icon/shop.png') }}" alt="to store" height="50px" width="50px">
-                        </button>
                         <!--711的下拉式表單，此有機會可以再加入mysql-->
                         <select name="store">
                             <option value="新竹中山店">新竹中山店 - 新竹市東區中山路176號</option>
@@ -75,19 +82,14 @@
                     </div>
                 </form>
 
-
-                <form method="POST" action="{{ route('pay_to_home') }}" enctype="multipart/form-data">
+                <!-- 宅配到家表單 -->
+                <form method="POST" action="{{ route('pay_to_home') }}" enctype="multipart/form-data" id="homeForm" style="display: none;">
                     @csrf
-                    <!-- 2. toHome -->
                     <div id="toHome">
-                        <button id="express" title="express">
-                            <img src="{{ asset('img/icon/home.png') }}" alt="to home" height="50px" width="50px">
-                        </button>
-
                         <label for="deliver to your home">輸入住址：</label>
                         @if ( empty($ppl_info->to_address) )
                         <input type="text" id="map-address-input" placeholder="請輸入地址..." name="address" >
-                        @else 
+                        @else
                         <input type="text" id="map-address-input" name="address" value= {{ $ppl_info->to_address ??''}}>
                         @endif
                         <input type="submit" value="選擇宅配到家">
@@ -98,9 +100,9 @@
 
                 <form method="POST" action="{{ route('pay_name') }}" enctype="multipart/form-data">
                     @csrf
-                <!--3. 收貨姓名; 4. 付款帳號 -->
+                <!--2. 收貨姓名; 3. 付款帳號 -->
                     <div id="check_name">
-                        <label for="deliver to your home">請輸入收貨人姓名：</label>
+                        <label for="deliver to your home">收貨姓名：</label>
                         @if ( empty($ppl_info->name) )
                         <input type="text"   name="name_input"  value="王大明">
                         @else
@@ -114,7 +116,7 @@
                 <form method="POST" action="{{ route('pay_account') }}" enctype="multipart/form-data">
                     @csrf
                     <div id="check_account">
-                        <label for="deliver to your home">請輸入扣款帳號：</label>
+                        <label for="deliver to your home">扣款帳號：</label>
                         @if ( empty($ppl_info->name) )
                         <input type="text"   name="account_input"  value="0191227-0082229">
                         @else
@@ -124,7 +126,7 @@
                     </div>
                 </form>
 
-                <!-- 5. 地圖API -->
+                <!-- 4. 地圖API -->
 
                 <div id="map"></div>
                     
@@ -134,7 +136,7 @@
 
             <div id="trading" data-aos="fade-left" data-aos-duration="700">
 
-                <table id="check_list"> 購買確認清單
+                <table id="check_list2"> 購買確認清單
                     <tr><td>收件姓名：</td><td> {{ $purchased->name ??'' }} </td></tr>
                     <tr><td>訂購帳號：</td><td> {{ $purchased->account ??'' }} </td></tr>
                     <tr><td>扣款帳號：</td><td> {{ $purchased->bank_account ??'' }} </td></tr>
@@ -149,7 +151,9 @@
                     <tr><td>貨運方式：</td><td style="color:gray;">請在左側選擇</td></tr>
                     <tr><td>收件地址：</td><td>{{ $purchased->to_address }}</td></tr>
                     @endif
+                </table>
 
+                <table>
                     <tr><th>名稱</th><th>編號</th><th>數量</th><th>單價</th><th>小計</th></tr>
                     <tr><th>_____</th><th>_____</th><th>_____</th><th>_____</th><th>_____</th></tr>
 
@@ -159,9 +163,9 @@
 
                     <tr><th>_____</th><th>_____</th><th>_____</th><th>_____</th><th>_____</th></tr>
                     <tr><td>交易金額：</td><td> ${{ $purchased->bill }} </td></tr>
-                    </table>
+                </table>
                 
-                    <form method="POST" action="{{ route('pay_confirm') }}" enctype="multipart/form-data">
+                <form method="POST" action="{{ route('pay_confirm') }}" enctype="multipart/form-data">
                     @csrf
                     <!-- 送回後端要存在訂單的 -->
                     <input type="text" name="name" value="{{$purchased->name ??''}}" style="display:none;">
@@ -174,15 +178,37 @@
                             <h3>結帳</h3>
                             <img src="{{ asset('img/icon/bill.png') }}" alt="pay for it" width="50x" height="50px">
                         </button>
-                    </form>
+                </form>
             </div>
-
-        @include('template.footer_template')
-
         </main>
     </div>
     <script>
         AOS.init();
+        
+        // 配送方式切換功能
+        function showDeliveryOption(type) {
+            const storeForm = document.getElementById('storeForm');
+            const homeForm = document.getElementById('homeForm');
+            const marketBtn = document.getElementById('market');
+            const expressBtn = document.getElementById('express');
+            
+            if (type === 'store') {
+                storeForm.style.display = 'block';
+                homeForm.style.display = 'none';
+                marketBtn.style.backgroundColor = '#7fbfff';
+                expressBtn.style.backgroundColor = '#fff8dc';
+            } else if (type === 'home') {
+                storeForm.style.display = 'none';
+                homeForm.style.display = 'block';
+                marketBtn.style.backgroundColor = '#fff8dc';
+                expressBtn.style.backgroundColor = '#a6fe7b';
+            }
+        }
+        
+        // 初始化顯示第一個選項（超商取貨）
+        document.addEventListener('DOMContentLoaded', function() {
+            showDeliveryOption('store');
+        });
     </script>
 
     <!-- 引入google map api 相關設定 -->
@@ -190,5 +216,7 @@
     @include('template.map_api')
     
 </body>
+
+@include('template.footer_template')
 
 </html>
