@@ -33,8 +33,8 @@ class PaymentService
     {
         $user = Auth::user();
         $marqee = $this->productRepository->getAllMarqee();
-        $userInfo = User::where('account', $user->account)->first();
-        $latestOrder = $this->orderRepository->getLatestOrderByAccount($user->account);
+        $userInfo = User::where('account', $user->account ?? $user->email)->first();
+        $latestOrder = $this->orderRepository->getLatestOrderByAccount($user->account ?? $user->email);
         
         $products = $this->parsePurchasedProducts($latestOrder->purchased);
 
@@ -172,9 +172,9 @@ class PaymentService
         if (empty($request->name) || empty($request->bank_account) || empty($request->shop1_addr2)) {
             return ['error' => '資料未填寫完整', 'redirect' => 'pay_show'];
         }
-        
-        $userAccount = Auth::user()->account;
-        
+
+        $userAccount = Auth::user()->account ?? Auth::user()->email;
+
         // 更新訂單為顯示狀態
         $orderUpdates = ['show' => "1"];
         $order = $this->orderRepository->updateOrderDeliveryInfo($userAccount, $orderUpdates);
