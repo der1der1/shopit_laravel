@@ -16,7 +16,8 @@ class purchasedCtlr extends Controller
     public function pay_show()
     {
         $data = $this->paymentService->getPaymentPageData();
-        
+        $data['purchased']['account'] = $data['purchased']['account'] == null ? $data['user']->email : $data['purchased']['account'];
+
         return view('pay', [
             'user' => $data['user'],
             'marqee' => $data['marqee'],

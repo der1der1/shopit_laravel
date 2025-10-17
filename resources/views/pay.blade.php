@@ -138,7 +138,7 @@
 
                 <table id="check_list2"> 購買確認清單
                     <tr><td>收件姓名：</td><td> {{ $purchased->name ??'' }} </td></tr>
-                    <tr><td>訂購帳號：</td><td> {{ $purchased->account ??'' }} </td></tr>
+                    <tr><td>訂購帳號：</td><td> {{ $purchased->account ?? $purchased->email }} </td></tr>
                     <tr><td>扣款帳號：</td><td> {{ $purchased->bank_account ??'' }} </td></tr>
 
                     @if ( $purchased->shop1_addr2 == "1" )
