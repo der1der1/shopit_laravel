@@ -105,6 +105,15 @@
             line-height: 1.6;
             white-space: pre-wrap;
         }
+        .message-content a {
+            color: #4169E1;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+        .message-content a:hover {
+            color: #1E90FF;
+            text-decoration: none;
+        }
         
         #chatbot_img {
             height: 50px;
@@ -148,7 +157,7 @@
                         <img  src="{{ asset('img/icon/chatbot.png') }}" alt="AI chatta!" style="width: 15px; height: 15px;">
                         AI 回應：
                     </div>
-                    <div class="message-content">{{ $output }}</div>
+                    <div class="message-content">{!! $output !!}</div>
                 </div>
             </div>
         @endif
