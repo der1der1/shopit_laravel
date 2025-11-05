@@ -47,7 +47,7 @@ class ProductRepository
 
     public function getAllProducts()
     {
-        return Product::all();
+        return Product::inRandomOrder()->get();
     }
 
     public function getRandomProducts($limit = 5)

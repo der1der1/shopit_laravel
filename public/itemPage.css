@@ -155,7 +155,11 @@ header {
     height: 280px;
     width: 100%;
     padding: 20px;
-
+    overflow: scroll;
+    scrollbar-width: thin;
+    overflow-x: hidden;
+    scrollbar-color: var(--line) var(--background);
+    box-shadow: inset 0px -4px 6px rgba(0, 0, 0, 0.1);
 }
 
 #may_interesteds {
