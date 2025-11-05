@@ -26,7 +26,7 @@
                         <div id="title">{{ $products->product_name }}</div>
                         <input type="submit" name="submit" id="select" value="加入購物車">
                     </div>
-                    <div id="paragraph">{{ $products->description }} </div>
+                    <div id="paragraph">{!! $products->description !!} </div>
                 </div>
                 <input type="text" name="product_id" value="{{ $products->id }}" style="display: none;">
             </div>

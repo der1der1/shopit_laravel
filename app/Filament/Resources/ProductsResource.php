@@ -95,9 +95,9 @@ class ProductsResource extends Resource
                             ])->columnSpan(1),
                         Section::make('description')
                             ->schema([
-                                Forms\Components\MarkdownEditor::make('description')
+                                Forms\Components\RichEditor::make('description')
                                     ->required()
-                                    ->maxLength(225)
+                                    ->maxLength(10000)
                                     ->columnSpanFull(),
                             ])->columns(1),
                     ])->columns(3)
