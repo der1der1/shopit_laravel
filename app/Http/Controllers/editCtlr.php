@@ -35,15 +35,16 @@ class editCtlr extends Controller
         if ($request->delete == "1") {
             $product->delete();
         } else {
-            // 如果資料庫的該筆資料 != 網頁上的送出資料 => 更新
-            $product->id = ($product->id != $request->id) ? $request->id : $product->id;
-            $product->pic_name = ($product->pic_name != $request->pic_name) ? $request->pic_name : $product->pic_name;
-            $product->product_name = ($product->product_name != $request->product_name) ? $request->product_name : $product->product_name;
-            $product->description = ($product->description != $request->description) ? $request->description : $product->description;
-            $product->price = ($product->price != $request->price) ? $request->price : $product->price;
-            $product->ori_price = ($product->ori_price != $request->ori_price) ? $request->ori_price : $product->ori_price;
-            $product->category = ($product->category != $request->category) ? $request->category : $product->category;
-
+            // 直接更新資料（Laravel ORM 會自動偵測變更）
+            $product->fill($request->only([
+                'id',
+                'pic_name',
+                'product_name',
+                'description',
+                'price',
+                'ori_price',
+                'category'
+            ]));
             $product->save();
         }
  
