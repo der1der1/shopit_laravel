@@ -75,7 +75,7 @@
             @foreach ($productRow as $allProductss)
             <a href="{{ route('itemPage', ['id' => $allProductss->id]) }}" style="margin-right: 10px; margin-bottom: 10px;">
                 <button id="item">
-                    <img src="{{ asset('storage/' . $allProductss->pic_dir) }}" title="優質特賣" width="160px"
+                    <img src="{{ asset($allProductss->pic_dir) }}" title="優質特賣" width="160px"
                         height="190px">
                 </button>
             </a>
@@ -89,7 +89,7 @@
             @foreach ($productRow as $allProductss)
             <a href="{{ route('itemPage', ['id' => $allProductss->id]) }}" style="margin-right: 10px; margin-bottom: 10px;">
                 <button id="item">
-                    <img src="{{ asset('storage/' . $allProductss->pic_dir) }}" title="優質特賣" width="160px"
+                    <img src="{{ asset($allProductss->pic_dir) }}" title="優質特賣" width="160px"
                         height="190px">
                 </button>
             </a>
