@@ -108,7 +108,7 @@
             @foreach ($few_products as $few_productss)
             <a href="{{ route('itemPage', ['id' => $few_productss->id]) }}">
                 <button id="item_interested" height="210px" ; width="180px" ;>
-                    <img src="{{ asset('storage/' . $few_productss->pic_dir) }}" alt="" title="優質特賣" width="110px"
+                    <img src="{{ asset( $few_productss->pic_dir ) }}" alt="" title="優質特賣" width="110px"
                         height="110px">
                     <div id="level1">
                         <div id="stars"><img src="{{ asset('img/icon/star-solid.svg') }}" alt=""
