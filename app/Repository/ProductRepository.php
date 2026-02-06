@@ -45,9 +45,11 @@ class ProductRepository
         return marqeeModel::getAllMarqee();
     }
 
-    public function getAllProducts()
+    public function getAllProducts($sort = null)
     {
-        return Product::inRandomOrder()->get();
+        $query = Product::query();
+        
+        return $this->applySorting($query, $sort)->get();
     }
 
     public function getRandomProducts($limit = 5)
@@ -57,16 +59,36 @@ class ProductRepository
 
     public function getProductCategories()
     {
-        return Product::select('category')->distinct()->get();
+        return Product::select('category')->distinct()->inRandomOrder()->get();
     }
 
-    public function getProductsByCategory($category)
+    public function getProductsByCategory($category, $sort = null)
     {
-        return Product::where('category', $category)->get();
+        $query = Product::where('category', $category);
+        
+        return $this->applySorting($query, $sort)->get();
     }
 
-    public function searchProductsByCategory($searchWord)
+    public function searchProductsByCategory($searchWord, $sort = null)
     {
-        return Product::where('category', $searchWord)->get();
+        $query = Product::where('category', $searchWord);
+        
+        return $this->applySorting($query, $sort)->get();
+    }
+    
+    protected function applySorting($query, $sort)
+    {
+        switch ($sort) {
+            case 'price_asc':
+                return $query->orderBy('price', 'asc');
+            case 'price_desc':
+                return $query->orderBy('price', 'desc');
+            case 'newest':
+                return $query->orderBy('updated_at', 'desc');
+            case 'oldest':
+                return $query->orderBy('updated_at', 'asc');
+            default:
+                return $query->inRandomOrder();
+        }
     }
 }

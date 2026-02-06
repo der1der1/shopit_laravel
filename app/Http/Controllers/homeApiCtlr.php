@@ -29,9 +29,11 @@ class homeApiCtlr extends Controller
             'gride' => $grid
         ]);
     }
-    public function toHome_with_search($search)
+    public function toHome_with_search($search, Request $request)
     {
-        $data = $this->homeService->getHomeDataWithCategorySearch($search);
+        $grid = $request->query('grid', '4'); // 預設為 4 列
+        $sort = $request->query('sort', null); // 排序參數
+        $data = $this->homeService->getHomeDataWithCategorySearch($search, $sort);
         
         return view('welcome', [
             'user' => $data['user'],
@@ -45,7 +47,9 @@ class homeApiCtlr extends Controller
     }
     public function toHome_words_search(Request $request)
     {
-        $result = $this->homeService->searchProductsByWords($request);
+        $grid = $request->input('grid', '4'); // 預設為 4 列
+        $sort = $request->query('sort', null); // 排序參數
+        $result = $this->homeService->searchProductsByWords($request, $sort);
         
         if (isset($result['error'])) {
             return redirect()->route($result['redirect'])->with('error', $result['error']);
