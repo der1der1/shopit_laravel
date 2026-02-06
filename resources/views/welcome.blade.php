@@ -65,10 +65,84 @@
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>
             </button>
-        </div>
-        <!-- Bootstrap end -->
     </div>
-
+    <!-- Bootstrap end -->
+    </div>
+    
+    <!-- Grid Layout Selector -->
+    <div id="grid-selector">        
+        <span class="grid-label">顯示行數:</span>
+        
+        <a href="{{ request()->fullUrlWithQuery(['grid' => 2]) }}" class="grid-btn {{ $gride == 2 ? 'active' : '' }}" title="2行顯示">
+            <div class="grid-icon-line">
+                <div class="grid-icon-square"></div>
+                <div class="grid-icon-square"></div>
+            </div>
+            <div class="grid-icon-line">
+                <div class="grid-icon-square"></div>
+                <div class="grid-icon-square"></div>
+            </div>
+        </a>
+        
+        <a href="{{ request()->fullUrlWithQuery(['grid' => 3]) }}" class="grid-btn {{ $gride == 3 ? 'active' : '' }}" title="3行顯示">
+            <div class="grid-icon-line">
+                <div class="grid-icon-square"></div>
+                <div class="grid-icon-square"></div>
+                <div class="grid-icon-square"></div>
+            </div>
+            <div class="grid-icon-line">
+                <div class="grid-icon-square"></div>
+                <div class="grid-icon-square"></div>
+                <div class="grid-icon-square"></div>
+            </div>
+        </a>
+        
+        <a href="{{ request()->fullUrlWithQuery(['grid' => 4]) }}" class="grid-btn {{ $gride == 4 ? 'active' : '' }}" title="4行顯示">
+            <div class="grid-icon-line">
+                <div class="grid-icon-square"></div>
+                <div class="grid-icon-square"></div>
+                <div class="grid-icon-square"></div>
+                <div class="grid-icon-square"></div>
+            </div>
+            <div class="grid-icon-line">
+                <div class="grid-icon-square"></div>
+                <div class="grid-icon-square"></div>
+                <div class="grid-icon-square"></div>
+                <div class="grid-icon-square"></div>
+            </div>
+        </a>
+        
+    </div>
+    
+    <!-- Sort Selector -->
+    <div id="sort-selector">
+        <span class="sort-label">排序:</span>
+        
+        <a href="{{ request()->fullUrlWithQuery(['sort' => 'price_asc']) }}" 
+           class="sort-btn {{ request()->query('sort') == 'price_asc' ? 'active' : '' }}" 
+           title="低價優先">
+            低價優先
+        </a>
+        
+        <a href="{{ request()->fullUrlWithQuery(['sort' => 'price_desc']) }}" 
+           class="sort-btn {{ request()->query('sort') == 'price_desc' ? 'active' : '' }}" 
+           title="高價優先">
+            高價優先
+        </a>
+        
+        <a href="{{ request()->fullUrlWithQuery(['sort' => 'newest']) }}" 
+           class="sort-btn {{ request()->query('sort') == 'newest' ? 'active' : '' }}" 
+           title="最近更新">
+            最近更新
+        </a>
+        
+        <a href="{{ request()->fullUrlWithQuery(['sort' => 'oldest']) }}" 
+           class="sort-btn {{ request()->query('sort') == 'oldest' ? 'active' : '' }}" 
+           title="最舊商品">
+            最舊商品
+        </a>
+    </div>
+    
     <div id="normal">
         @foreach ($allProducts->take(12)->chunk(4) as $productRow)
         <div class="product-row">
