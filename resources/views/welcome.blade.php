@@ -144,18 +144,60 @@
     </div>
     
     <div id="normal">
-        @foreach ($allProducts->take(12)->chunk(4) as $productRow)
-        <div class="product-row">
-            @foreach ($productRow as $allProductss)
-            <a href="{{ route('itemPage', ['id' => $allProductss->id]) }}" style="margin-right: 10px; margin-bottom: 10px;">
-                <button id="item">
-                    <img src="{{ asset($allProductss->pic_dir) }}" title="優質特賣" width="160px"
-                        height="190px">
-                </button>
-            </a>
+        <div>
+            @foreach ($allProducts->chunk($gride) as $productRow)
+            <div class="product-row">
+                @foreach ($productRow as $allProductss)
+                <a href="{{ route('itemPage', ['id' => $allProductss->id]) }}" style="margin-right: 10px; margin-bottom: 10px;">
+                    <button id="item">
+                        <img src="{{ asset($allProductss->pic_dir) }}" title="優質特賣" width="160px"
+                            height="190px">
+                        <div class="product_info"> {{ $allProductss->product_name }}</div>
+                        <div class="product_info dscp description-truncate">{{ $allProductss->description }}</div>
+                        <div class="product_info">NT$ &nbsp;{{ $allProductss->price }}</div>                    
+                    </button>
+                </a>
+                @endforeach
+            </div>
             @endforeach
         </div>
-        @endforeach
+        <div id="sidePanel">
+            <div id="searchBar2">
+                商品搜尋  </br></br>
+                <form action="{{ route('toHome_words_search') }}" method="post" enctype="multipart/form-data">
+                    @csrf
+                    <input type="text" id="search2" name="search_word" value="{{ request('search') }}" placeholder="搜尋!" height="10px" title="搜尋商品名與種類">
+                    <button type="submit" title="可搜尋商品名與種類" style="border: none; background: none; padding: 0; cursor: pointer;">
+                        <img src="{{ asset('img/search.png') }}"
+                            alt="search icon"
+                            width="20px"
+                            height="20px"
+                            style="margin-top: -3px"
+                            cursor="pointer">
+                    </button>
+                </form>
+            </div>
+            <div id="category">
+                商品分類 </br></br>
+                @foreach ($products_category->take(5) as $products_categorys)
+                <a href="{{ route('home_with_search', ['search' => $products_categorys->category]) }}" style="margin-bottom: -10px; color: gray;">
+                    {{ $products_categorys->category }} 
+                </a> </br>
+                @endforeach
+            </div>
+            <div id="newest">
+                最新商品 </br> </br>
+                @foreach (\App\Models\productsModel::orderBy('updated_at', 'desc')->take(3)->get() as $newestProduct)
+                    <a href="{{ route('itemPage', ['id' => $newestProduct->id]) }}" style="display:flex; align-items:center; margin-bottom:10px; color: #333; text-decoration:none;">
+                        <img src="{{ asset($newestProduct->pic_dir) }}" alt="{{ $newestProduct->product_name }}" style="width:60px; height:60px; object-fit:cover; margin-right:8px; border-radius:4px;">
+                        <div>
+                            <div style="font-size:16px;">{{ $newestProduct->product_name }}</div>
+                            <div style="font-size:14px; color:gray;">NT$ {{ $newestProduct->price }}</div>
+                        </div>
+                    </a> </br>
+                @endforeach
+            </div>
+        </div>
     </div>
     <div id="normal_for_cellphone">
         @foreach ($allProducts->take(16)->chunk(4) as $productRow)

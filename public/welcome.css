@@ -1,3 +1,8 @@
+/* 各大小列表 
+@media(max-width:1350px) 
+@media(max-width:700px) 手機
+@media(max-width:426px) 小手機
+*/
 :root {
   --white: #FFF8DC;
   --background: #FFFFFF;
@@ -6,6 +11,7 @@
   --text: #40210F;
   --text2: #2A2A2A;
   --line: #40210F;
+  --lightLine: #e5e5e5;
   --btnline: #FFFFFF;
   --background2: #FBE0C5;
   --btn: #2A2A2A;
@@ -358,7 +364,7 @@ button {
 #item,
 #item_interested {
   width: 180px;
-  height: 210px;
+  height: 250px;
   padding: 7px;
   text-align: center;
   background-color: var(--background);
@@ -368,8 +374,14 @@ button {
 }
 
 #item>img {
-  height: 210px;
+  height: 170px;
   width: 180px;
+}
+.product_info {
+  font-size: 15px;
+}
+.dscp {
+  color: gray;
 }
 
 #item:hover,
@@ -383,6 +395,12 @@ button {
   padding-top: 0px;
 }
 
+.description-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
 
 #level1,
 #level2 {
@@ -399,10 +417,10 @@ button {
   width: 100%;
   border-radius: 7px;
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
   grid-gap: 10px;
   padding: 10px;
+  flex-direction: row;
 }
 
 #normal_for_cellphone {
@@ -419,6 +437,31 @@ button {
 #normal>div {
   text-align: center;
   padding: 5px;
+}
+#sidePanel {
+  background-color: var(--box);
+  width: 20%;
+  border: 2px solid var(--lightLine);
+}
+#searchBar2 {
+  border-bottom: 1px solid var(--lightLine);
+  margin-bottom: 10px;
+}
+#search2 {
+  margin-bottom: 10px;
+}
+#category {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--lightLine);
+  margin-bottom: 10px;
+
+}
+#newest {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 #level {
