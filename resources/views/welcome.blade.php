@@ -148,11 +148,11 @@
             @foreach ($allProducts->chunk($gride) as $productRow)
             <div class="product-row">
                 @foreach ($productRow as $allProductss)
-                <a href="{{ route('itemPage', ['id' => $allProductss->id]) }}" style="margin-right: 10px; margin-bottom: 10px;">
+                <a href="{{ route('itemPage', ['id' => $allProductss->id]) }}" class="item-link" style="border:2px solid #e5e5e5; margin: 0 -2px 10px 0; position:relative; overflow:hidden;">
                     <button id="item">
-                        <img src="{{ asset($allProductss->pic_dir) }}" title="優質特賣" width="160px"
-                            height="190px">
-                        <div class="product_info"> {{ $allProductss->product_name }}</div>
+                        <div class="item-hoversign">前往 {{ $allProductss->product_name }}</div>
+                        <img src="{{ asset($allProductss->pic_dir) }}" title="優質特賣" width="160px" height="190px" style="overflow: hidden;">
+                        <div class="product_info product_info_text"> {{ $allProductss->product_name }}</div>
                         <div class="product_info dscp description-truncate">{{ $allProductss->description }}</div>
                         <div class="product_info">NT$ &nbsp;{{ $allProductss->price }}</div>                    
                     </button>
