@@ -28,6 +28,7 @@ class checkController extends Controller
     {
         try {
             $result = $this->checkoutService->processCheckout($request);
+            session(['selected_items' => $request->selected_items]);
             
             if (isset($result['error'])) {
                 return redirect()->route($result['redirect'])->with('error', $result['error']);

@@ -1,219 +1,457 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- import of Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <!-- import of Bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
-    <title>Check</title>
-    {{-- 將 CSS & JS 文件連結到 HTML --}}
+    <title>購物車 - Shopping Cart</title>
     <link rel="stylesheet" href="{{ asset('check.css') }}">
 </head>
 
 <body>
-    <!-- 先跑要給使用者的訊息 -->
+    <!-- 訊息提示 -->
     @if(session('error'))
     <script>alert("{{ session('error') }}");</script>
-    @elseif(session(key: 'success'))
+    @elseif(session('success'))
     <script>alert("{{ session('success') }}");</script>
     @endif
     
     @include('template.header_template')
     
-    <main>
-        <div id="greatPromotion">
-            <!-- Retrieved the div code from Bootstrap -->
-            <!-- 廣告圖display -->
-            <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel"
-                data-aos="zoom-in" data-aos-duration="400">
-                <div class="carousel-inner">
-                    <div class="carousel-item active" data-bs-interval="4000">
-                        <img src="{{ asset('img/pictureTarget/ad1.png') }}" class="d-block w-100"
-                            height="255px">
-                    </div>
-                    <div class="carousel-item" data-bs-interval="4000">
-                        <img src="{{ asset('img/pictureTarget/ad2.png') }}" class="d-block w-100"
-                            height="255px">
-                    </div>
-                    <div class="carousel-item" data-bs-interval="4000">
-                        <img src="{{ asset('img/pictureTarget/ad3.png') }}" class="d-block w-100"
-                            height="255px">
-                    </div>
-                    <div class="carousel-item" data-bs-interval="4000">
-                        <img src="{{ asset('img/pictureTarget/ad4.png') }}" class="d-block w-100"
-                            height="255px">
-                    </div>
-                </div>
-                <button class="carousel-control-prev" type="button"
-                    data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button"
-                    data-bs-target="#carouselExampleInterval" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-            </div>
-            <!-- Bootstrap end -->
-
+    <!-- 主要購物車區域 -->
+    <div class="cart-page-container">
+        
+        <!-- 購物車標題 -->
+        <div class="cart-header">
+            <h1 class="cart-title">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+                購物車
+            </h1>
+            <p class="cart-subtitle">請確認您的商品並前往結帳</p>
         </div>
 
-        <form method="POST" action="{{ route('check_store') }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('check_store') }}" enctype="multipart/form-data" id="cartForm">
             @csrf
 
-            <div id="items">
-                @if (empty($wanted_product[0]))
-                {{-- 如果購物車沒東西，傳到前端至少會有第一陣列，但裡面沒東ㄒ，要這樣判斷 --}}
-                    <div id="item"><h2>您的購物車內尚無商品！</h2></div>
-                @else
-                {{-- 如果購物車有東西 --}}
-                    @foreach ($wanted_product as $wanted_products)
-                    {{-- without that "??empty" shit, view cant run --}}
-                        @if (empty($wanted_products))
-                        {{-- 如果該id的商品已經下架(即資料庫搜尋不到)則不予顯示 --}}
-                        @else
-                        <div id="' . $id . '" class="item">
-                            <div id="item_pic">
-                                <img src="{{ asset( $wanted_products->pic_dir ) }}" alt="{{ $wanted_products->product_name ?? '' }}"  width="140px" height="140px">
-                            </div>
-
-                            <div id="item_description">
-                                <p id="p">{{ $wanted_products->product_name ?? '' }}</br></br>{{ $wanted_products->description ?? '' }}</p>
-                            </div>
-                            <div id="item_money">
-                                <div id="item_money_total_{{ $wanted_products->id??'' }}" data-price="{{ $wanted_products->price??'' }}" class="item_money_total">Price $ = {{ $wanted_products->price ?? '' }}</div>
-                                <div id="item_money_top">
-                                    <p> number: &nbsp;</p>
-                                    <input type="number" 
-                                        class="quantity" 
-                                        id="quantity-{{ $wanted_products->id??'' }}" 
-                                        min="1" 
-                                        value="1" 
-                                        name="quantity[{{ $wanted_products->id??'' }}]" 
-                                        disabled
-                                        style="background-color: grey;">
-                                </div>
-                                <div id="item_sum_total_{{ $wanted_products->id??'' }}" class="item_money_total"> SUM $ = _______</div>
-                            </div>
-
-                            <div id="item_tradding_item">
-                                <label class="custom-checkbox">
-                                    <input type="checkbox" 
-                                        name="selected_items[]" 
-                                        value="{{ $wanted_products->id??'' }}" 
-                                        class="item-checkbox"
-                                        data-quantity-input="quantity-{{ $wanted_products->id??'' }}">
-                                    <span class="checkbox-btn"></span>
+            <div class="cart-content-wrapper">
+                <!-- 購物車商品列表 -->
+                <div class="cart-items-section">
+                    @if (empty($wanted_product[0]))
+                        <!-- 空購物車狀態 -->
+                        <div class="empty-cart">
+                            <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                                <line x1="3" y1="6" x2="21" y2="6"/>
+                                <path d="M16 10a4 4 0 0 1-8 0"/>
+                            </svg>
+                            <h2>您的購物車是空的</h2>
+                            <p>快去挑選喜歡的商品吧！</p>
+                            <a href="{{ route('home') }}" class="btn-browse-products">瀏覽商品</a>
+                        </div>
+                    @else
+                        <!-- 購物車表頭 -->
+                        <div class="cart-table-header">
+                            <div class="header-select">
+                                <label class="select-all-label">
+                                    <input type="checkbox" id="selectAll" class="select-all-checkbox">
+                                    <span class="custom-checkbox-mark"></span>
+                                    全選
                                 </label>
-                                <p>選擇!</p>
+                            </div>
+                            <div class="header-product">商品</div>
+                            <div class="header-price">單價</div>
+                            <div class="header-quantity">數量</div>
+                            <div class="header-total">小計</div>
+                        </div>
+
+                        <!-- 購物車商品項目 -->
+                        <div class="cart-items-list">
+                            @foreach ($wanted_product as $wanted_products)
+                                @if (!empty($wanted_products))
+                                <div class="cart-item" data-product-id="{{ $wanted_products->id }}">
+                                    <!-- 選擇框 -->
+                                    <div class="item-select">
+                                        <label class="custom-checkbox">
+                                            <input type="checkbox" 
+                                                   name="selected_items[]" 
+                                                   value="{{ $wanted_products->id }}" 
+                                                   class="item-checkbox"
+                                                   data-quantity-input="quantity-{{ $wanted_products->id }}"
+                                                   data-price="{{ $wanted_products->price }}">
+                                            <span class="checkbox-mark"></span>
+                                        </label>
+                                    </div>
+
+                                    <!-- 商品資訊 -->
+                                    <div class="item-product">
+                                        <div class="product-image">
+                                            <img src="{{ asset($wanted_products->pic_dir) }}" 
+                                                 alt="{{ $wanted_products->product_name }}">
+                                        </div>
+                                        <div class="product-details">
+                                            <h3 class="product-name">{{ $wanted_products->product_name }}</h3>
+                                            <p class="product-description">{{ Str::limit(strip_tags($wanted_products->description), 80) }}</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- 單價 -->
+                                    <div class="item-price">
+                                        <span class="price-currency">NT$</span>
+                                        <span class="price-amount" data-price="{{ $wanted_products->price }}">{{ number_format($wanted_products->price) }}</span>
+                                    </div>
+
+                                    <!-- 數量控制 -->
+                                    <div class="item-quantity">
+                                        <div class="quantity-control">
+                                            <button type="button" class="qty-decrease" onclick="decreaseQty({{ $wanted_products->id }})">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                                </svg>
+                                            </button>
+                                            <input type="number" 
+                                                   class="quantity-input" 
+                                                   id="quantity-{{ $wanted_products->id }}" 
+                                                   min="1" 
+                                                   max="99"
+                                                   value="1" 
+                                                   name="quantity[{{ $wanted_products->id }}]" 
+                                                   data-price="{{ $wanted_products->price }}"
+                                                   disabled
+                                                   onchange="updateItemTotal({{ $wanted_products->id }})">
+                                            <button type="button" class="qty-increase" onclick="increaseQty({{ $wanted_products->id }})">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <line x1="12" y1="5" x2="12" y2="19"/>
+                                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- 小計 -->
+                                    <div class="item-total">
+                                        <span class="total-currency">NT$</span>
+                                        <span class="total-amount" id="item-total-{{ $wanted_products->id }}">{{ number_format($wanted_products->price) }}</span>
+                                    </div>
+
+                                    <!-- 刪除按鈕 -->
+                                    <div class="item-remove">
+                                        <button type="button" class="btn-remove" onclick="removeItem({{ $wanted_products->id }})" title="移除商品">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                                <line x1="10" y1="11" x2="10" y2="17"/>
+                                                <line x1="14" y1="11" x2="14" y2="17"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+
+                <!-- 結帳摘要側邊欄 -->
+                @if (!empty($wanted_product[0]))
+                <div class="cart-summary-section">
+                    <div class="summary-card">
+                        <h2 class="summary-title">訂單摘要</h2>
+                        
+                        <div class="summary-details">
+                            <div class="summary-row">
+                                <span class="summary-label">已選商品</span>
+                                <span class="summary-value" id="selected-count">0 件</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="summary-label">商品總計</span>
+                                <span class="summary-value">NT$ <span id="subtotal">0</span></span>
+                            </div>
+                            <div class="summary-row discount-row">
+                                <span class="summary-label">優惠折扣</span>
+                                <span class="summary-value discount">- NT$ <span id="discount">0</span></span>
+                            </div>
+                            <div class="summary-row shipping-row">
+                                <span class="summary-label">運費</span>
+                                <span class="summary-value" id="shipping-cost">NT$ 0</span>
                             </div>
                         </div>
-                        @endif
-                    @endforeach
-                @endif
-            </div>
-        
-            <div id="trading_bar">
-                <button id="onsell_ticket_button">
-                    <img src="{{ asset('img/icon/ticket.png') }}" title="gain perfact price" alt="ticketsIcon" height="70px" width="70px">
-                    <p id="ticketword">YOUR ONSELL TICKETS HERE !</p>
-                </button>
 
-                <button id="check" type="submit" title="pay for my favorits">
-                    <img src="{{ asset('img/icon/takeaway.png') }}" alt="takeawayIcon" height="65px" width="65px">
-                    <span id="checkword">Purchase !!</span>
-                </button>
+                        <div class="summary-divider"></div>
+
+                        <div class="summary-total">
+                            <span class="total-label">總計</span>
+                            <div class="total-price">
+                                <span class="total-currency">NT$</span>
+                                <span class="total-amount" id="grand-total">0</span>
+                            </div>
+                        </div>
+
+                        <!-- 優惠券區 -->
+                        <div class="coupon-section">
+                            <div class="coupon-input-group">
+                                <input type="text" placeholder="請輸入優惠碼" class="coupon-input" id="couponInput">
+                                <button type="button" class="btn-apply-coupon" onclick="applyCoupon()">使用</button>
+                            </div>
+                            <p class="coupon-note">* 優惠券功能待實作</p>
+                        </div>
+
+                        <!-- 結帳按鈕 -->
+                        <button type="submit" class="btn-checkout" id="checkoutBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V4l-8-2-8 2v8c0 6 8 10 8 10z"/>
+                            </svg>
+                            前往結帳
+                        </button>
+
+                        <!-- 繼續購物 -->
+                        <a href="{{ route('home') }}" class="btn-continue-shopping">繼續購物</a>
+                    </div>
+
+                    <!-- 安全提示 -->
+                    <div class="security-badges">
+                        <div class="badge-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V4l-8-2-8 2v8c0 6 8 10 8 10z"/>
+                            </svg>
+                            <span>安全購物保障</span>
+                        </div>
+                        <div class="badge-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                <line x1="1" y1="10" x2="23" y2="10"/>
+                            </svg>
+                            <span>多元付款方式</span>
+                        </div>
+                        <div class="badge-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            <span>快速到貨服務</span>
+                        </div>
+                    </div>
+                </div>
+                @endif
             </div>
 
         </form>
+    </div>
 
-            @include('template.footer_template')
-    </main>
+    @include('template.footer_template')
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        // 增加數量
+        function increaseQty(productId) {
+            const input = document.getElementById(`quantity-${productId}`);
+            if (!input.disabled && parseInt(input.value) < 99) {
+                input.value = parseInt(input.value) + 1;
+                updateItemTotal(productId);
+            }
+        }
+
+        // 減少數量
+        function decreaseQty(productId) {
+            const input = document.getElementById(`quantity-${productId}`);
+            if (!input.disabled && parseInt(input.value) > 1) {
+                input.value = parseInt(input.value) - 1;
+                updateItemTotal(productId);
+            }
+        }
+
+        // 更新單項商品小計
+        function updateItemTotal(productId) {
+            const input = document.getElementById(`quantity-${productId}`);
+            const price = parseFloat(input.dataset.price) || 0;
+            const quantity = parseInt(input.value) || 0;
+            const total = price * quantity;
+            
+            const totalElement = document.getElementById(`item-total-${productId}`);
+            if (totalElement) {
+                totalElement.textContent = total.toLocaleString('zh-TW');
+            }
+            
+            updateCartSummary();
+        }
+
+        // 移除商品項目
+        function removeItem(productId) {
+            if (confirm('確定要移除此商品嗎？')) {
+                const item = document.querySelector(`.cart-item[data-product-id="${productId}"]`);
+                if (item) {
+                    item.remove();
+                    updateCartSummary();
+                    
+                    // 檢查是否還有商品
+                    const remainingItems = document.querySelectorAll('.cart-item');
+                    if (remainingItems.length === 0) {
+                        location.reload();
+                    }
+                }
+            }
+        }
+
+        // 更新購物車摘要
+        function updateCartSummary() {
+            const checkedItems = document.querySelectorAll('.item-checkbox:checked');
+            let subtotal = 0;
+            let count = 0;
+
+            checkedItems.forEach(checkbox => {
+                const productId = checkbox.value;
+                const qtyInput = document.getElementById(`quantity-${productId}`);
+                const price = parseFloat(qtyInput.dataset.price) || 0;
+                const quantity = parseInt(qtyInput.value) || 0;
+                
+                subtotal += price * quantity;
+                count++;
+            });
+
+            // 更新顯示
+            document.getElementById('selected-count').textContent = `${count} 件`;
+            document.getElementById('subtotal').textContent = subtotal.toLocaleString('zh-TW');
+            
+            // 計算運費 (滿額免運示例)
+            const shipping = subtotal >= 1000 ? 0 : 100;
+            document.getElementById('shipping-cost').textContent = shipping === 0 ? '免運費' : `NT$ ${shipping}`;
+            
+            // 折扣 (示例)
+            const discount = 0;
+            document.getElementById('discount').textContent = discount.toLocaleString('zh-TW');
+            
+            // 總計
+            const grandTotal = subtotal + shipping - discount;
+            document.getElementById('grand-total').textContent = grandTotal.toLocaleString('zh-TW');
+        }
+
+        // 更新全選 checkbox 狀態
+        function updateSelectAllState() {
+            const allCheckboxes = document.querySelectorAll('.item-checkbox');
+            const selectAllCheckbox = document.getElementById('selectAll');
+            if (selectAllCheckbox && allCheckboxes.length > 0) {
+                const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
+                selectAllCheckbox.checked = allChecked;
+            }
+        }
+
+        // 全選功能
+        document.getElementById('selectAll')?.addEventListener('change', function() {
+            const isChecked = this.checked;
+            const checkboxes = document.querySelectorAll('.item-checkbox');
+            
+            checkboxes.forEach(cb => {
+                if (cb.checked !== isChecked) {
+                    cb.checked = isChecked;
+                    
+                    // 手動更新相關的數量輸入框和小計
+                    const quantityInputId = cb.getAttribute('data-quantity-input');
+                    const quantityInput = document.getElementById(quantityInputId);
+                    
+                    if (quantityInput) {
+                        quantityInput.disabled = !isChecked;
+                        
+                        if (!isChecked) {
+                            quantityInput.value = 1;
+                            quantityInput.style.backgroundColor = '#e9ecef';
+                        } else {
+                            quantityInput.style.backgroundColor = 'white';
+                            if (quantityInput.value === '' || quantityInput.value < 1) {
+                                quantityInput.value = 1;
+                            }
+                        }
+                        
+                        // 更新該項目的小計
+                        const productId = cb.value;
+                        updateItemTotal(productId);
+                    }
+                }
+            });
+            
+            // 更新購物車摘要
+            updateCartSummary();
+        });
+
+        // 單選框變更事件
+        document.querySelectorAll('.item-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const quantityInputId = this.getAttribute('data-quantity-input');
+                const quantityInput = document.getElementById(quantityInputId);
+                
+                // 啟用/禁用數量輸入
+                if (quantityInput) {
+                    quantityInput.disabled = !this.checked;
+                    
+                    if (!this.checked) {
+                        quantityInput.value = 1;
+                        quantityInput.style.backgroundColor = '#e9ecef';
+                    } else {
+                        quantityInput.style.backgroundColor = 'white';
+                        if (quantityInput.value === '' || quantityInput.value < 1) {
+                            quantityInput.value = 1;
+                        }
+                    }
+                    
+                    // 更新該項目的小計
+                    const productId = this.value;
+                    updateItemTotal(productId);
+                }
+                
+                // 更新全選狀態
+                updateSelectAllState();
+            });
+        });
+
+        // 結帳按鈕驗證
+        document.getElementById('checkoutBtn')?.addEventListener('click', function(e) {
+            const checkedItems = document.querySelectorAll('.item-checkbox:checked');
+            
+            if (checkedItems.length === 0) {
+                e.preventDefault();
+                alert('請至少選擇一項商品');
+                return false;
+            }
+            
+            // 驗證數量
+            let hasInvalidQty = false;
+            checkedItems.forEach(checkbox => {
+                const qtyInput = document.getElementById(checkbox.getAttribute('data-quantity-input'));
+                const qty = parseInt(qtyInput.value) || 0;
+                if (qty <= 0) {
+                    hasInvalidQty = true;
+                }
+            });
+            
+            if (hasInvalidQty) {
+                e.preventDefault();
+                alert('請確保所選商品的數量都大於 0');
+                return false;
+            }
+        });
+
+        // 優惠券功能 (示例)
+        function applyCoupon() {
+            const couponCode = document.getElementById('couponInput')?.value;
+            if (couponCode) {
+                alert('優惠券功能尚未啟用：' + couponCode);
+            }
+        }
+
+        // 頁面載入時更新摘要
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartSummary();
+        });
+    </script>
+
 </body>
 
 </html>
-
-{{-- 引入jQuery --}}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script>
-// 確保在 jQuery 載入後才執行
-$(document).ready(function() {
-    // 選取所有 name 屬性選取所有以 "num_adjust" 開頭的輸入框
-    var $inputs = $('input[id^="quantity-"]');
-        // 每當輸入框的值發生變化時，都會觸發這個函數
-    $inputs.on('input', function() {
-        // 從 name 屬性中提取產品 ID；例如 name="num_adjust_123" 會被替換成 "123"
-        var productId = $(this).attr('id').replace('quantity-', '');
-        // 獲取單價
-        // parseFloat 字串轉浮點數；如果轉換失敗，則預設為 0
-        // 從 data-price 屬性中讀取單價
-        var itemPrice = parseFloat($('#item_money_total_' + productId).data('price')) || 0;
-        // 獲取輸入的數量
-        var quantity = parseInt($(this).val()) || 0;
-        var totalSum = itemPrice * quantity;
-        // toFixed(1) 保證顯示一位小數
-        // 在總金額前加上 "SUM $ = "
-        $('#item_sum_total_' + productId).text('SUM $ = ' + totalSum.toFixed(1));
-    });
-    // 在頁面載入時立即觸發所有輸入框的 input 事件，上面則是input框更動時跟著更動
-    $inputs.trigger('input');
-});
-</script>
-
-<script>
-    // 將選取框框與數量合併傳送到後端
-    document.querySelectorAll('.item-checkbox').forEach(checkbox => {
-    checkbox.addEventListener('change', function() {
-        const quantityInputId = this.getAttribute('data-quantity-input');
-        const quantityInput = document.getElementById(quantityInputId);
-        
-        // 當checkbox被勾選時，數量input啟用；取消勾選時禁用
-        quantityInput.disabled = !this.checked;
-        
-        // 如果取消勾選，重置數量為1；如果勾選，確保至少為1
-        if (!this.checked) {
-            quantityInput.value = 1;
-        } else if (quantityInput.value === '' || quantityInput.value < 1) {
-            quantityInput.value = 1;
-        }
-        
-        // 觸發數量變更事件來更新總價
-        $(quantityInput).trigger('input');
-    });
-});
-
-    // 防止都沒有勾選就提交
-    document.getElementById('check').addEventListener('click', function(e) {
-        const checkboxes = document.querySelectorAll('.item-checkbox:checked');
-        
-        if (checkboxes.length === 0) {
-            e.preventDefault();
-            alert('請至少選擇一項商品');
-            return false;
-        }
-        
-        // 確保所有已勾選商品的數量都大於0
-        let hasInvalidQuantity = false;
-        checkboxes.forEach(checkbox => {
-            const quantityInputId = checkbox.getAttribute('data-quantity-input');
-            const quantityInput = document.getElementById(quantityInputId);
-            const quantity = parseInt(quantityInput.value) || 0;
-            
-            if (quantity <= 0) {
-                hasInvalidQuantity = true;
-            }
-        });
-        
-        if (hasInvalidQuantity) {
-            e.preventDefault();
-            alert('請確保所選商品的數量都大於0');
-            return false;
-        }
-    });
-</script>

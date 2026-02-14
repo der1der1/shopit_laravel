@@ -72,7 +72,7 @@ class CheckoutService
         $totalPrice = $this->calculateTotalPrice($purchasedData['merged_arr']);
 
         // 更新使用者的想要清單
-        $this->updateUserWantList($user->account, $itemIds);
+        // $this->updateUserWantList($user->account, $itemIds);
 
         // 建立購買記錄
         $this->orderRepository->createPurchaseOrder(
@@ -110,7 +110,7 @@ class CheckoutService
         return $totalPrice;
     }
 
-    private function updateUserWantList($userAccount, $purchasedItemIds)
+    public function updateUserWantList($userAccount, $purchasedItemIds)
     {
         // 取得原先的想要清單
         $currentWantString = $this->wishlistRepository->getUserWantList($userAccount);

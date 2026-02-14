@@ -4,14 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Service\PaymentService;
+use App\Service\CheckoutService;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class purchasedCtlr extends Controller
 {
     protected $paymentService;
+    protected $checkoutService;
 
-    public function __construct(PaymentService $paymentService)
+    public function __construct(PaymentService $paymentService, CheckoutService $checkoutService)
     {
         $this->paymentService = $paymentService;
+        $this->checkoutService = $checkoutService;
     }
     public function pay_show()
     {
@@ -79,7 +84,11 @@ class purchasedCtlr extends Controller
     }
     public function pay_confirm(Request $request)
     {
+        $user = User::find(Auth::id());
+        $selected_items = session()->get('selected_items');
         $result = $this->paymentService->confirmPayment($request);
+        // 更新使用者的想要清單
+        $this->checkoutService->updateUserWantList($user->account, $selected_items);
         
         if (isset($result['error'])) {
             return redirect()->route($result['redirect'])->with('error', $result['error']);
