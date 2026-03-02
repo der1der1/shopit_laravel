@@ -18,5 +18,6 @@ class contactModel extends Authenticatable
         'email',
         'phone',
         'information',
+        'replied',
     ];
 }

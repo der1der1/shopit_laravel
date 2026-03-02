@@ -26,6 +26,17 @@ class editCtlr extends Controller
         }
     }
 
+    public function admin_show() {
+        $user = Auth::user();
+        // 權限A可以進入
+        if ( $user->prvilige == "A" ) {
+            // 重定向到新的管理後台儀表板
+            return redirect()->route('admin.dashboard');
+        } else {
+            // 權限B級則拒絕並返回首頁
+            return redirect()->route('home')->with('error', '您沒有權限執行此操作');
+        }
+    }
 
     public function edit_product_store(Request $request) {
 

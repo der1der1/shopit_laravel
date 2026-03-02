@@ -25,4 +25,14 @@ class ContactRepository
     {
         return contactModel::find($id);
     }
+
+    public function Replied($id)
+    {
+        $contact = contactModel::find($id);
+        if ($contact) {
+            $contact->replied = 1;
+            $contact->save();
+        }
+        return $contact;
+    }
 }

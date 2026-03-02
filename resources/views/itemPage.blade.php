@@ -3,9 +3,62 @@
 
 <head>
     <link rel="stylesheet" href="{{ asset('itemPage.css') }}">
+    <!-- Quill Editor Styles for Content Display -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $products->product_name }} - 商品詳情</title>
+    <style>
+        /* Override Quill styles for content display */
+        .description-content .ql-align-center {
+            text-align: center !important;
+        }
+        .description-content .ql-align-right {
+            text-align: right !important;
+        }
+        .description-content .ql-align-left {
+            text-align: left !important;
+        }
+        .description-content .ql-align-justify {
+            text-align: justify !important;
+        }
+        .description-content h1, .description-content h2, .description-content h3,
+        .description-content h4, .description-content h5, .description-content h6 {
+            margin: 15px 0;
+            font-weight: 600;
+        }
+        .description-content ul, .description-content ol {
+            margin: 10px 0;
+            padding-left: 30px;
+        }
+        .description-content img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 15px auto;
+        }
+        .description-content p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .description-content strong {
+            font-weight: 600;
+        }
+        .description-content em {
+            font-style: italic;
+        }
+        .description-content a {
+            color: #3498db;
+            text-decoration: underline;
+        }
+        .description-content blockquote {
+            border-left: 4px solid #ddd;
+            padding-left: 15px;
+            margin: 15px 0;
+            color: #666;
+        }
+        /* FOR Quill END */
+    </style>
 </head>
 
 <body id="top">

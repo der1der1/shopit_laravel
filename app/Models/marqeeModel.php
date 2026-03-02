@@ -13,6 +13,7 @@ class marqeeModel extends Authenticatable
 
     protected $fillable = [
         'texts',
+        'rank',
         'updated_at'
     ];
 
