@@ -23,7 +23,10 @@ class productsModel extends Authenticatable
         'price',
         'ori_price',
         'category',
-        'selected'
+        'selected',
+        'is_active',
+        'quantity',
+        'min_quantity'
     ];
 }
 

@@ -200,6 +200,8 @@ class AdminController extends Controller
                 'description' => 'required',
                 'price' => 'required|numeric',
                 'category' => 'required',
+                'quantity' => 'required|integer|min:0',
+                'min_quantity' => 'required|integer|min:0',
                 'images' => 'required|array|min:1|max:4',
                 'images.*' => 'image|max:5120',
                 'image_names' => 'required|array|min:1|max:4',
@@ -244,6 +246,9 @@ class AdminController extends Controller
                 'pic_name_more' => !empty($additionalImageNames) ? json_encode(array_values($additionalImageNames)) : null,
                 'pic_dir_more' => !empty($additionalImagePaths) ? json_encode($additionalImagePaths) : null,
                 'selected' => $request->selected ?? '0',
+                'is_active' => $request->has('is_active') ? 1 : 0,
+                'quantity' => $request->quantity,
+                'min_quantity' => $request->min_quantity,
             ]);
             
             return redirect()->route('admin.products')->with('success', '商品已新增');
@@ -288,6 +293,9 @@ class AdminController extends Controller
             $product->ori_price = $request->ori_price ?? $request->price;
             $product->category = $request->category;
             $product->selected = $request->selected ?? '0';
+            $product->is_active = $request->has('is_active') ? 1 : 0;
+            $product->quantity = $request->quantity ?? 0;
+            $product->min_quantity = $request->min_quantity ?? 0;
             
             // 取得現有圖片路徑
             $existingImages = $request->input('existing_images', []);
@@ -509,6 +517,22 @@ class AdminController extends Controller
             $mail->save();
             
             return response()->json(['success' => true, 'message' => '狀態已更新']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+    
+    /**
+     * Toggle mail list stock notification
+     */
+    public function toggleStockNotification(Request $request, $id)
+    {
+        try {
+            $mail = mailListModel::findOrFail($id);
+            $mail->stock_notification = $request->input('stock_notification');
+            $mail->save();
+            
+            return response()->json(['success' => true, 'message' => '數量不足通知設定已更新']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }

@@ -96,6 +96,52 @@
         font-size: 28px;
         font-weight: bold;
     }
+    
+    /* Toggle Switch 樣式 */
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.3s;
+        border-radius: 24px;
+    }
+
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+        background-color: #3498db;
+    }
+
+    .toggle-switch input:checked + .toggle-slider:before {
+        transform: translateX(26px);
+    }
 </style>
 @endsection
 
@@ -140,6 +186,7 @@
                 <th>Email</th>
                 <th>標題/備註</th>
                 <th>狀態</th>
+                <th>數量不足通知</th>
                 <th>訂閱時間</th>
                 <th>操作</th>
             </tr>
@@ -156,6 +203,14 @@
                         {{ $mail->onoff ? '啟用' : '停用' }}
                     </span>
                 </td>
+                <td>
+                    <label class="toggle-switch">
+                        <input type="checkbox" 
+                               onchange="toggleStockNotification({{ $mail->id }}, this.checked)"
+                               {{ $mail->stock_notification ? 'checked' : '' }}>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </td>
                 <td>{{ $mail->created_at ? $mail->created_at->format('Y-m-d H:i') : '-' }}</td>
                 <td>
                     <div class="action-btns">
@@ -170,7 +225,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="7" style="text-align: center; color: #7f8c8d; padding: 40px;">
+                <td colspan="8" style="text-align: center; color: #7f8c8d; padding: 40px;">
                     暫無訂閱用戶
                 </td>
             </tr>
@@ -285,6 +340,34 @@
     
     function exportList() {
         window.location.href = '/admin/maillist/export';
+    }
+    
+    function toggleStockNotification(id, isChecked) {
+        fetch(`/admin/maillist/${id}/toggle-stock-notification`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ stock_notification: isChecked ? 1 : 0 })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Optionally show a success message
+                console.log('數量不足通知設定已更新');
+            } else {
+                alert('更新失敗：' + (data.message || '未知錯誤'));
+                // Revert the toggle
+                location.reload();
+            }
+        })
+        .catch(error => {
+            alert('更新失敗：' + error.message);
+            // Revert the toggle
+            location.reload();
+        });
     }
 </script>
 @endsection

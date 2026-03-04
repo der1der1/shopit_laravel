@@ -112,6 +112,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function() {
     Route::get('/maillist', [AdminController::class, 'maillist'])->name('maillist');
     Route::get('/maillist/compose', function() { return view('admin.maillist-compose'); })->name('maillist.compose');
     Route::post('/maillist/{id}/toggle', [AdminController::class, 'toggleMailStatus'])->name('maillist.toggle');
+    Route::post('/maillist/{id}/toggle-stock-notification', [AdminController::class, 'toggleStockNotification'])->name('maillist.toggle-stock-notification');
     Route::delete('/maillist/{id}', [AdminController::class, 'deleteMail'])->name('maillist.delete');
     
     // Marquee Management

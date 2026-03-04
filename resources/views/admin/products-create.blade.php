@@ -255,6 +255,18 @@
     <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         
+        <!-- 商品狀態 Toggle -->
+        <div class="form-group full-width">
+            <label for="is_active">商品狀態 *</label>
+            <div class="toggle-container">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="is_active" name="is_active" value="1" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label" id="status-label-text">上架</span>
+            </div>
+        </div>
+        
         <div class="form-row">
             <div class="form-group">
                 <label for="product_name">商品名稱 *</label>
@@ -290,6 +302,21 @@
             <div class="form-group">
                 <label for="price">售價 *</label>
                 <input type="number" id="price" name="price" required style="background: #64e0ff;">
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="quantity">商品庫存數 *</label>
+                <input type="number" id="quantity" name="quantity" min="0" value="0" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="min_quantity">最低庫存數 *</label>
+                <input type="number" id="min_quantity" name="min_quantity" min="0" value="0" required>
+                <a href="{{ route('admin.maillist') }}" style="display: inline-block; margin-top: 8px; color: #3498db; text-decoration: none; font-size: 13px;">
+                    📧 前往數量不足通報設定
+                </a>
             </div>
         </div>
         
@@ -651,13 +678,24 @@
             });
         });
         
-        // Toggle switch 標籤更新
+        // Toggle switch 標籤更新 - 精選商品
         const selectedToggle = document.getElementById('selected');
         const toggleLabelText = document.getElementById('toggle-label-text');
         
         if (selectedToggle && toggleLabelText) {
             selectedToggle.addEventListener('change', function() {
                 toggleLabelText.textContent = this.checked ? '是' : '否';
+            });
+        }
+        
+        // Toggle switch 標籤更新 - 商品狀態
+        const statusToggle = document.getElementById('is_active');
+        const statusLabelText = document.getElementById('status-label-text');
+        
+        if (statusToggle && statusLabelText) {
+            statusToggle.addEventListener('change', function() {
+                statusLabelText.textContent = this.checked ? '上架' : '下架';
+                statusLabelText.style.color = this.checked ? '#3498db' : '#e74c3c';
             });
         }
     });

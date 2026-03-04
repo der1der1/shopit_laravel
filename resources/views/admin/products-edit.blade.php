@@ -170,90 +170,90 @@
         background: #c0392b;
         transform: scale(1.1);
     }
-/* 圖片上傳區域結束 */
+    /* 圖片上傳區域結束 */
 
-/* Toggle Switch 樣式 */
-.toggle-container {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
+    /* Toggle Switch 樣式 */
+    .toggle-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
 
-.toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 30px;
-}
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 30px;
+    }
 
-.toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
 
-.toggle-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: 0.3s;
-    border-radius: 30px;
-}
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.3s;
+        border-radius: 30px;
+    }
 
-.toggle-slider:before {
-    position: absolute;
-    content: "";
-    height: 22px;
-    width: 22px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: 0.3s;
-    border-radius: 50%;
-}
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 22px;
+        width: 22px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+    }
 
-.toggle-switch input:checked + .toggle-slider {
-    background-color: #3498db;
-}
+    .toggle-switch input:checked + .toggle-slider {
+        background-color: #3498db;
+    }
 
-.toggle-switch input:checked + .toggle-slider:before {
-    transform: translateX(30px);
-}
+    .toggle-switch input:checked + .toggle-slider:before {
+        transform: translateX(30px);
+    }
 
-.toggle-label {
-    font-weight: 600;
-    color: #666;
-    transition: color 0.3s;
-}
+    .toggle-label {
+        font-weight: 600;
+        color: #666;
+        transition: color 0.3s;
+    }
 
-.toggle-switch input:checked ~ .toggle-label {
-    color: #3498db;
-}
-/* Toggle Switch 結束 */
+    .toggle-switch input:checked ~ .toggle-label {
+        color: #3498db;
+    }
+    /* Toggle Switch 結束 */
 
-/* Category Select Styles */
-.category-select {
-    width: 100%;
-    padding: 10px 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 14px;
-    background: white;
-    cursor: pointer;
-}
+    /* Category Select Styles */
+    .category-select {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+    }
 
-.category-new-input {
-    width: 100%;
-    padding: 10px 15px;
-    border: 1px solid #3498db;
-    border-radius: 5px;
-    font-size: 14px;
-}
-/* Category Select 結束 */
+    .category-new-input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #3498db;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    /* Category Select 結束 */
 
 </style>
 @endsection
@@ -263,6 +263,18 @@
     <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
+        
+        <!-- 商品狀態 Toggle -->
+        <div class="form-group full-width">
+            <label for="is_active">商品狀態 *</label>
+            <div class="toggle-container">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="is_active" name="is_active" value="1" {{ ($product->is_active ?? 1) == 1 ? 'checked' : '' }}>
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label" id="status-label-text">{{ ($product->is_active ?? 1) == 1 ? '上架' : '下架' }}</span>
+            </div>
+        </div>
         
         <div class="form-row">
             <div class="form-group">
@@ -299,6 +311,21 @@
             <div class="form-group">
                 <label for="price">售價 *</label>
                 <input type="number" id="price" name="price" value="{{ $product->price }}" required style="background: #64e0ff;">
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="quantity">商品庫存數 *</label>
+                <input type="number" id="quantity" name="quantity" min="0" value="{{ $product->quantity ?? 0 }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="min_quantity">最低庫存數 *</label>
+                <input type="number" id="min_quantity" name="min_quantity" min="0" value="{{ $product->min_quantity ?? 0 }}" required>
+                <a href="{{ route('admin.maillist') }}" style="display: inline-block; margin-top: 8px; color: #3498db; text-decoration: none; font-size: 13px;">
+                    📧 前往數量不足通報設定
+                </a>
             </div>
         </div>
         
@@ -707,6 +734,17 @@
         if (selectedToggle && toggleLabelText) {
             selectedToggle.addEventListener('change', function() {
                 toggleLabelText.textContent = this.checked ? '是' : '否';
+            });
+        }
+        
+        // Toggle switch 標籤更新 - 商品狀態
+        const statusToggle = document.getElementById('is_active');
+        const statusLabelText = document.getElementById('status-label-text');
+        
+        if (statusToggle && statusLabelText) {
+            statusToggle.addEventListener('change', function() {
+                statusLabelText.textContent = this.checked ? '上架' : '下架';
+                statusLabelText.style.color = this.checked ? '#3498db' : '#e74c3c';
             });
         }
     });
