@@ -15,12 +15,15 @@ class productsModel extends Authenticatable
 
     protected $fillable = [
         'pic_name',
-        'product_name', 
+        'product_name',
         'pic_dir',
+        'pic_name_more',
+        'pic_dir_more',
         'description',
         'price',
         'ori_price',
-        'category'
+        'category',
+        'selected'
     ];
 }
 

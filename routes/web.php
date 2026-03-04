@@ -120,6 +120,15 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function() {
     Route::put('/marquee/{id}', [AdminController::class, 'updateMarquee'])->name('marquee.update');
     Route::post('/marquee/update-order', [AdminController::class, 'updateMarqueeOrder'])->name('marquee.updateOrder');
     Route::delete('/marquee/{id}', [AdminController::class, 'destroyMarquee'])->name('marquee.destroy');
+    
+    // Payment Methods Management
+    Route::get('/payment-methods', [AdminController::class, 'paymentMethods'])->name('payment-methods');
+    Route::get('/payment-methods/create', [AdminController::class, 'createPaymentMethod'])->name('payment-methods.create');
+    Route::post('/payment-methods', [AdminController::class, 'storePaymentMethod'])->name('payment-methods.store');
+    Route::get('/payment-methods/{id}/edit', [AdminController::class, 'editPaymentMethod'])->name('payment-methods.edit');
+    Route::put('/payment-methods/{id}', [AdminController::class, 'updatePaymentMethod'])->name('payment-methods.update');
+    Route::delete('/payment-methods/{id}', [AdminController::class, 'deletePaymentMethod'])->name('payment-methods.delete');
+    Route::post('/payment-methods/update-order', [AdminController::class, 'updatePaymentMethodOrder'])->name('payment-methods.updateOrder');
 });
 
 Route::get('/contact', [contactCtlr::class, 'report_show'])->name('report_show');

@@ -51,6 +51,202 @@
         gap: 10px;
         margin-top: 30px;
     }
+    
+    /* 圖片上傳區域樣式 */
+    .image-upload-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-top: 10px;
+    }
+    
+    .image-upload-box {
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        background: #f9f9f9;
+        transition: all 0.3s;
+    }
+    
+    .image-upload-box:hover {
+        border-color: #3498db;
+        background: #f0f8ff;
+    }
+    
+    .image-name-input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+    
+    .image-preview-area {
+        position: relative;
+        aspect-ratio: 1;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        overflow: hidden;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .image-preview-area:hover .image-add-btn {
+        background: #3498db;
+        color: white;
+    }
+    
+    .image-add-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s;
+        pointer-events: none;
+    }
+    
+    .plus-icon {
+        font-size: 48px;
+        color: #3498db;
+        font-weight: 300;
+    }
+    
+    .add-text {
+        font-size: 14px;
+        color: #666;
+    }
+    
+    .image-preview-area:hover .plus-icon {
+        color: white;
+    }
+    
+    .image-preview-area:hover .add-text {
+        color: white;
+    }
+    
+    .preview-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    
+    .remove-image-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(231, 76, 60, 0.9);
+        color: white;
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.3s;
+        z-index: 10;
+    }
+    
+    .image-preview-area:hover .remove-image-btn {
+        opacity: 1;
+    }
+    
+    .remove-image-btn:hover {
+        background: #c0392b;
+        transform: scale(1.1);
+    }
+
+    /* Toggle Switch 樣式 */
+    .toggle-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 30px;
+    }
+
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.3s;
+        border-radius: 30px;
+    }
+
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 22px;
+        width: 22px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+        background-color: #3498db;
+    }
+
+    .toggle-switch input:checked + .toggle-slider:before {
+        transform: translateX(30px);
+    }
+
+    .toggle-label {
+        font-weight: 600;
+        color: #666;
+        transition: color 0.3s;
+    }
+
+    .toggle-switch input:checked ~ .toggle-label {
+        color: #3498db;
+    }
+    /* Toggle Switch 結束 */
+
+    /* Category Select Styles */
+    .category-select {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+    }
+
+    .category-new-input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #3498db;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    /* Category Select 結束 */
 </style>
 @endsection
 
@@ -67,7 +263,15 @@
             
             <div class="form-group">
                 <label for="category">商品分類 *</label>
-                <input type="text" id="category" name="category" required>
+                <select id="category_select" class="category-select" onchange="handleCategoryChange(this)">
+                    <option value="">請選擇分類</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat }}">{{ $cat }}</option>
+                    @endforeach
+                    <option value="__new__">➕ 新增分類...</option>
+                </select>
+                <input type="text" id="category" name="category" style="display:none;" required>
+                <input type="text" id="category_new" class="category-new-input" placeholder="輸入新分類名稱" style="display:none; margin-top:10px;">
             </div>
         </div>
         
@@ -79,13 +283,13 @@
         
         <div class="form-row">
             <div class="form-group">
-                <label for="price">售價 *</label>
-                <input type="number" id="price" name="price" required>
-            </div>
-            
-            <div class="form-group">
                 <label for="ori_price">原價</label>
                 <input type="number" id="ori_price" name="ori_price">
+            </div>
+
+            <div class="form-group">
+                <label for="price">售價 *</label>
+                <input type="number" id="price" name="price" required style="background: #64e0ff;">
             </div>
         </div>
         
@@ -97,16 +301,74 @@
             
             <div class="form-group">
                 <label for="selected">精選商品</label>
-                <select id="selected" name="selected">
-                    <option value="0" selected>否</option>
-                    <option value="1">是</option>
-                </select>
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="selected" name="selected" value="1">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label" id="toggle-label-text">否</span>
+                </div>
             </div>
         </div>
         
-        <div class="form-group">
-            <label for="pic_dir">商品圖片 *</label>
-            <input type="file" id="pic_dir" name="pic_dir" accept="image/*" required>
+        <!-- 商品圖片上傳區 (四張圖片) -->
+        <div class="form-group full-width">
+            <label>商品圖片（最少 1 張，最多 4 張）*</label>
+            <div class="image-upload-grid">
+                <!-- 圖片 1 (必填-首圖) -->
+                <div class="image-upload-box" data-index="0">
+                    <div style="margin-bottom: 5px;">
+                        <span style="display: inline-block; background: #e74c3c; color: white; padding: 2px 8px; border-radius: 3px; font-size: 12px; font-weight: bold;">首圖</span>
+                    </div>
+                    <input type="text" class="image-name-input" name="image_names[]" placeholder="圖片名稱 (必填)" required>
+                    <div class="image-preview-area">
+                        <input type="file" class="image-file-input" name="images[]" accept="image/*" data-index="0" required style="display:none;">
+                        <div class="image-add-btn">
+                            <span class="plus-icon">+</span>
+                            <span class="add-text">點擊上傳圖片</span>
+                        </div>
+                        <img class="preview-image" src="" style="display:none;">
+                        <button type="button" class="remove-image-btn" style="display:none;">×</button>
+                    </div>
+                </div>
+
+                <!-- 圖片 2-4 (選填) -->
+                <div class="image-upload-box" data-index="1">
+                    <div class="image-preview-area">
+                        <input type="file" class="image-file-input" name="images[]" accept="image/*" data-index="1" style="display:none;">
+                        <div class="image-add-btn">
+                            <span class="plus-icon">+</span>
+                            <span class="add-text">點擊上傳圖片</span>
+                        </div>
+                        <img class="preview-image" src="" style="display:none;">
+                        <button type="button" class="remove-image-btn" style="display:none;">×</button>
+                    </div>
+                </div>
+
+                <div class="image-upload-box" data-index="2">
+                    <div class="image-preview-area">
+                        <input type="file" class="image-file-input" name="images[]" accept="image/*" data-index="2" style="display:none;">
+                        <div class="image-add-btn">
+                            <span class="plus-icon">+</span>
+                            <span class="add-text">點擊上傳圖片</span>
+                        </div>
+                        <img class="preview-image" src="" style="display:none;">
+                        <button type="button" class="remove-image-btn" style="display:none;">×</button>
+                    </div>
+                </div>
+
+                <div class="image-upload-box" data-index="3">
+                    <div class="image-preview-area">
+                        <input type="file" class="image-file-input" name="images[]" accept="image/*" data-index="3" style="display:none;">
+                        <div class="image-add-btn">
+                            <span class="plus-icon">+</span>
+                            <span class="add-text">點擊上傳圖片</span>
+                        </div>
+                        <img class="preview-image" src="" style="display:none;">
+                        <button type="button" class="remove-image-btn" style="display:none;">×</button>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <div class="form-actions">
@@ -339,6 +601,91 @@
     document.querySelector('form').onsubmit = function() {
         document.querySelector('#description').value = quill.root.innerHTML;
     };
+    
+    // 商品圖片上傳功能
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageBoxes = document.querySelectorAll('.image-upload-box');
+        
+        imageBoxes.forEach((box, index) => {
+            const previewArea = box.querySelector('.image-preview-area');
+            const fileInput = box.querySelector('.image-file-input');
+            const previewImage = box.querySelector('.preview-image');
+            const addBtn = box.querySelector('.image-add-btn');
+            const removeBtn = box.querySelector('.remove-image-btn');
+            
+            // 點擊預覽區域觸發文件選擇
+            previewArea.addEventListener('click', function(e) {
+                if (e.target === removeBtn) return;
+                fileInput.click();
+            });
+            
+            // 文件選擇後預覽
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = 'block';
+                        addBtn.style.display = 'none';
+                        removeBtn.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // 刪除圖片
+            removeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                fileInput.value = '';
+                previewImage.src = '';
+                previewImage.style.display = 'none';
+                addBtn.style.display = 'flex';
+                removeBtn.style.display = 'none';
+                
+                // 清空對應的圖片名稱
+                const nameInput = box.querySelector('.image-name-input');
+                if (index > 0) { // 第一張圖片的名稱保留required
+                    nameInput.value = '';
+                }
+            });
+        });
+        
+        // Toggle switch 標籤更新
+        const selectedToggle = document.getElementById('selected');
+        const toggleLabelText = document.getElementById('toggle-label-text');
+        
+        if (selectedToggle && toggleLabelText) {
+            selectedToggle.addEventListener('change', function() {
+                toggleLabelText.textContent = this.checked ? '是' : '否';
+            });
+        }
+    });
+    
+    // Category dropdown handler
+    function handleCategoryChange(select) {
+        const categoryInput = document.getElementById('category');
+        const categoryNewInput = document.getElementById('category_new');
+        
+        if (select.value === '__new__') {
+            // Show new category input
+            categoryNewInput.style.display = 'block';
+            categoryNewInput.required = true;
+            categoryNewInput.focus();
+            categoryInput.value = '';
+            
+            // Update hidden input when typing in new category
+            categoryNewInput.addEventListener('input', function() {
+                categoryInput.value = this.value;
+            });
+        } else {
+            // Use selected category
+            categoryNewInput.style.display = 'none';
+            categoryNewInput.required = false;
+            categoryNewInput.value = '';
+            categoryInput.value = select.value;
+        }
+    }
 </script>
 
 <style>

@@ -85,20 +85,26 @@
                     <div class="image-badge">熱賣商品</div>
                 </div>
                 
-                <!-- 縮圖區 - 目前使用相同圖片，可自行替換 -->
+                <!-- 縮圖區 - 顯示所有商品圖片 -->
                 <div class="thumbnail-gallery">
-                    <div class="thumbnail active" onclick="changeMainImage('{{ asset($products->pic_dir) }}', this)">
-                        <img src="{{ asset($products->pic_dir) }}" alt="圖片1">
-                    </div>
-                    <div class="thumbnail" onclick="changeMainImage('{{ asset($products->pic_dir) }}', this)">
-                        <img src="{{ asset($products->pic_dir) }}" alt="圖片2">
-                    </div>
-                    <div class="thumbnail" onclick="changeMainImage('{{ asset($products->pic_dir) }}', this)">
-                        <img src="{{ asset($products->pic_dir) }}" alt="圖片3">
-                    </div>
-                    <div class="thumbnail" onclick="changeMainImage('{{ asset($products->pic_dir) }}', this)">
-                        <img src="{{ asset($products->pic_dir) }}" alt="圖片4">
-                    </div>
+                    @php
+                        // 解碼額外圖片資料
+                        $picDirMore = $products->pic_dir_more ? json_decode($products->pic_dir_more, true) : [];
+                        
+                        // 組合所有圖片
+                        $allProductImages = [$products->pic_dir];
+                        if (is_array($picDirMore)) {
+                            $allProductImages = array_merge($allProductImages, $picDirMore);
+                        }
+                    @endphp
+                    
+                    @foreach($allProductImages as $index => $imagePath)
+                        @if($imagePath)
+                            <div class="thumbnail {{ $index == 0 ? 'active' : '' }}" onclick="changeMainImage('{{ asset($imagePath) }}', this)">
+                                <img src="{{ asset($imagePath) }}" alt="圖片{{ $index + 1 }}">
+                            </div>
+                        @endif
+                    @endforeach
                 </div>
             </div>
 

@@ -9,11 +9,13 @@ use App\Models\purchasedModel;
 use App\Models\contactModel;
 use App\Models\mailListModel;
 use App\Models\marqeeModel;
+use App\Models\PaymentMethodModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
+    
     /**
      * Constructor - 驗證管理員權限
      */
@@ -183,7 +185,8 @@ class AdminController extends Controller
      */
     public function createProduct()
     {
-        return view('admin.products-create');
+        $categories = productsModel::distinct()->pluck('category')->filter();
+        return view('admin.products-create', compact('categories'));
     }
     
     /**
@@ -197,16 +200,38 @@ class AdminController extends Controller
                 'description' => 'required',
                 'price' => 'required|numeric',
                 'category' => 'required',
-                'pic_dir' => 'required|image'
+                'images' => 'required|array|min:1|max:4',
+                'images.*' => 'image|max:5120',
+                'image_names' => 'required|array|min:1|max:4',
+                'image_names.0' => 'required'
             ]);
             
-            // Handle image upload
-            $imagePath = 'img/pictureTarget/default.png';
-            if ($request->hasFile('pic_dir')) {
-                $image = $request->file('pic_dir');
-                $image->move(public_path('img/pictureTarget'), $image->getClientOriginalName());
-                $imagePath = 'img/pictureTarget/' . $image->getClientOriginalName();
+            // Handle multiple images upload
+            $imageNames = $request->input('image_names', []);
+            $uploadedImages = [];
+            
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $index => $image) {
+                    if ($image) {
+                        $filename = time() . '_' . $index . '_' . $image->getClientOriginalName();
+                        $image->move(public_path('img/pictureTarget'), $filename);
+                        $uploadedImages[] = 'img/pictureTarget/' . $filename;
+                    }
+                }
             }
+            
+            // 第一張圖片作為預設圖片 (pic_name, pic_dir)
+            $firstImagePath = $uploadedImages[0] ?? 'img/pictureTarget/default.png';
+            $firstImageName = $imageNames[0] ?? null;
+            
+            // 其他圖片儲存在 pic_name_more 和 pic_dir_more
+            $additionalImagePaths = array_slice($uploadedImages, 1);
+            $additionalImageNames = array_slice($imageNames, 1);
+            
+            // 清理空值
+            $additionalImageNames = array_filter($additionalImageNames, function($name) {
+                return !empty($name);
+            });
             
             productsModel::create([
                 'product_name' => $request->product_name,
@@ -214,8 +239,10 @@ class AdminController extends Controller
                 'price' => $request->price,
                 'ori_price' => $request->ori_price ?? $request->price,
                 'category' => $request->category,
-                'pic_name' => $request->pic_name,
-                'pic_dir' => $imagePath,
+                'pic_name' => $firstImageName,
+                'pic_dir' => $firstImagePath,
+                'pic_name_more' => !empty($additionalImageNames) ? json_encode(array_values($additionalImageNames)) : null,
+                'pic_dir_more' => !empty($additionalImagePaths) ? json_encode($additionalImagePaths) : null,
                 'selected' => $request->selected ?? '0',
             ]);
             
@@ -231,7 +258,8 @@ class AdminController extends Controller
     public function editProduct($id)
     {
         $product = productsModel::findOrFail($id);
-        return view('admin.products-edit', compact('product'));
+        $categories = productsModel::distinct()->pluck('category')->filter();
+        return view('admin.products-edit', compact('product', 'categories'));
     }
     
     /**
@@ -242,20 +270,67 @@ class AdminController extends Controller
         try {
             $product = productsModel::findOrFail($id);
             
+            // 檢查是否有首圖（第一張圖片必須存在）
+            $hasFirstImage = false;
+            if ($request->hasFile('images.0')) {
+                $hasFirstImage = true;
+            } elseif ($request->has('existing_images.0') && !empty($request->input('existing_images.0'))) {
+                $hasFirstImage = true;
+            }
+            
+            if (!$hasFirstImage) {
+                return back()->with('error', '請上傳首圖')->withInput();
+            }
+            
             $product->product_name = $request->product_name;
             $product->description = $request->description;
             $product->price = $request->price;
             $product->ori_price = $request->ori_price ?? $request->price;
             $product->category = $request->category;
-            $product->pic_name = $request->pic_name;
             $product->selected = $request->selected ?? '0';
             
-            // Handle image upload if provided
-            if ($request->hasFile('pic_dir')) {
-                $image = $request->file('pic_dir');
-                $image->move(public_path('img/pictureTarget'), $image->getClientOriginalName());
-                $product->pic_dir = 'img/pictureTarget/' . $image->getClientOriginalName();
+            // 取得現有圖片路徑
+            $existingImages = $request->input('existing_images', []);
+            $imageNames = $request->input('image_names', []);
+            
+            // 處理第一張圖片（首圖）
+            if ($request->hasFile('images.0')) {
+                // 上傳新的首圖
+                $image = $request->file('images.0');
+                $filename = time() . '_0_' . $image->getClientOriginalName();
+                $image->move(public_path('img/pictureTarget'), $filename);
+                $product->pic_dir = 'img/pictureTarget/' . $filename;
+                $product->pic_name = $imageNames[0] ?? null;
+            } else {
+                // 保留現有首圖
+                if (isset($existingImages[0]) && !empty($existingImages[0])) {
+                    $product->pic_dir = $existingImages[0];
+                    $product->pic_name = $imageNames[0] ?? $product->pic_name;
+                }
             }
+            
+            // 處理第2-4張圖片
+            $additionalImagePaths = [];
+            $additionalImageNames = [];
+            
+            for ($i = 1; $i < 4; $i++) {
+                if ($request->hasFile("images.{$i}")) {
+                    // 上傳新圖片
+                    $image = $request->file("images.{$i}");
+                    $filename = time() . "_{$i}_" . $image->getClientOriginalName();
+                    $image->move(public_path('img/pictureTarget'), $filename);
+                    $additionalImagePaths[] = 'img/pictureTarget/' . $filename;
+                    $additionalImageNames[] = $imageNames[$i] ?? '';
+                } elseif (isset($existingImages[$i]) && !empty($existingImages[$i])) {
+                    // 保留現有圖片
+                    $additionalImagePaths[] = $existingImages[$i];
+                    $additionalImageNames[] = $imageNames[$i] ?? '';
+                }
+            }
+            
+            // 確保圖片名稱與圖片路徑數量一致 (不過濾空值，保持索引對應)
+            $product->pic_name_more = !empty($additionalImageNames) ? json_encode($additionalImageNames) : null;
+            $product->pic_dir_more = !empty($additionalImagePaths) ? json_encode($additionalImagePaths) : null;
             
             $product->save();
             
@@ -542,6 +617,164 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('admin.marquee')
                 ->with('error', '刪除失敗：' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Display payment methods list
+     */
+    public function paymentMethods()
+    {
+        $paymentMethods = PaymentMethodModel::orderBy('display_order', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        $stats = [
+            'total' => PaymentMethodModel::where('status', '!=', 'delete')->count(),
+            'active' => PaymentMethodModel::where('status', 'active')->count(),
+            'inactive' => PaymentMethodModel::where('status', 'inactive')->count(),
+        ];
+        
+        return view('admin.payment-methods', compact('paymentMethods', 'stats'));
+    }
+    
+    /**
+     * Show create payment method form
+     */
+    public function createPaymentMethod()
+    {
+        return view('admin.payment-methods-create');
+    }
+    
+    /**
+     * Store a new payment method
+     */
+    public function storePaymentMethod(Request $request)
+    {
+        try {
+            $request->validate([
+                'method_name' => 'required|unique:payment_methods,method_name|max:20',
+                'fee_percentage' => 'nullable|numeric|min:0|max:100',
+                'fee_fixed' => 'nullable|numeric|min:0',
+                'display_order' => 'nullable|integer|min:0',
+            ]);
+            
+            $data = [
+                'method_name' => $request->method_name,
+                'description' => $request->description,
+                'api_endpoint' => $request->api_endpoint,
+                'merchant_id' => $request->merchant_id,
+                'api_key' => $request->api_key,
+                'api_secret' => $request->api_secret,
+                'sandbox_merchant_id' => $request->sandbox_merchant_id,
+                'sandbox_api_key' => $request->sandbox_api_key,
+                'sandbox_api_secret' => $request->sandbox_api_secret,
+                'display_order' => $request->display_order ?? 0,
+                'fee_percentage' => $request->fee_percentage ?? 0,
+                'fee_fixed' => $request->fee_fixed ?? 0,
+                'status' => $request->status ?? 'active',
+            ];
+            
+            // Handle icon upload
+            if ($request->hasFile('icon')) {
+                $icon = $request->file('icon');
+                $filename = time() . '_' . $icon->getClientOriginalName();
+                $icon->move(public_path('img/payment_icons'), $filename);
+                $data['icon'] = 'img/payment_icons/' . $filename;
+            }
+            
+            PaymentMethodModel::create($data);
+            
+            return redirect()->route('admin.payment-methods')->with('success', '支付方式已新增');
+        } catch (\Exception $e) {
+            return back()->with('error', '新增失敗：' . $e->getMessage())->withInput();
+        }
+    }
+    
+    /**
+     * Show edit payment method form
+     */
+    public function editPaymentMethod($id)
+    {
+        $paymentMethod = PaymentMethodModel::findOrFail($id);
+        return view('admin.payment-methods-edit', compact('paymentMethod'));
+    }
+    
+    /**
+     * Update a payment method
+     */
+    public function updatePaymentMethod(Request $request, $id)
+    {
+        try {
+            $paymentMethod = PaymentMethodModel::findOrFail($id);
+            
+            $request->validate([
+                'method_name' => 'required|max:20|unique:payment_methods,method_name,' . $id,
+                'fee_percentage' => 'nullable|numeric|min:0|max:100',
+                'fee_fixed' => 'nullable|numeric|min:0',
+                'display_order' => 'nullable|integer|min:0',
+            ]);
+            
+            $paymentMethod->method_name = $request->method_name;
+            $paymentMethod->description = $request->description;
+            $paymentMethod->api_endpoint = $request->api_endpoint;
+            $paymentMethod->merchant_id = $request->merchant_id;
+            $paymentMethod->api_key = $request->api_key;
+            $paymentMethod->api_secret = $request->api_secret;
+            $paymentMethod->sandbox_merchant_id = $request->sandbox_merchant_id;
+            $paymentMethod->sandbox_api_key = $request->sandbox_api_key;
+            $paymentMethod->sandbox_api_secret = $request->sandbox_api_secret;
+            $paymentMethod->display_order = $request->display_order ?? 0;
+            $paymentMethod->fee_percentage = $request->fee_percentage ?? 0;
+            $paymentMethod->fee_fixed = $request->fee_fixed ?? 0;
+            $paymentMethod->status = $request->status ?? 'active';
+            
+            // Handle icon upload
+            if ($request->hasFile('icon')) {
+                $icon = $request->file('icon');
+                $filename = time() . '_' . $icon->getClientOriginalName();
+                $icon->move(public_path('img/payment_icons'), $filename);
+                $paymentMethod->icon = 'img/payment_icons/' . $filename;
+            }
+            
+            $paymentMethod->save();
+            
+            return redirect()->route('admin.payment-methods')->with('success', '支付方式已更新');
+        } catch (\Exception $e) {
+            return back()->with('error', '更新失敗：' . $e->getMessage())->withInput();
+        }
+    }
+    
+    /**
+     * Delete a payment method
+     */
+    public function deletePaymentMethod($id)
+        {
+            try {
+                $paymentMethod = PaymentMethodModel::findOrFail($id);
+                $paymentMethod->status = 'delete';
+                $paymentMethod->save();
+                return response()->json(['success' => true, 'message' => '支付方式已刪除']);
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            }
+        }
+    
+    /**
+     * Update payment method display order
+     */
+    public function updatePaymentMethodOrder(Request $request)
+    {
+        try {
+            $order = $request->input('order', []);
+            
+            foreach ($order as $index => $id) {
+                PaymentMethodModel::where('id', $id)->update(['display_order' => $index + 1]);
+            }
+            
+            return response()->json(['success' => true, 'message' => '順序已更新']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 }

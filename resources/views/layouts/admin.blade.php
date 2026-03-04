@@ -224,6 +224,9 @@
                     <a href="{{ route('admin.marquee') }}" class="menu-item {{ request()->routeIs('admin.marquee') ? 'active' : '' }}">
                         <img src="{{ asset('img/icon/marqee.png') }}" alt="跑馬燈管理" style="width:22px;height:22px;margin-right:10px;vertical-align:middle;"> 跑馬燈管理
                     </a>
+                    <a href="{{ route('admin.payment-methods') }}" class="menu-item {{ request()->routeIs('admin.payment-methods*') ? 'active' : '' }}">
+                        <img src="{{ asset('img/icon/dollar.svg') }}" alt="支付方式管理" style="width:22px;height:22px;margin-right:10px;vertical-align:middle;"> 支付方式管理
+                    </a>
                 </div>
                 
                 <div class="menu-section">
