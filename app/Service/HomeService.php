@@ -86,7 +86,7 @@ class HomeService
     {
         $user = Auth::user();
         $marqee = $this->productRepository->getAllMarqee();
-        $products = $this->productRepository->findProductById($id);
+        $products = $this->productRepository->findProductWithVariants($id);
         $few_products = $this->productRepository->getRandomProducts(4);
 
         return [

@@ -126,21 +126,60 @@
 
                 <!-- 價格區 -->
                 <div class="product-price">
-                    <div class="price-main">
+                    @php
+                        // 取得預設品項或第一個品項的價格
+                        $defaultVariant = $products->variants->where('is_default', true)->first() ?? $products->variants->first();
+                        $displayPrice = $defaultVariant ? $defaultVariant->price : $products->price;
+                        $displayOriPrice = $defaultVariant  && $defaultVariant->ori_price ? $defaultVariant->ori_price : null;
+                    @endphp
+                    <div class="price-main" id="price-display">
                         <span class="currency">NT$</span>
-                        <span class="price-amount">1,280</span>
-                        <!-- 提示：請從資料庫新增價格欄位 -->
+                        <span class="price-amount" id="current-price" data-price="{{ $displayPrice }}">{{ number_format($displayPrice) }}</span>
                     </div>
-                    <div class="price-original">
+                    @if($displayOriPrice && $displayOriPrice > $displayPrice)
+                    <div class="price-original" id="ori-price-display">
                         <span>原價：</span>
-                        <span class="strikethrough">NT$ 1,580</span>
+                        <span class="strikethrough">NT$ <span id="current-ori-price">{{ number_format($displayOriPrice) }}</span></span>
+                    </div>
+                    @endif
+                </div>
+
+                <!-- 品項選擇器 -->
+                @if($products->variants && $products->variants->count() > 1)
+                <div class="variant-selector" style="margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 12px; color: #2c3e50;">
+                        選擇品項：
+                    </label>
+                    <div class="variant-options" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        @foreach($products->variants->where('is_active', true)->where('quantity', '>', 0) as $variant)
+                            <div class="variant-option {{ $variant->is_default ? 'active' : '' }}" 
+                                 data-variant-id="{{ $variant->id }}"
+                                 data-variant-name="{{ $variant->variant_name }}"
+                                 data-price="{{ $variant->price }}"
+                                 data-ori-price="{{ $variant->ori_price ?? '' }}"
+                                 data-quantity="{{ $variant->quantity }}"
+                                 onclick="selectVariant(this)"
+                                 style="padding: 12px 20px; border: 2px solid #dee2e6; border-radius: 6px; cursor: pointer; transition: all 0.3s; background: white;">
+                                <div style="font-weight: 600; color: #2c3e50;">{{ $variant->variant_name }}</div>
+                                <div style="font-size: 14px; color: #3498db; margin-top: 4px;">NT$ {{ number_format($variant->price) }}</div>
+                                @if($variant->quantity <= 10)
+                                    <div style="font-size: 12px; color: #e74c3c; margin-top: 2px;">僅剩 {{ $variant->quantity }} 件</div>
+                                @endif
+                            </div>
+                        @endforeach
                     </div>
                 </div>
+                @endif
 
                 <!-- 庫存狀態 -->
                 <div class="stock-status">
                     <span class="stock-label">庫存狀態：</span>
-                    <span class="stock-value in-stock">現貨供應</span>
+                    @php
+                        $stockQuantity = $defaultVariant ? $defaultVariant->quantity : 0;
+                    @endphp
+                    <span class="stock-value {{ $stockQuantity > 0 ? 'in-stock' : 'out-of-stock' }}" id="stock-status">
+                        {{ $stockQuantity > 0 ? '現貨供應' : '缺貨中' }}
+                    </span>
                 </div>
 
                 <!-- 產品簡述 -->
@@ -152,12 +191,13 @@
                 <form method="POST" action="{{ route('want') }}" enctype="multipart/form-data" id="addToCartForm">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $products->id }}">
+                    <input type="hidden" name="variant_id" id="selected_variant_id" value="{{ $defaultVariant ? $defaultVariant->id : '' }}">
                     
                     <div class="quantity-selector">
                         <label for="quantity">數量：</label>
                         <div class="quantity-controls">
                             <button type="button" class="qty-btn minus" onclick="decreaseQuantity()">−</button>
-                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="99" readonly>
+                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ $stockQuantity }}" readonly>
                             <button type="button" class="qty-btn plus" onclick="increaseQuantity()">+</button>
                         </div>
                     </div>
@@ -351,6 +391,71 @@
 
     <!-- JavaScript -->
     <script>
+        let maxQuantity = {{ $stockQuantity }};
+
+        // 品項選擇功能
+        function selectVariant(element) {
+            // 移除所有active類別
+            document.querySelectorAll('.variant-option').forEach(opt => {
+                opt.classList.remove('active');
+                opt.style.borderColor = '#dee2e6';
+                opt.style.background = 'white';
+            });
+            
+            // 添加active類別到選中的品項
+            element.classList.add('active');
+            element.style.borderColor = '#3498db';
+            element.style.background = '#e3f2fd';
+            
+            // 更新隱藏的variant_id
+            const variantId = element.dataset.variantId;
+            document.getElementById('selected_variant_id').value = variantId;
+            
+            // 更新價格顯示
+            const price = parseFloat(element.dataset.price);
+            const oriPrice = element.dataset.oriPrice;
+            document.getElementById('current-price').textContent = price.toLocaleString('zh-TW');
+            document.getElementById('current-price').dataset.price = price;
+            
+            // 更新原價顯示
+            const oriPriceDisplay = document.getElementById('ori-price-display');
+            if (oriPrice && parseFloat(oriPrice) > price) {
+                if (!oriPriceDisplay) {
+                    // 創建原價顯示元素
+                    const priceMain = document.getElementById('price-display');
+                    const oriDiv = document.createElement('div');
+                    oriDiv.id = 'ori-price-display';
+                    oriDiv.className = 'price-original';
+                    oriDiv.innerHTML = '<span>原價：</span><span class="strikethrough">NT$ <span id="current-ori-price"></span></span>';
+                    priceMain.parentNode.insertBefore(oriDiv, priceMain.nextSibling);
+                }
+                document.getElementById('current-ori-price').textContent = parseFloat(oriPrice).toLocaleString('zh-TW');
+                document.getElementById('ori-price-display').style.display = 'block';
+            } else if (oriPriceDisplay) {
+                oriPriceDisplay.style.display = 'none';
+            }
+            
+            // 更新庫存數量限制
+            maxQuantity = parseInt(element.dataset.quantity);
+            const qtyInput = document.getElementById('quantity');
+            qtyInput.max = maxQuantity;
+            
+            // 確保當前數量不超過新的庫存
+            if (parseInt(qtyInput.value) > maxQuantity) {
+                qtyInput.value = maxQuantity;
+            }
+            
+            // 更新庫存狀態
+            const stockStatus = document.getElementById('stock-status');
+            if (maxQuantity > 0) {
+                stockStatus.textContent = '現貨供應';
+                stockStatus.className = 'stock-value in-stock';
+            } else {
+                stockStatus.textContent = '缺貨中';
+                stockStatus.className = 'stock-value out-of-stock';
+            }
+        }
+
         // 切換主圖片
         function changeMainImage(imageSrc, thumbnail) {
             document.getElementById('mainProductImage').src = imageSrc;
@@ -366,7 +471,7 @@
         function increaseQuantity() {
             const input = document.getElementById('quantity');
             let value = parseInt(input.value);
-            if (value < 99) {
+            if (value < maxQuantity) {
                 input.value = value + 1;
             }
         }
@@ -408,6 +513,15 @@
             } else {
                 toTopBtn.style.opacity = '0';
                 toTopBtn.style.visibility = 'hidden';
+            }
+        });
+        
+        // 頁面載入時設定預設品項樣式
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeVariant = document.querySelector('.variant-option.active');
+            if (activeVariant) {
+                activeVariant.style.borderColor = '#3498db';
+                activeVariant.style.background = '#e3f2fd';
             }
         });
     </script>

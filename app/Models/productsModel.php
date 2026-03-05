@@ -26,7 +26,16 @@ class productsModel extends Authenticatable
         'selected',
         'is_active',
         'quantity',
-        'min_quantity'
+        'min_quantity',
+        'pay_methods'
     ];
+
+    /**
+     * 關聯到商品品項
+     */
+    public function variants()
+    {
+        return $this->hasMany(ProductVariantModel::class, 'product_id');
+    }
 }
 

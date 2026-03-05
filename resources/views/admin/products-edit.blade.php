@@ -255,6 +255,32 @@
     }
     /* Category Select 結束 */
 
+    /* Deleted Variant Overlay */
+    .variant-deleted-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(149, 165, 166, 0.85);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        z-index: 100;
+    }
+
+    .variant-deleted-text {
+        background: white;
+        color: #e74c3c;
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    /* Deleted Variant Overlay 結束 */
+
 </style>
 @endsection
 
@@ -327,6 +353,32 @@
                     📧 前往數量不足通報設定
                 </a>
             </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="payment_method">付款方式</label>
+                <!-- payment_methods 多選框 -->
+                <div id="payment_methods">
+                    @foreach($payment_methods as $method)
+                        <label style="display:flex; align-items: center;background: #f0f0f0; padding: 8px 12px; border-radius: 4px; margin-bottom: 8px; cursor: pointer;">
+                            <input type="checkbox" name="payment_methods[]" value="{{ $method->id }}" 
+                            {{ in_array($method->id, explode(',', $product->pay_methods ?? '')) ? 'checked' : '' }}
+                            style="width: auto; margin-right: 8px;">
+                            {{ $method->method_name }}
+                        </label><br>
+                    @endforeach
+                </div>
+
+                <a href="{{ route('admin.payment-methods') }}" style="display: inline-block; margin-top: 8px; color: #3498db; text-decoration: none; font-size: 13px;">
+                    📧 前往付款方式設定
+                </a>
+            </div>
+
+            <!-- <div class="form-group">
+                <label for="price">售價 *</label>
+                <input type="number" id="price" name="price" value="{{ $product->price }}" required style="background: #64e0ff;">
+            </div> -->
         </div>
         
         <div class="form-row">
@@ -406,8 +458,103 @@
             </div>
         </div>
         
+        <!-- 商品品項管理區塊 -->
+        <div class="form-group full-width" style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #3498db;">
+            <label style="font-size: 18px; color: #2c3e50; margin-bottom: 20px; display: block;">
+                🏷️ 商品品項管理
+                <span style="font-size: 13px; color: #7f8c8d; font-weight: normal; margin-left: 10px;">
+                    （可選）可為商品新增不同的品項，例如：黑色版、紅色版、三分螺絲等
+                </span>
+            </label>
+            
+            <!-- 現有品項列表 -->
+            <div id="variants-container">
+                @foreach($product->variants as $index => $variant)
+                <div class="variant-item" data-variant-id="{{ $variant->id }}" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 15px; position: relative;">
+                    <input type="hidden" name="variants[{{$index}}][id]" value="{{ $variant->id }}">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4 style="margin: 0; color: #2c3e50;">
+                            品項 #{{ $index + 1 }}
+                            @if($variant->is_default)
+                                <span style="background: #3498db; color: white; padding: 3px 10px; border-radius: 4px; font-size: 12px; margin-left: 10px;">預設品項</span>
+                            @endif
+                        </h4>
+                        <button type="button" class="btn-remove-variant" onclick="removeVariant(this)" style="background: #e74c3c; color: white; border: none; padding: 6px 15px; border-radius: 4px; cursor: pointer;">刪除品項</button>
+                    </div>
+                    
+                    <div class="form-row" style="grid-template-columns: 2fr 1fr 1fr;">
+                        <div class="form-group">
+                            <label>品項名稱 *</label>
+                            <input type="text" name="variants[{{$index}}][variant_name]" value="{{ $variant->variant_name }}" required placeholder="例如：黑色版、紅色版">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>售價 *</label>
+                            <input type="number" name="variants[{{$index}}][price]" value="{{ $variant->price }}" required step="0.01" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>原價</label>
+                            <input type="number" name="variants[{{$index}}][ori_price]" value="{{ $variant->ori_price }}" step="0.01" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+                        <div class="form-group">
+                            <label>庫存數量 *</label>
+                            <input type="number" name="variants[{{$index}}][quantity]" value="{{ $variant->quantity }}" required min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>最低庫存 *</label>
+                            <input type="number" name="variants[{{$index}}][min_quantity]" value="{{ $variant->min_quantity }}" required min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>排序</label>
+                            <input type="number" name="variants[{{$index}}][sort_order]" value="{{ $variant->sort_order }}" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; cursor: pointer; user-select: none;">
+                                <input type="checkbox" name="variants[{{$index}}][is_default]" value="1" {{ $variant->is_default ? 'checked' : '' }} style="width: auto; margin-right: 8px;">
+                                設為預設品項
+                            </label>
+                            <label style="display: flex; align-items: center; cursor: pointer; user-select: none; margin-top: 10px;">
+                                <input type="checkbox" name="variants[{{$index}}][is_active]" value="1" {{ $variant->is_active ? 'checked' : '' }} style="width: auto; margin-right: 8px;">
+                                上架此品項
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- 品項圖片 -->
+                    <div class="form-group">
+                        <label>品項專屬圖片（可選）</label>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            @if($variant->pic_dir)
+                                <img src="{{ asset($variant->pic_dir) }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px; border: 2px solid #ddd;">
+                            @endif
+                            <input type="file" name="variants[{{$index}}][image]" accept="image/*" style="flex: 1;">
+                            <input type="hidden" name="variants[{{$index}}][existing_image]" value="{{ $variant->pic_dir }}">
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            
+            <!-- 新增品項按鈕 -->
+            <button type="button" onclick="addNewVariant()" class="btn" style="background: #27ae60; color: white; width: 100%; padding: 12px; font-size: 16px; margin-top: 15px;">
+                ➕ 新增品項
+            </button>
+        </div>
+        
+        <!-- 隱藏欄位，用於追蹤使用者點擊的按鈕 -->
+        <input type="hidden" id="stay_on_page" name="stay_on_page" value="0">
+        
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">更新商品</button>
+            <button type="submit" class="btn btn-primary" onclick="document.getElementById('stay_on_page').value='0';">更新 離開</button>
+            <button type="submit" class="btn" style="background: #27ae60; color: white;" onclick="document.getElementById('stay_on_page').value='1';">更新 留下</button>
             <a href="{{ route('admin.products') }}" class="btn" style="background: #95a5a6; color: white;">返回列表</a>
         </div>
     </form>
@@ -773,6 +920,120 @@
             categoryInput.value = select.value;
         }
     }
+    
+    // Variants Management
+    let variantCounter = {{ $product->variants->count() }};
+    
+    function addNewVariant() {
+        const container = document.getElementById('variants-container');
+        const newVariantHTML = `
+            <div class="variant-item" data-is-new="true" style="background: #e8f8f5; padding: 20px; border-radius: 8px; margin-bottom: 15px; position: relative; border: 2px dashed #27ae60;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4 style="margin: 0; color: #27ae60;">
+                        新品項 #${variantCounter + 1}
+                        <span style="background: #27ae60; color: white; padding: 3px 10px; border-radius: 4px; font-size: 12px; margin-left: 10px;">新增</span>
+                    </h4>
+                    <button type="button" class="btn-remove-variant" onclick="removeVariant(this)" style="background: #e74c3c; color: white; border: none; padding: 6px 15px; border-radius: 4px; cursor: pointer;">移除</button>
+                </div>
+                
+                <div class="form-row" style="grid-template-columns: 2fr 1fr 1fr;">
+                    <div class="form-group">
+                        <label>品項名稱 *</label>
+                        <input type="text" name="new_variants[${variantCounter}][variant_name]" required placeholder="例如：黑色版、紅色版">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>售價 *</label>
+                        <input type="number" name="new_variants[${variantCounter}][price]" required step="0.01" min="0" value="{{ $product->price ?? 0 }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>原價</label>
+                        <input type="number" name="new_variants[${variantCounter}][ori_price]" step="0.01" min="0" value="{{ $product->ori_price ?? '' }}">
+                    </div>
+                </div>
+                
+                <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+                    <div class="form-group">
+                        <label>庫存數量 *</label>
+                        <input type="number" name="new_variants[${variantCounter}][quantity]" required min="0" value="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>最低庫存 *</label>
+                        <input type="number" name="new_variants[${variantCounter}][min_quantity]" required min="0" value="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>排序</label>
+                        <input type="number" name="new_variants[${variantCounter}][sort_order]" min="0" value="${variantCounter}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; cursor: pointer; user-select: none;">
+                            <input type="checkbox" name="new_variants[${variantCounter}][is_default]" value="1" style="width: auto; margin-right: 8px;">
+                            設為預設品項
+                        </label>
+                        <label style="display: flex; align-items: center; cursor: pointer; user-select: none; margin-top: 10px;">
+                            <input type="checkbox" name="new_variants[${variantCounter}][is_active]" value="1" checked style="width: auto; margin-right: 8px;">
+                            上架此品項
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- 品項圖片 -->
+                <div class="form-group">
+                    <label>品項專屬圖片（可選）</label>
+                    <input type="file" name="new_variants[${variantCounter}][image]" accept="image/*">
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', newVariantHTML);
+        variantCounter++;
+    }
+    
+    function removeVariant(button) {
+        const variantItem = button.closest('.variant-item');
+        const isNew = variantItem.getAttribute('data-is-new') === 'true';
+        
+        if (isNew) {
+            // 直接移除新品項
+            variantItem.remove();
+        } else {
+            // 確認刪除現有品項
+            if (confirm('確定要刪除此品項嗎？')) {
+                const variantId = variantItem.getAttribute('data-variant-id');
+                
+                // 添加隱藏欄位標記為刪除
+                const deleteInput = document.createElement('input');
+                deleteInput.type = 'hidden';
+                deleteInput.name = 'delete_variants[]';
+                deleteInput.value = variantId;
+                variantItem.appendChild(deleteInput);
+                
+                // 創建灰色遮罩層
+                const overlay = document.createElement('div');
+                overlay.className = 'variant-deleted-overlay';
+                overlay.innerHTML = '<div class="variant-deleted-text">更新後正式刪除</div>';
+                
+                // 將品項設為相對定位以便遮罩層正確顯示
+                variantItem.style.position = 'relative';
+                
+                // 添加遮罩層到品項
+                variantItem.appendChild(overlay);
+                
+                // 禁用該品項內的所有輸入欄位
+                const inputs = variantItem.querySelectorAll('input, select, textarea, button');
+                inputs.forEach(input => {
+                    if (input.type !== 'hidden') {
+                        input.disabled = true;
+                    }
+                });
+            }
+        }
+    }
+
 </script>
 
 <style>

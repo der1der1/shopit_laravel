@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
-            $table->string('method_name', 20)->unique()->comment('支付方式名稱');
-            $table->text('description')->nullable()->comment('支付方式描述');
+            $table->string('method_name', 20)->comment('付款方式名稱');
+            $table->text('description')->nullable()->comment('付款方式描述');
             $table->string('api_endpoint', 255)->nullable()->comment('API 端點');
             $table->string('icon', 255)->nullable()->comment('圖標路徑');
             

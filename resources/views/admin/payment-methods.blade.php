@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', '支付方式管理 - 管理後台')
-@section('page-title', '支付方式管理')
+@section('title', '付款方式管理 - 管理後台')
+@section('page-title', '付款方式管理')
 
 @section('styles')
 <style>
@@ -185,8 +185,8 @@
 
 @section('content')
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="color: #2c3e50; margin: 0;">支付方式管理</h2>
-        <a href="{{ route('admin.payment-methods.create') }}" class="btn btn-primary">+ 新增支付方式</a>
+        <h2 style="color: #2c3e50; margin: 0;">付款方式管理</h2>
+        <a href="{{ route('admin.payment-methods.create') }}" class="btn btn-primary">+ 新增付款方式</a>
     </div>
     
     @if(session('success'))
@@ -218,7 +218,7 @@
     </div>
     
     <!-- Payment Methods List -->
-    <h3 style="margin-bottom: 15px; color: #2c3e50;">所有支付方式</h3>
+    <h3 style="margin-bottom: 15px; color: #2c3e50;">所有付款方式</h3>
     <div class="drag-info">
         ℹ️ 提示：您可以拖拉項目來重新排序，系統會自動儲存新的順序
     </div>
@@ -227,7 +227,7 @@
             <tr>
                 <th style="width: 40px;">順序</th>
                 <th style="width: 60px;">圖標</th>
-                <th>支付方式名稱</th>
+                <th>付款方式名稱</th>
                 <th>描述</th>
                 <th>手續費</th>
                 <th>設定狀態</th>
@@ -296,7 +296,7 @@
             @empty
             <tr>
                 <td colspan="9" style="text-align: center; color: #7f8c8d; padding: 40px;">
-                    暫無支付方式
+                    暫無付款方式
                 </td>
             </tr>
             @endforelse
@@ -309,7 +309,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
     function deletePaymentMethod(id) {
-        if (!confirm('確定要刪除此支付方式嗎？')) {
+        if (!confirm('確定要刪除此付款方式嗎？')) {
             return;
         }
         

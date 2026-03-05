@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', '新增支付方式 - 管理後台')
-@section('page-title', '新增支付方式')
+@section('title', '新增付款方式 - 管理後台')
+@section('page-title', '新增付款方式')
 
 @section('styles')
 <style>
@@ -145,7 +145,7 @@
     @endif
     
     <div class="form-container">
-        <h2 style="color: #2c3e50; margin-bottom: 30px;">新增支付方式</h2>
+        <h2 style="color: #2c3e50; margin-bottom: 30px;">新增付款方式</h2>
         
         <form action="{{ route('admin.payment-methods.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
@@ -156,7 +156,7 @@
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="method_name">支付方式名稱 <span class="required">*</span></label>
+                        <label for="method_name">付款方式名稱 <span class="required">*</span></label>
                         <input type="text" id="method_name" name="method_name" value="{{ old('method_name') }}" required maxlength="20">
                         <div class="form-help">最多20個字元，例如：信用卡、LINE Pay、街口支付</div>
                     </div>
@@ -188,7 +188,7 @@
                 <div class="form-group full-width">
                     <label for="description">描述</label>
                     <textarea id="description" name="description">{{ old('description') }}</textarea>
-                    <div class="form-help">支付方式的詳細說明</div>
+                    <div class="form-help">付款方式的詳細說明</div>
                 </div>
                 
                 <div class="form-group full-width">
@@ -272,7 +272,7 @@
             </div>
             
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">新增支付方式</button>
+                <button type="submit" class="btn btn-primary">新增付款方式</button>
                 <a href="{{ route('admin.payment-methods') }}" class="btn" style="background: #95a5a6; color: white;">取消</a>
             </div>
         </form>

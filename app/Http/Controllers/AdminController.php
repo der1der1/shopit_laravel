@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\productsModel;
+use App\Models\ProductVariantModel;
 use App\Models\purchasedModel;
 use App\Models\contactModel;
 use App\Models\mailListModel;
@@ -262,9 +263,11 @@ class AdminController extends Controller
      */
     public function editProduct($id)
     {
-        $product = productsModel::findOrFail($id);
+        $product = productsModel::with('variants')->findOrFail($id);
         $categories = productsModel::distinct()->pluck('category')->filter();
-        return view('admin.products-edit', compact('product', 'categories'));
+        $payment_methods = PaymentMethodModel::active()->ordered()->get();
+        // dump($product->pay_methods);
+        return view('admin.products-edit', compact('product', 'categories', 'payment_methods'));
     }
     
     /**
@@ -286,7 +289,7 @@ class AdminController extends Controller
             if (!$hasFirstImage) {
                 return back()->with('error', '請上傳首圖')->withInput();
             }
-            
+
             $product->product_name = $request->product_name;
             $product->description = $request->description;
             $product->price = $request->price;
@@ -296,6 +299,7 @@ class AdminController extends Controller
             $product->is_active = $request->has('is_active') ? 1 : 0;
             $product->quantity = $request->quantity ?? 0;
             $product->min_quantity = $request->min_quantity ?? 0;
+            $product->pay_methods = $request->payment_methods ? implode(',', $request->payment_methods) : null;
             
             // 取得現有圖片路徑
             $existingImages = $request->input('existing_images', []);
@@ -342,7 +346,116 @@ class AdminController extends Controller
             
             $product->save();
             
-            return redirect()->route('admin.products')->with('success', '商品已更新');
+            // ===== 處理商品品項 =====
+            // 1. 處理要刪除的品項
+            if ($request->has('delete_variants')) {
+                $deleteVariantIds = $request->input('delete_variants', []);
+                ProductVariantModel::whereIn('id', $deleteVariantIds)->delete();
+            }
+            
+            // 2. 更新現有品項
+            if ($request->has('variants')) {
+                $variants = $request->input('variants', []);
+                
+                foreach ($variants as $index => $variantData) {
+                    if (isset($variantData['id'])) {
+                        $variant = ProductVariantModel::find($variantData['id']);
+                        
+                        if ($variant) {
+                            $variant->variant_name = $variantData['variant_name'];
+                            $variant->price = $variantData['price'];
+                            $variant->ori_price = $variantData['ori_price'] ?? null;
+                            $variant->use_oriprice = !empty($variantData['ori_price']);
+                            $variant->quantity = $variantData['quantity'];
+                            $variant->min_quantity = $variantData['min_quantity'];
+                            $variant->sort_order = $variantData['sort_order'] ?? 0;
+                            $variant->is_default = isset($variantData['is_default']) && $variantData['is_default'] == '1';
+                            $variant->is_active = isset($variantData['is_active']) && $variantData['is_active'] == '1';
+                            
+                            // 處理品項圖片
+                            if ($request->hasFile("variants.{$index}.image")) {
+                                $image = $request->file("variants.{$index}.image");
+                                $filename = time() . '_variant_' . $variant->id . '_' . $image->getClientOriginalName();
+                                $image->move(public_path('img/pictureTarget'), $filename);
+                                $variant->pic_dir = 'img/pictureTarget/' . $filename;
+                            } elseif (isset($variantData['existing_image'])) {
+                                $variant->pic_dir = $variantData['existing_image'];
+                            }
+                            
+                            $variant->save();
+                        }
+                    }
+                }
+            }
+            
+            // 3. 新增新品項
+            if ($request->has('new_variants')) {
+                $newVariants = $request->input('new_variants', []);
+                
+                foreach ($newVariants as $index => $variantData) {
+                    $newVariant = new ProductVariantModel();
+                    $newVariant->product_id = $product->id;
+                    $newVariant->variant_name = $variantData['variant_name'];
+                    $newVariant->unicode = 'VAR-' . $product->id . '-' . time() . '-' . $index;
+                    $newVariant->price = $variantData['price'];
+                    $newVariant->ori_price = $variantData['ori_price'] ?? null;
+                    $newVariant->use_oriprice = !empty($variantData['ori_price']);
+                    $newVariant->quantity = $variantData['quantity'];
+                    $newVariant->min_quantity = $variantData['min_quantity'];
+                    $newVariant->sort_order = $variantData['sort_order'] ?? 0;
+                    $newVariant->is_default = isset($variantData['is_default']) && $variantData['is_default'] == '1';
+                    $newVariant->is_active = isset($variantData['is_active']) && $variantData['is_active'] == '1';
+                    
+                    // 處理新品項圖片
+                    if ($request->hasFile("new_variants.{$index}.image")) {
+                        $image = $request->file("new_variants.{$index}.image");
+                        $filename = time() . '_newvariant_' . $index . '_' . $image->getClientOriginalName();
+                        $image->move(public_path('img/pictureTarget'), $filename);
+                        $newVariant->pic_dir = 'img/pictureTarget/' . $filename;
+                    }
+                    
+                    $newVariant->save();
+                }
+            }
+            
+            // 4. 確保至少有一個預設品項
+            $defaultVariantsCount = ProductVariantModel::where('product_id', $product->id)
+                ->where('is_default', true)
+                ->count();
+            
+            if ($defaultVariantsCount === 0) {
+                // 如果沒有預設品項，將第一個品項設為預設
+                $firstVariant = ProductVariantModel::where('product_id', $product->id)
+                    ->orderBy('sort_order')
+                    ->orderBy('id')
+                    ->first();
+                
+                if ($firstVariant) {
+                    $firstVariant->is_default = true;
+                    $firstVariant->save();
+                }
+            } elseif ($defaultVariantsCount > 1) {
+                // 如果有多個預設品項，只保留第一個
+                $defaultVariants = ProductVariantModel::where('product_id', $product->id)
+                    ->where('is_default', true)
+                    ->orderBy('sort_order')
+                    ->orderBy('id')
+                    ->get();
+                
+                foreach ($defaultVariants as $index => $variant) {
+                    if ($index > 0) {
+                        $variant->is_default = false;
+                        $variant->save();
+                    }
+                }
+            }
+            
+            // 檢查是否要留在當前頁面
+            if ($request->input('stay_on_page') == '1') {
+                return redirect()->route('admin.products.edit', $product->id)->with('success', '商品及品項已更新');
+            }
+            
+            return redirect()->route('admin.products')->with('success', '商品及品項已更新');
         } catch (\Exception $e) {
             return back()->with('error', '更新失敗：' . $e->getMessage());
         }
@@ -677,7 +790,7 @@ class AdminController extends Controller
     {
         try {
             $request->validate([
-                'method_name' => 'required|unique:payment_methods,method_name|max:20',
+                'method_name' => 'required|max:20',
                 'fee_percentage' => 'nullable|numeric|min:0|max:100',
                 'fee_fixed' => 'nullable|numeric|min:0',
                 'display_order' => 'nullable|integer|min:0',
@@ -709,7 +822,7 @@ class AdminController extends Controller
             
             PaymentMethodModel::create($data);
             
-            return redirect()->route('admin.payment-methods')->with('success', '支付方式已新增');
+            return redirect()->route('admin.payment-methods')->with('success', '付款方式已新增');
         } catch (\Exception $e) {
             return back()->with('error', '新增失敗：' . $e->getMessage())->withInput();
         }
@@ -733,7 +846,7 @@ class AdminController extends Controller
             $paymentMethod = PaymentMethodModel::findOrFail($id);
             
             $request->validate([
-                'method_name' => 'required|max:20|unique:payment_methods,method_name,' . $id,
+                'method_name' => 'required|max:20' . $id,
                 'fee_percentage' => 'nullable|numeric|min:0|max:100',
                 'fee_fixed' => 'nullable|numeric|min:0',
                 'display_order' => 'nullable|integer|min:0',
@@ -763,7 +876,7 @@ class AdminController extends Controller
             
             $paymentMethod->save();
             
-            return redirect()->route('admin.payment-methods')->with('success', '支付方式已更新');
+            return redirect()->route('admin.payment-methods')->with('success', '付款方式已更新');
         } catch (\Exception $e) {
             return back()->with('error', '更新失敗：' . $e->getMessage())->withInput();
         }
@@ -778,7 +891,7 @@ class AdminController extends Controller
                 $paymentMethod = PaymentMethodModel::findOrFail($id);
                 $paymentMethod->status = 'delete';
                 $paymentMethod->save();
-                return response()->json(['success' => true, 'message' => '支付方式已刪除']);
+                return response()->json(['success' => true, 'message' => '付款方式已刪除']);
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
             }

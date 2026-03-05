@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Models\productsModel as Product;
+use App\Models\ProductVariantModel;
 use App\Models\marqeeModel;
 
 class ProductRepository
@@ -10,6 +11,44 @@ class ProductRepository
     public function findProductById($productId)
     {
         return Product::where('id', $productId)->first();
+    }
+
+    /**
+     * 取得商品及其品項
+     */
+    public function findProductWithVariants($productId)
+    {
+        return Product::with('variants')->where('id', $productId)->first();
+    }
+
+    /**
+     * 取得商品的上架品項
+     */
+    public function getActiveVariants($productId)
+    {
+        return ProductVariantModel::where('product_id', $productId)
+                                   ->where('is_active', true)
+                                   ->where('quantity', '>', 0)
+                                   ->orderBy('sort_order')
+                                   ->orderBy('id')
+                                   ->get();
+    }
+
+    /**
+     * 透過品項 ID 取得品項
+     */
+    public function findVariantById($variantId)
+    {
+        return ProductVariantModel::find($variantId);
+    }
+
+    /**
+     * 取得品項價格
+     */
+    public function getVariantPrice($variantId)
+    {
+        $variant = $this->findVariantById($variantId);
+        return $variant ? $variant->getDisplayPrice() : null;
     }
 
     public function findProductsByIds($productIds)
