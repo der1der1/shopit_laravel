@@ -51,12 +51,17 @@ class ProductRepository
         return $variant ? $variant->getDisplayPrice() : null;
     }
 
-    public function findProductsByIds($productIds)
+    public function findProductsByIds($wantedIdsVarisntIds)
     {
+        // dump($wantedIdsVarisntIds);
         $products = [];
-        foreach ($productIds as $productId) {
-            if (!empty($productId)) {
+        foreach ($wantedIdsVarisntIds as $wantedIdVarisntId) {
+            if (!empty($wantedIdVarisntId)) {
+                $productId = explode('-', $wantedIdVarisntId)[0]; // 取得商品 ID，忽略品項 ID
+                $variantId = explode('-', $wantedIdVarisntId)[1] ?? null; // 取得品項 ID（如果存在）
                 $product = $this->findProductById($productId);
+                $variant = $this->findVariantById($variantId);
+                $product->variant = $variant; // 將品項資訊加到商品物件上
                 if ($product) {
                     $products[] = $product;
                 }

@@ -98,6 +98,7 @@
                                         </div>
                                         <div class="product-details">
                                             <h3 class="product-name">{{ $wanted_products->product_name }}</h3>
+                                            <div class="variant">{{ $wanted_products->variant->variant_name ?? null }}</div>
                                             <p class="product-description">{{ Str::limit(strip_tags($wanted_products->description), 80) }}</p>
                                         </div>
                                     </div>
@@ -105,7 +106,16 @@
                                     <!-- 單價 -->
                                     <div class="item-price">
                                         <span class="price-currency">NT$</span>
+                                        @if ($wanted_products->variant && $wanted_products->variant->use_oriprice == false)
+                                        <!-- with variant & discount -->
+                                        <span class="price-amount" data-price="{{ $wanted_products->variant->price }}">{{ number_format($wanted_products->variant->price) }}</span>
+                                        @elseif ($wanted_products->variant && $wanted_products->variant->use_oriprice == true)
+                                        <!-- with variant no discount -->
+                                        <span class="price-amount" data-price="{{ $wanted_products->variant->ori_price }}">{{ number_format($wanted_products->variant->ori_price) }}</span>
+                                        @else
+                                        <!-- no variant -->
                                         <span class="price-amount" data-price="{{ $wanted_products->price }}">{{ number_format($wanted_products->price) }}</span>
+                                        @endif
                                     </div>
 
                                     <!-- 數量控制 -->

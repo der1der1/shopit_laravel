@@ -14,7 +14,7 @@ class WishlistRepository
     public function parseWantIds($wantString)
     {
         // 刪除數字及逗點以外的一切 (正則表達式)
-        $cleanedString = preg_replace('/[^\d,]/', '', $wantString);
+        $cleanedString = preg_replace('/[^\d,-]/', '', $wantString);
         // 第一個字元如果是逗號則刪除該字元
         $cleanedString = isset($cleanedString[0]) && $cleanedString[0] === ',' ? substr($cleanedString, 1) : $cleanedString;
         // 把該欄位的字串改成陣列

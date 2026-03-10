@@ -7,6 +7,7 @@ use App\Repository\WishlistRepository;
 use App\Repository\OrderRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Whoops\Util\HtmlDumperOutput;
 
 class CheckoutService
 {
@@ -31,10 +32,11 @@ class CheckoutService
 
         // 抓出使用者的want欄位並處理
         $wantString = $this->wishlistRepository->getUserWantList($user->account);
-        $wantedIds = $this->wishlistRepository->parseWantIds($wantString);
-
+        $wantedIdsVarisntIds = $this->wishlistRepository->parseWantIds($wantString);
+        // $wantedIdsVarisntIds[0] = null;
         // 取得想要的商品資訊
-        $wantedProducts = $this->productRepository->findProductsByIds($wantedIds);
+        $wantedProducts = $this->productRepository->findProductsByIds($wantedIdsVarisntIds);
+        // dump($wantedProducts[1]->variant ?? null);
 
         return [
             'user' => $user,

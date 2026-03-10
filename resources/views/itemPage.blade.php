@@ -152,15 +152,16 @@
                     </label>
                     <div class="variant-options" style="display: flex; flex-wrap: wrap; gap: 10px;">
                         @foreach($products->variants->where('is_active', true)->where('quantity', '>', 0) as $variant)
-                            <div class="variant-option {{ $variant->is_default ? 'active' : '' }}" 
-                                 data-variant-id="{{ $variant->id }}"
-                                 data-variant-name="{{ $variant->variant_name }}"
-                                 data-price="{{ $variant->price }}"
-                                 data-ori-price="{{ $variant->ori_price ?? '' }}"
-                                 data-quantity="{{ $variant->quantity }}"
-                                 onclick="selectVariant(this)"
-                                 style="padding: 12px 20px; border: 2px solid #dee2e6; border-radius: 6px; cursor: pointer; transition: all 0.3s; background: white;">
-                                <div style="font-weight: 600; color: #2c3e50;">{{ $variant->variant_name }}</div>
+                             <div class="variant-option {{ $variant->is_default ? 'active' : '' }}" 
+                                  data-variant-id="{{ $variant->id }}"
+                                  data-variant-name="{{ $variant->variant_name }}"
+                                  data-price="{{ $variant->price }}"
+                                  data-ori-price="{{ $variant->ori_price ?? '' }}"
+                                  data-quantity="{{ $variant->quantity }}"
+                                   data-image="{{ asset($variant->pic_dir ?? $products->pic_dir) }}"
+                                  onclick="selectVariant(this)"
+                                  style="padding: 12px 20px; border: 2px solid #dee2e6; border-radius: 6px; cursor: pointer; transition: all 0.3s; background: white;">
+                                 <div style="font-weight: 600; color: #2c3e50;">{{ $variant->variant_name }}</div>
                                 <div style="font-size: 14px; color: #3498db; margin-top: 4px;">NT$ {{ number_format($variant->price) }}</div>
                                 @if($variant->quantity <= 10)
                                     <div style="font-size: 12px; color: #e74c3c; margin-top: 2px;">僅剩 {{ $variant->quantity }} 件</div>
@@ -416,6 +417,20 @@
             const oriPrice = element.dataset.oriPrice;
             document.getElementById('current-price').textContent = price.toLocaleString('zh-TW');
             document.getElementById('current-price').dataset.price = price;
+
+            // 更新主圖片（需在HTML加上data-image屬性）
+            const imageSrc = element.dataset.image;
+            if (imageSrc) {
+                document.getElementById('mainProductImage').src = imageSrc;
+                // 同步縮圖active
+                document.querySelectorAll('.thumbnail').forEach(t => {
+                    t.classList.remove('active');
+                    const img = t.querySelector('img');
+                    if (img && img.src === imageSrc) {
+                        t.classList.add('active');
+                    }
+                });
+            }
             
             // 更新原價顯示
             const oriPriceDisplay = document.getElementById('ori-price-display');

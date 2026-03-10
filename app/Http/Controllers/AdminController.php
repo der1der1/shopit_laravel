@@ -513,7 +513,20 @@ class AdminController extends Controller
     public function orders()
     {
         $orders = purchasedModel::orderBy('created_at', 'desc')->paginate(20);
-        // dump($orders);
+        // for 單一訂單
+        foreach ($orders as $order) {
+            $purchased = $order->purchased;
+            $purchased = explode(';', $purchased);
+
+            // for 單一訂單的單一商品
+            foreach ($purchased as $purchased_item) {
+                // [0]商品id[1]數量[2]價格
+                $purchased_item = explode(',', $purchased_item);
+
+            }
+            dump($purchased);
+        }
+        
         return view('admin.orders', compact('orders'));
     }
     

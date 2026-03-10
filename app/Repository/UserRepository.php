@@ -65,12 +65,12 @@ class UserRepository
         return $infos;
     }
 
-    public function addToWishlist($userAccount, $productId)
+    public function addToWishlist($userAccount, $prod_vari)
     {
         $user = User::where('account', $userAccount)->first();
         if ($user) {
             $currentWant = $user->want;
-            $user->want = $currentWant . $productId . ',';
+            $user->want = $currentWant . $prod_vari . ',';
             $user->save();
         }
         return $user;
