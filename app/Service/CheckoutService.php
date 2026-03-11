@@ -38,6 +38,17 @@ class CheckoutService
         $wantedProducts = $this->productRepository->findProductsByIds($wantedIdsVarisntIds);
         // dump($wantedProducts[1]->variant ?? null);
 
+        foreach ($wantedProducts as $wantedProduct) {
+            // 品項從物件轉陣列
+            $variants = [];
+            $variants[] = $wantedProduct->variant;
+            $wantedProduct['variant'] = $variants[0];
+            
+            // 簡化傳遞到前端的價格
+            $wantedProduct['variant']['price'] = $wantedProduct->variant->use_oriprice ? $wantedProduct->variant->ori_price : $wantedProduct->variant->price;
+            // 刪除key $wantedProduct['variant']['ori_price']
+            unset($wantedProduct['variant']['ori_price']);
+        }
         return [
             'user' => $user,
             'marqee' => $marqee,

@@ -66,7 +66,7 @@
                                     全選
                                 </label>
                             </div>
-                            <div class="header-product">商品</div>
+                            <div class="header-product">商品與規格</div>
                             <div class="header-price">單價</div>
                             <div class="header-quantity">數量</div>
                             <div class="header-total">小計</div>
@@ -106,17 +106,7 @@
                                     <!-- 單價 -->
                                     <div class="item-price">
                                         <span class="price-currency">NT$</span>
-                                        @if ($wanted_products->variant && $wanted_products->variant->use_oriprice == false)
-                                        <!-- with variant & discount -->
-                                        <span class="price-amount" data-price="{{ $wanted_products->variant->price }}">{{ number_format($wanted_products->variant->price) }}</span>
-                                        @elseif ($wanted_products->variant && $wanted_products->variant->use_oriprice == true)
-                                        <!-- with variant no discount -->
-                                        <span class="price-amount" data-price="{{ $wanted_products->variant->ori_price }}">{{ number_format($wanted_products->variant->ori_price) }}</span>
-                                        @else
-                                        <!-- no variant -->
-                                        <span class="price-amount" data-price="{{ $wanted_products->price }}">{{ number_format($wanted_products->price) }}</span>
-                                        @endif
-                                    </div>
+                                        <span class="price-amount" data-price="{{ $wanted_products->variant->price }}">{{ number_format($wanted_products->variant->price) }}</span>                                    </div>
 
                                     <!-- 數量控制 -->
                                     <div class="item-quantity">
@@ -130,12 +120,13 @@
                                                    class="quantity-input" 
                                                    id="quantity-{{ $wanted_products->id }}" 
                                                    min="1" 
-                                                   max="99"
+                                                   max="{{ $wanted_products->variant->quantity }}"
                                                    value="1" 
                                                    name="quantity[{{ $wanted_products->id }}]" 
-                                                   data-price="{{ $wanted_products->price }}"
+                                                   data-price="{{ $wanted_products->variant->price }}"
                                                    disabled
-                                                   onchange="updateItemTotal({{ $wanted_products->id }})">
+                                                   onchange="updateItemTotal({{ $wanted_products->id }})"
+                                                   oninput="limitMaxQuantity(this)">
                                             <button type="button" class="qty-increase" onclick="increaseQty({{ $wanted_products->id }})">
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                     <line x1="12" y1="5" x2="12" y2="19"/>
@@ -145,10 +136,17 @@
                                         </div>
                                     </div>
 
+                                    <!-- 存貨 -->
+                                    <div class="item-stock">
+                                        <span class="stock-label">庫存:</span>
+                                        <span class="stock-quantity">{{ $wanted_products->variant->quantity }}</span>
+                                    </div>
+
                                     <!-- 小計 -->
                                     <div class="item-total">
                                         <span class="total-currency">NT$</span>
-                                        <span class="total-amount" id="item-total-{{ $wanted_products->id }}">{{ number_format($wanted_products->price) }}</span>
+                                        <span class="total-amount" id="item-total-{{ $wanted_products->variant->id }}">{{ number_format($wanted_products->variant->price) }}</span>
+
                                     </div>
 
                                     <!-- 刪除按鈕 -->
@@ -460,6 +458,19 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateCartSummary();
         });
+    </script>
+    <script>
+        // 限制輸入最大值
+        function limitMaxQuantity(input) {
+            var max = parseInt(input.max);
+            var min = parseInt(input.min);
+            var val = parseInt(input.value);
+            if (val > max) {
+                input.value = max;
+            } else if (val < min || isNaN(val)) {
+                input.value = min;
+            }
+        }
     </script>
 
 </body>

@@ -4,15 +4,27 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Service\CheckoutService;
+use App\Service\PaymentService;
+
 
 class checkController extends Controller
 {
     protected $checkoutService;
+    protected $paymentService;
 
-    public function __construct(CheckoutService $checkoutService)
+    public function __construct(CheckoutService $checkoutService, PaymentService $paymentService)
     {
         $this->checkoutService = $checkoutService;
+        $this->paymentService = $paymentService;
     }
+    
+    public function want(Request $request)
+    {
+        $result = $this->paymentService->addToWishlist($request);
+        
+        return redirect()->route($result['redirect'])->with('success', $result['success']);
+    }
+
     // 要先驗證是否已經登入
     public function check_show()
     {

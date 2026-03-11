@@ -37,13 +37,6 @@ class purchasedCtlr extends Controller
         return view('map');
     }
 
-    public function want(Request $request)
-    {
-        $result = $this->paymentService->addToWishlist($request);
-        
-        return redirect()->route($result['redirect'])->with('success', $result['success']);
-    }
-
     public function pay_to_shop(Request $request)
     {
         $result = $this->paymentService->updateDeliveryToStore($request);

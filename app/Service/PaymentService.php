@@ -74,8 +74,8 @@ class PaymentService
     public function addToWishlist(Request $request)
     {
         $userAccount = Auth::user()->account;
-        // make ProductID-VariantID string
-        $prod_vari = $request->product_id . '-' . $request->variant_id;
+        // save VariantID + Quantity string
+        $prod_vari = $request->variant_id . '-' . $request->quantity;
         $this->userRepository->addToWishlist($userAccount, $prod_vari);
         
         return ['success' => '加入成功', 'redirect' => 'home'];

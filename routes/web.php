@@ -41,7 +41,7 @@ Route::middleware(['guest'])->group(function() {
 });
 Route::middleware(['auth'])->group(function() {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::post('/want', [purchasedCtlr::class, 'want'])->name('want');
+    Route::post('/want', [checkController::class, 'want'])->name('want');
 
     Route::post('/purchase', [purchasedCtlr::class, 'purchase'])->name('purchase');
 
