@@ -372,6 +372,8 @@
             const homeForm = document.getElementById('homeForm');
             const marketBtn = document.getElementById('market');
             const expressBtn = document.getElementById('express');
+            const mapDiv = document.getElementById('map');
+            
 
             const storeSelect = document.getElementById('store-select');
             const mapAddressInput = document.getElementById('map-address-input');
@@ -379,6 +381,7 @@
             if (type === 'store') {
                 storeForm.style.display = 'block';
                 homeForm.style.display = 'none';
+                mapDiv.style.display = 'none';
                 storeSelect.name = 'store';
                 mapAddressInput.name = '';
                 marketBtn.classList.add('active');
@@ -386,6 +389,7 @@
             } else if (type === 'home') {
                 storeForm.style.display = 'none';
                 homeForm.style.display = 'block';
+                mapDiv.style.display = 'block';
                 storeSelect.name = '';
                 mapAddressInput.name = 'address';
                 marketBtn.classList.remove('active');

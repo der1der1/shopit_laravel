@@ -1,4 +1,13 @@
 <script>
+/* 
+裡面一共有5個函式
+1. initMap()：初始化地圖、標記和自動完成輸入框，並設置事件監聽器。
+2. setupEventListeners()：設置地圖和標記的事件監聽器，包括地址輸入、地圖拖動、標記拖動和地圖點擊事件。
+3. geocodeAddress(address)：根據輸入的地址進行地理編碼，將地址轉換為地理坐標，並更新地圖和標記位置。
+4. reverseGeocode(location)：根據地理坐標進行反向地理編碼，將坐標轉換為地址，並更新地址輸入框的值。
+5. updateMapAndMarker(location)：更新地圖中心和標記位置。
+*/
+
     let map;
     let geocoder;
     let marker;
