@@ -35,8 +35,20 @@ class PaymentService
         $marqee = $this->productRepository->getAllMarqee();
         $userInfo = User::where('account', $user->account ?? $user->email)->first();
         $latestOrder = $this->orderRepository->getLatestOrderByAccount($user->account ?? $user->email);
-        
+        // 資料層說明: 以商品-品項作前台顯示，以品項儲存want；到pay頁之前整理在此，直接將商品與品項合併，資訊以品項為主，只是多掛一個key存商品名
         $products = $this->parsePurchasedProducts($latestOrder->purchased);
+        // 剔除 $products 中 null 與重複項
+        $products = array_filter($products); // 移除 null 項
+        $products = array_unique($products, SORT_REGULAR); // 移除重複項
+
+        unset($latestOrder->purchased);  // 已經整理在products
+
+        // 更新價格合計
+        $finalBill = 0;
+        foreach ($products as $product) {
+            $finalBill += $product['num'] * $product['price'];
+        }
+        $latestOrder->bill = $finalBill;
 
         return [
             'user' => $user,
@@ -54,16 +66,18 @@ class PaymentService
         
         foreach ($purchaseItems as $purchase) {
             $purchaseData = explode(',', $purchase);
-            $product = $this->productRepository->findProductById($purchaseData[0]);
-            
+            $variant = $this->productRepository->findVariantById($purchaseData[0]);
+            $product = $this->productRepository->findProductById($variant->product_id);
+
             if ($product) {
                 $products[] = [
-                    'id' => $purchaseData[0],
+                    'id' => $variant->id,  // 注意 此處id是品項
                     'num' => $purchaseData[1],
-                    'pic_dir' => $product->pic_dir,
+                    'pic_dir' => $variant->pic_dir,
                     'product_name' => $product->product_name,
+                    'variant_name' => $variant->variant_name,
                     'description' => $product->description,
-                    'price' => $product->price,
+                    'price' => $variant->use_oriprice == '1' ? $variant->ori_price : $variant->price,
                 ];
             }
         }

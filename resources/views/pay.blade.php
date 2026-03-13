@@ -40,6 +40,8 @@
             <p class="page-subtitle">請填寫配送資訊並確認訂單</p>
         </div>
 
+        <form method="POST" action="{{ route('pay_confirm') }}">
+        @csrf
         <main class="checkout-main">
             
             <!-- 左側：配送與付款資訊 -->
@@ -125,9 +127,9 @@
                     </div>
 
                     <!-- 超商取貨表單 -->
-                    <form method="POST" action="{{ route('pay_to_shop') }}" id="storeForm" class="delivery-form">
-                        @csrf
-                        <div class="form-group">
+                    <!-- <form method="POST" action="{{ route('pay_to_shop') }}" id="storeForm" class="delivery-form"> -->
+                        <!-- @csrf -->
+                        <div class="form-group" id="storeForm">
                             <label for="store-select">選擇取貨門市</label>
                             <select name="store" id="store-select" class="form-select">
                                 <option value="新竹中山店">新竹中山店 - 新竹市東區中山路176號</option>
@@ -142,14 +144,15 @@
                                 <option value="桃園中正店">桃園中正店 - 桃園市桃園區中正路550號</option>
                                 <option value="中壢中北店">中壢中北店 - 桃園市中壢區中北路二段466號</option>
                             </select>
-                            <button type="submit" class="btn-submit">確認取貨門市</button>
+                            <!-- <button type="submit" class="btn-submit">確認取貨門市</button> -->
                         </div>
-                    </form>
+                    <!-- </form> -->
+                                             
 
                     <!-- 宅配到家表單 -->
-                    <form method="POST" action="{{ route('pay_to_home') }}" id="homeForm" class="delivery-form">
-                        @csrf
-                        <div class="form-group">
+                    <!-- <form method="POST" action="{{ route('pay_to_home') }}" id="homeForm" class="delivery-form"> -->
+                        <!-- @csrf -->
+                        <div class="form-group" id="homeForm">
                             <label for="map-address-input">配送地址</label>
                             <input type="text" 
                                    id="map-address-input" 
@@ -157,14 +160,14 @@
                                    class="form-input"
                                    placeholder="請輸入完整配送地址..."
                                    value="{{ $ppl_info->to_address ?? '' }}">
-                            <button type="submit" class="btn-submit">確認配送地址</button>
+                            <!-- <button type="submit" class="btn-submit">確認配送地址</button> -->
                         </div>
                         
                         <!-- Google Map -->
                         <div class="map-container">
                             <div id="map"></div>
                         </div>
-                    </form>
+                    <!-- </form> -->
                 </div>
 
                 <!-- 3. 收件資訊 -->
@@ -179,8 +182,8 @@
                         </h2>
                     </div>
                     
-                    <form method="POST" action="{{ route('pay_name') }}" class="info-form">
-                        @csrf
+                    <!-- <form method="POST" action="{{ route('pay_name') }}" class="info-form"> -->
+                        <!-- @csrf -->
                         <div class="form-row">
                             <label for="name-input">收件人姓名</label>
                             <div class="input-group">
@@ -189,10 +192,10 @@
                                        name="name_input" 
                                        class="form-input"
                                        value="{{ $ppl_info->name ?? '王大明' }}">
-                                <button type="submit" class="btn-confirm">確認</button>
+                                <!-- <button type="submit" class="btn-confirm">確認</button> -->
                             </div>
                         </div>
-                    </form>
+                    <!-- </form> -->
                 </div>
 
                 <!-- 4. 付款資訊 -->
@@ -207,8 +210,8 @@
                         </h2>
                     </div>
                     
-                    <form method="POST" action="{{ route('pay_account') }}" class="info-form">
-                        @csrf
+                    <!-- <form method="POST" action="{{ route('pay_account') }}" class="info-form"> -->
+                        <!-- @csrf -->
                         <div class="form-row">
                             <label for="account-input">扣款帳號</label>
                             <div class="input-group">
@@ -217,10 +220,10 @@
                                        name="account_input" 
                                        class="form-input"
                                        value="{{ $ppl_info->bank_account ?? '0191227-0082229' }}">
-                                <button type="submit" class="btn-confirm">確認</button>
+                                <!-- <button type="submit" class="btn-confirm">確認</button> -->
                             </div>
                         </div>
-                    </form>
+                    <!-- </form> -->
                 </div>
             </div>
 
@@ -291,7 +294,7 @@
                                 </div>
                                 @foreach ($products as $product)
                                     <div class="table-row">
-                                        <span class="item-name">{{ Str::limit($product['product_name'] ?? '', 12) }}</span>
+                                        <span class="item-name">{{ Str::limit($product['product_name'], 8) }}-{{ Str::limit($product['variant_name'], 10) }}</span>
                                         <span class="item-qty">{{ $product['num'] ?? '' }}</span>
                                         <span class="item-price">NT$ {{ $product['price'] ?? '' }}</span>
                                         <span class="item-total">NT$ {{ ($product['num'] ?? 0) * ($product['price'] ?? 0) }}</span>
@@ -318,8 +321,8 @@
                         </div>
 
                         <!-- 確認結帳按鈕 -->
-                        <form method="POST" action="{{ route('pay_confirm') }}">
-                            @csrf
+                        <!-- <form method="POST" action="{{ route('pay_confirm') }}"> -->
+                            <!-- @csrf -->
                             <input type="hidden" name="name" value="{{ $purchased->name ?? '' }}">
                             <input type="hidden" name="bank_account" value="{{ $purchased->bank_account ?? '' }}">
                             <input type="hidden" name="shop1_addr2" value="{{ $purchased->shop1_addr2 ?? '' }}">
@@ -332,7 +335,7 @@
                                 </svg>
                                 確認並結帳
                             </button>
-                        </form>
+                        <!-- </form> -->
 
                         <!-- 安全提示 -->
                         <div class="security-note">
@@ -347,26 +350,44 @@
                 </div>
             </div>
         </main>
+        </form>
     </div>
 
     <script>
         AOS.init();
         
+/* 
+<button type="button" class="delivery-option" id="market" onclick="showDeliveryOption('store')">
+<button type="button" class="delivery-option" id="express" onclick="showDeliveryOption('home')">
+
+<div class="form-group" id="storeForm">
+<div class="form-group" id="homeForm">
+
+<select name="store" id="store-select" class="form-select">
+<input type="text" id="map-address-input" name="address" class="form-input" >
+ */
         // 配送方式切換功能
         function showDeliveryOption(type) {
             const storeForm = document.getElementById('storeForm');
             const homeForm = document.getElementById('homeForm');
             const marketBtn = document.getElementById('market');
             const expressBtn = document.getElementById('express');
+
+            const storeSelect = document.getElementById('store-select');
+            const mapAddressInput = document.getElementById('map-address-input');
             
             if (type === 'store') {
                 storeForm.style.display = 'block';
                 homeForm.style.display = 'none';
+                storeSelect.name = 'store';
+                mapAddressInput.name = '';
                 marketBtn.classList.add('active');
                 expressBtn.classList.remove('active');
             } else if (type === 'home') {
                 storeForm.style.display = 'none';
                 homeForm.style.display = 'block';
+                storeSelect.name = '';
+                mapAddressInput.name = 'address';
                 marketBtn.classList.remove('active');
                 expressBtn.classList.add('active');
             }
@@ -379,10 +400,11 @@
     </script>
 
     <!-- Google Map API -->
-    @include('template.map_api')
+    <!-- @include('template.map_api') -->
     
 </body>
 
 @include('template.footer_template')
 
 </html>
+

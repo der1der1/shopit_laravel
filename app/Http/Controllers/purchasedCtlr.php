@@ -77,8 +77,47 @@ class purchasedCtlr extends Controller
     }
     public function pay_confirm(Request $request)
     {
+        dd($request->all());
         $user = User::find(Auth::id());
         $selected_items = session()->get('selected_items');
+
+        // 整合所有欄位的驗證與資料處理
+        $validated = $request->validate([
+            'name_input' => 'required|string|max:50',
+            'account_input' => 'required|string|max:50',
+            // 配送方式相關欄位
+            // 若有 store 則必須選擇門市，否則必須有 address
+        ]);
+
+        $deliveryType = null;
+        if ($request->has('store') && $request->input('store')) {
+            $deliveryType = 'store';
+        } elseif ($request->has('address') && $request->input('address')) {
+            $deliveryType = 'home';
+        }
+        if (!$deliveryType) {
+            return back()->with('error', '請選擇配送方式與填寫相關資訊')->withInput();
+        }
+
+        // 整合配送資訊
+        if ($deliveryType === 'store') {
+            $request->merge([
+                'shop1_addr2' => '1',
+                'to_shop' => $request->input('store'),
+                'to_address' => null,
+            ]);
+        } else {
+            $request->merge([
+                'shop1_addr2' => '2',
+                'to_shop' => null,
+                'to_address' => $request->input('address'),
+            ]);
+        }
+        $request->merge([
+            'name' => $request->input('name_input'),
+            'bank_account' => $request->input('account_input'),
+        ]);
+
         $result = $this->paymentService->confirmPayment($request);
         // 更新使用者的想要清單
         $this->checkoutService->updateUserWantList($user->account, $selected_items);
