@@ -127,47 +127,38 @@
                     </div>
 
                     <!-- 超商取貨表單 -->
-                    <!-- <form method="POST" action="{{ route('pay_to_shop') }}" id="storeForm" class="delivery-form"> -->
-                        <!-- @csrf -->
-                        <div class="form-group" id="storeForm">
-                            <label for="store-select">選擇取貨門市</label>
-                            <select name="store" id="store-select" class="form-select">
-                                <option value="新竹中山店">新竹中山店 - 新竹市東區中山路176號</option>
-                                <option value="大安仁愛店">大安仁愛店 - 台北市大安區仁愛路四段345號</option>
-                                <option value="中正忠孝店">中正忠孝店 - 台北市中正區忠孝西路一段50號</option>
-                                <option value="西屯文心店">西屯文心店 - 台中市西屯區文心路三段100號</option>
-                                <option value="南屯大墩店">南屯大墩店 - 台中市南屯區大墩路一段766號</option>
-                                <option value="前鎮中華店">前鎮中華店 - 高雄市前鎮區中華五路596號</option>
-                                <option value="苓雅中華店">苓雅中華店 - 高雄市苓雅區中華四路282號</option>
-                                <option value="板橋文化店">板橋文化店 - 新北市板橋區文化路一段128號</option>
-                                <option value="新店中正店">新店中正店 - 新北市新店區中正路151號</option>
-                                <option value="桃園中正店">桃園中正店 - 桃園市桃園區中正路550號</option>
-                                <option value="中壢中北店">中壢中北店 - 桃園市中壢區中北路二段466號</option>
-                            </select>
-                            <!-- <button type="submit" class="btn-submit">確認取貨門市</button> -->
-                        </div>
-                    <!-- </form> -->
-                                             
+                    <div class="form-group" id="storeForm">
+                        <label for="store-select">選擇取貨門市</label>
+                        <select name="store" id="store-select" class="form-select">
+                            <option value="新竹中山店">新竹中山店 - 新竹市東區中山路176號</option>
+                            <option value="大安仁愛店">大安仁愛店 - 台北市大安區仁愛路四段345號</option>
+                            <option value="中正忠孝店">中正忠孝店 - 台北市中正區忠孝西路一段50號</option>
+                            <option value="西屯文心店">西屯文心店 - 台中市西屯區文心路三段100號</option>
+                            <option value="南屯大墩店">南屯大墩店 - 台中市南屯區大墩路一段766號</option>
+                            <option value="前鎮中華店">前鎮中華店 - 高雄市前鎮區中華五路596號</option>
+                            <option value="苓雅中華店">苓雅中華店 - 高雄市苓雅區中華四路282號</option>
+                            <option value="板橋文化店">板橋文化店 - 新北市板橋區文化路一段128號</option>
+                            <option value="新店中正店">新店中正店 - 新北市新店區中正路151號</option>
+                            <option value="桃園中正店">桃園中正店 - 桃園市桃園區中正路550號</option>
+                            <option value="中壢中北店">中壢中北店 - 桃園市中壢區中北路二段466號</option>
+                        </select>
+                    </div>
 
                     <!-- 宅配到家表單 -->
-                    <!-- <form method="POST" action="{{ route('pay_to_home') }}" id="homeForm" class="delivery-form"> -->
-                        <!-- @csrf -->
-                        <div class="form-group" id="homeForm">
-                            <label for="map-address-input">配送地址</label>
-                            <input type="text" 
-                                   id="map-address-input" 
-                                   name="address" 
-                                   class="form-input"
-                                   placeholder="請輸入完整配送地址..."
-                                   value="{{ $ppl_info->to_address ?? '' }}">
-                            <!-- <button type="submit" class="btn-submit">確認配送地址</button> -->
-                        </div>
-                        
-                        <!-- Google Map -->
-                        <div class="map-container">
-                            <div id="map"></div>
-                        </div>
-                    <!-- </form> -->
+                    <div class="form-group" id="homeForm">
+                        <label for="map-address-input">配送地址</label>
+                        <input type="text" 
+                               id="map-address-input" 
+                               name="address" 
+                               class="form-input"
+                               placeholder="請輸入完整配送地址..."
+                               value="{{ $ppl_info->to_address ?? '' }}">
+                    </div>
+                    
+                    <!-- Google Map -->
+                    <div class="map-container">
+                        <div id="map"></div>
+                    </div>
                 </div>
 
                 <!-- 3. 收件資訊 -->
@@ -182,20 +173,16 @@
                         </h2>
                     </div>
                     
-                    <!-- <form method="POST" action="{{ route('pay_name') }}" class="info-form"> -->
-                        <!-- @csrf -->
-                        <div class="form-row">
-                            <label for="name-input">收件人姓名</label>
-                            <div class="input-group">
-                                <input type="text" 
-                                       id="name-input"
-                                       name="name_input" 
-                                       class="form-input"
-                                       value="{{ $ppl_info->name ?? '王大明' }}">
-                                <!-- <button type="submit" class="btn-confirm">確認</button> -->
-                            </div>
+                    <div class="form-row">
+                        <label for="name-input">收件人姓名</label>
+                        <div class="input-group">
+                            <input type="text" 
+                                   id="name-input"
+                                   name="name_input" 
+                                   class="form-input"
+                                   value="{{ $ppl_info->name ?? '王大明' }}">
                         </div>
-                    <!-- </form> -->
+                    </div>
                 </div>
 
                 <!-- 4. 付款資訊 -->
@@ -210,20 +197,16 @@
                         </h2>
                     </div>
                     
-                    <!-- <form method="POST" action="{{ route('pay_account') }}" class="info-form"> -->
-                        <!-- @csrf -->
-                        <div class="form-row">
-                            <label for="account-input">扣款帳號</label>
-                            <div class="input-group">
-                                <input type="text" 
-                                       id="account-input"
-                                       name="account_input" 
-                                       class="form-input"
-                                       value="{{ $ppl_info->bank_account ?? '0191227-0082229' }}">
-                                <!-- <button type="submit" class="btn-confirm">確認</button> -->
-                            </div>
+                    <div class="form-row">
+                        <label for="account-input">扣款帳號</label>
+                        <div class="input-group">
+                            <input type="text" 
+                                   id="account-input"
+                                   name="account_input" 
+                                   class="form-input"
+                                   value="{{ $ppl_info->bank_account ?? '0191227-0082229' }}">
                         </div>
-                    <!-- </form> -->
+                    </div>
                 </div>
             </div>
 
@@ -239,7 +222,8 @@
                             <h3 class="section-subtitle">收件資訊</h3>
                             <div class="info-row">
                                 <span class="info-label">收件人：</span>
-                                <span class="info-value">{{ $purchased->name ?? '尚未填寫' }}</span>
+                                {{-- 即時同步：由 JS 更新此欄位 --}}
+                                <span class="info-value" id="summary-name">{{ $ppl_info->name ?? '王大明' }}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">訂購帳號：</span>
@@ -247,7 +231,8 @@
                             </div>
                             <div class="info-row">
                                 <span class="info-label">扣款帳號：</span>
-                                <span class="info-value">{{ $purchased->bank_account ?? '尚未填寫' }}</span>
+                                {{-- 即時同步：由 JS 更新此欄位 --}}
+                                <span class="info-value" id="summary-account">{{ $ppl_info->bank_account ?? '0191227-0082229' }}</span>
                             </div>
                         </div>
 
@@ -255,30 +240,33 @@
 
                         <div class="summary-section">
                             <h3 class="section-subtitle">配送資訊</h3>
-                            @if ($purchased->shop1_addr2 == "1")
+
+                            {{-- 超商取貨摘要（預設顯示，對應 showDeliveryOption('store')） --}}
+                            <div id="summary-delivery-store">
                                 <div class="info-row">
                                     <span class="info-label">配送方式：</span>
                                     <span class="info-value highlight">超商取貨</span>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">取貨門市：</span>
-                                    <span class="info-value">{{ $purchased->to_shop }}</span>
+                                    {{-- 即時同步：由 JS 更新此欄位 --}}
+                                    <span class="info-value" id="summary-store">新竹中山店</span>
                                 </div>
-                            @elseif ($purchased->shop1_addr2 == "2")
+                            </div>
+
+                            {{-- 宅配到府摘要（預設隱藏，對應 showDeliveryOption('home')） --}}
+                            <div id="summary-delivery-home" style="display: none;">
                                 <div class="info-row">
                                     <span class="info-label">配送方式：</span>
                                     <span class="info-value highlight">宅配到府</span>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">配送地址：</span>
-                                    <span class="info-value">{{ $purchased->to_address }}</span>
+                                    {{-- 即時同步：由 JS 更新此欄位 --}}
+                                    <span class="info-value" id="summary-address">{{ $ppl_info->to_address ?? '尚未填寫' }}</span>
                                 </div>
-                            @else
-                                <div class="info-row">
-                                    <span class="info-label">配送方式：</span>
-                                    <span class="info-value incomplete">請選擇配送方式</span>
-                                </div>
-                            @endif
+                            </div>
+
                         </div>
 
                         <div class="summary-divider"></div>
@@ -320,22 +308,19 @@
                             </div>
                         </div>
 
-                        <!-- 確認結帳按鈕 -->
-                        <!-- <form method="POST" action="{{ route('pay_confirm') }}"> -->
-                            <!-- @csrf -->
-                            <input type="hidden" name="name" value="{{ $purchased->name ?? '' }}">
-                            <input type="hidden" name="bank_account" value="{{ $purchased->bank_account ?? '' }}">
-                            <input type="hidden" name="shop1_addr2" value="{{ $purchased->shop1_addr2 ?? '' }}">
-                            <input type="hidden" name="to_shop" value="{{ $purchased->to_shop ?? '' }}">
-                            <input type="hidden" name="to_address" value="{{ $purchased->to_address ?? '' }}">
-                            
-                            <button type="submit" class="btn-checkout">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 22s8-4 8-10V4l-8-2-8 2v8c0 6 8 10 8 10z"/>
-                                </svg>
-                                確認並結帳
-                            </button>
-                        <!-- </form> -->
+                        <!-- hidden fields for form submission -->
+                        <input type="hidden" id="name-inlist" name="name" value="{{ $purchased->name ?? '' }}">
+                        <input type="hidden" id="account-inlist" name="bank_account" value="{{ $purchased->bank_account ?? '' }}">
+                        <input type="hidden" id="shop1-addr2-inlist" name="shop1_addr2" value="{{ $purchased->shop1_addr2 ?? '' }}">
+                        <input type="hidden" id="to-shop-inlist" name="to_shop" value="{{ $purchased->to_shop ?? '' }}">
+                        <input type="hidden" id="to-address-inlist" name="to_address" value="{{ $purchased->to_address ?? '' }}">
+                        
+                        <button type="submit" class="btn-checkout">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V4l-8-2-8 2v8c0 6 8 10 8 10z"/>
+                            </svg>
+                            確認並結帳
+                        </button>
 
                         <!-- 安全提示 -->
                         <div class="security-note">
@@ -355,63 +340,131 @@
 
     <script>
         AOS.init();
-        
-/* 
-<button type="button" class="delivery-option" id="market" onclick="showDeliveryOption('store')">
-<button type="button" class="delivery-option" id="express" onclick="showDeliveryOption('home')">
 
-<div class="form-group" id="storeForm">
-<div class="form-group" id="homeForm">
-
-<select name="store" id="store-select" class="form-select">
-<input type="text" id="map-address-input" name="address" class="form-input" >
- */
-        // 配送方式切換功能
+        // ─── 配送方式切換 ───────────────────────────────────────────────
         function showDeliveryOption(type) {
-            const storeForm = document.getElementById('storeForm');
-            const homeForm = document.getElementById('homeForm');
-            const marketBtn = document.getElementById('market');
+            const storeForm  = document.getElementById('storeForm');
+            const homeForm   = document.getElementById('homeForm');
+            const marketBtn  = document.getElementById('market');
             const expressBtn = document.getElementById('express');
-            const mapDiv = document.getElementById('map');
-            
+            const mapDiv     = document.getElementById('map');
 
-            const storeSelect = document.getElementById('store-select');
+            const storeSelect     = document.getElementById('store-select');
             const mapAddressInput = document.getElementById('map-address-input');
-            
+
+            // 訂單摘要：配送區塊
+            const summaryStore = document.getElementById('summary-delivery-store');
+            const summaryHome  = document.getElementById('summary-delivery-home');
+
+            // hidden fields
+            const shop1Addr2Hidden = document.getElementById('shop1-addr2-inlist');
+
             if (type === 'store') {
                 storeForm.style.display = 'block';
-                homeForm.style.display = 'none';
-                mapDiv.style.display = 'none';
-                storeSelect.name = 'store';
-                mapAddressInput.name = '';
+                homeForm.style.display  = 'none';
+                mapDiv.style.display    = 'none';
+                storeSelect.name        = 'store';
+                mapAddressInput.name    = '';
                 marketBtn.classList.add('active');
                 expressBtn.classList.remove('active');
+
+                // 摘要切換
+                summaryStore.style.display = 'block';
+                summaryHome.style.display  = 'none';
+
+                // 更新 hidden field
+                shop1Addr2Hidden.value = '1';
+
+                // 立即同步門市選擇到摘要
+                syncStoreToSummary();
+
             } else if (type === 'home') {
                 storeForm.style.display = 'none';
-                homeForm.style.display = 'block';
-                mapDiv.style.display = 'block';
-                storeSelect.name = '';
-                mapAddressInput.name = 'address';
+                homeForm.style.display  = 'block';
+                mapDiv.style.display    = 'block';
+                storeSelect.name        = '';
+                mapAddressInput.name    = 'address';
                 marketBtn.classList.remove('active');
                 expressBtn.classList.add('active');
+
+                // 摘要切換
+                summaryStore.style.display = 'none';
+                summaryHome.style.display  = 'block';
+
+                // 更新 hidden field
+                shop1Addr2Hidden.value = '2';
+
+                // 立即同步地址到摘要
+                syncAddressToSummary();
+
                 if (typeof google !== 'undefined' && map) {
                     google.maps.event.trigger(map, 'resize');
                 }
             }
         }
-        
-        // 初始化顯示第一個選項（超商取貨）
-        document.addEventListener('DOMContentLoaded', function() {
+
+        // ─── 即時同步：收件人 ────────────────────────────────────────────
+        function syncNameToSummary() {
+            const val = document.getElementById('name-input').value.trim();
+            document.getElementById('summary-name').textContent = val || '尚未填寫';
+            document.getElementById('name-inlist').value = val;
+        }
+
+        // ─── 即時同步：扣款帳號 ──────────────────────────────────────────
+        function syncAccountToSummary() {
+            const val = document.getElementById('account-input').value.trim();
+            document.getElementById('summary-account').textContent = val || '尚未填寫';
+            document.getElementById('account-inlist').value = val;
+        }
+
+        // ─── 即時同步：取貨門市 ──────────────────────────────────────────
+        function syncStoreToSummary() {
+            const select = document.getElementById('store-select');
+            const val    = select.value;
+            document.getElementById('summary-store').textContent = val || '尚未選擇';
+            document.getElementById('to-shop-inlist').value = val;
+        }
+
+        // ─── 即時同步：配送地址 ──────────────────────────────────────────
+        function syncAddressToSummary() {
+            const val = document.getElementById('map-address-input').value.trim();
+            document.getElementById('summary-address').textContent = val || '尚未填寫';
+            document.getElementById('to-address-inlist').value = val;
+        }
+
+        // ─── 綁定事件監聽 ────────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // 收件人：input 事件（逐字即時更新）
+            document.getElementById('name-input')
+                .addEventListener('input', syncNameToSummary);
+
+            // 扣款帳號：input 事件（逐字即時更新）
+            document.getElementById('account-input')
+                .addEventListener('input', syncAccountToSummary);
+
+            // 取貨門市：change 事件
+            document.getElementById('store-select')
+                .addEventListener('change', syncStoreToSummary);
+
+            // 配送地址：input 事件（逐字即時更新）
+            document.getElementById('map-address-input')
+                .addEventListener('input', syncAddressToSummary);
+
+            // 初始化顯示超商取貨（同時觸發第一次摘要同步）
             showDeliveryOption('store');
+
+            // 確保摘要在頁面載入時也反映初始值
+            syncNameToSummary();
+            syncAccountToSummary();
         });
     </script>
 
     <!-- Google Map API -->
-    <!-- @include('template.map_api') -->
+    @include('template.map_api')
     
 </body>
 
 @include('template.footer_template')
 
 </html>
-
