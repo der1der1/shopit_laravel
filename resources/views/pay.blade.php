@@ -394,6 +394,9 @@
                 mapAddressInput.name = 'address';
                 marketBtn.classList.remove('active');
                 expressBtn.classList.add('active');
+                if (typeof google !== 'undefined' && map) {
+                    google.maps.event.trigger(map, 'resize');
+                }
             }
         }
         
