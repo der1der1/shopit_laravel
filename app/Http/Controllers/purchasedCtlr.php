@@ -28,7 +28,7 @@ class purchasedCtlr extends Controller
             'marqee' => $data['marqee'],
             'products' => $data['products'],
             'ppl_info' => $data['ppl_info'],
-            'purchased' => $data['purchased']
+            'purchased' => $data['purchased'],
         ]);
     }
 
@@ -77,7 +77,6 @@ class purchasedCtlr extends Controller
     }
     public function pay_confirm(Request $request)
     {
-        dd($request->all());
         $user = User::find(Auth::id());
         $selected_items = session()->get('selected_items');
 
@@ -118,6 +117,7 @@ class purchasedCtlr extends Controller
             'bank_account' => $request->input('account_input'),
         ]);
 
+        // 先確認訂單（儲存、發送確認信）
         $result = $this->paymentService->confirmPayment($request);
         // 更新使用者的想要清單
         $this->checkoutService->updateUserWantList($user->account, $selected_items);
@@ -125,8 +125,11 @@ class purchasedCtlr extends Controller
         if (isset($result['error'])) {
             return redirect()->route($result['redirect'])->with('error', $result['error']);
         }
-        
-        return redirect()->route($result['redirect'])->with('success', $result['success']);
+
+        // 產生綠界跳轉付款表單並顯示過渡頁
+        $paymentResult = $this->paymentService->processPayment($request);
+
+        return view('ecpay_redirect', ['ecpayForm' => $paymentResult['form']]);
     }
 
     public function view_mail(Request $request)

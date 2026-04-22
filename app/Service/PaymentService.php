@@ -16,17 +16,20 @@ class PaymentService
     protected $productRepository;
     protected $userRepository;
     protected $emailService;
+    protected $ecpayService;
 
     public function __construct(
         OrderRepository $orderRepository,
         ProductRepository $productRepository,
         UserRepository $userRepository,
-        EmailService $emailService
+        EmailService $emailService,
+        EcpayService $ecpayService
     ) {
         $this->orderRepository = $orderRepository;
         $this->productRepository = $productRepository;
         $this->userRepository = $userRepository;
         $this->emailService = $emailService;
+        $this->ecpayService = $ecpayService;
     }
 
     public function getPaymentPageData()
@@ -55,7 +58,7 @@ class PaymentService
             'marqee' => $marqee,
             'products' => $products,
             'ppl_info' => $userInfo,
-            'purchased' => $latestOrder
+            'purchased' => $latestOrder,
         ];
     }
 
@@ -109,7 +112,7 @@ class PaymentService
         
         // 更新用戶信息
         $userData = [
-            'to_shop' => $storeName
+            'to_shop' => $storeName,
         ];
         $this->userRepository->updateUserDeliveryInfo($userAccount, $userData);
         
@@ -134,7 +137,7 @@ class PaymentService
         
         // 更新用戶信息
         $userData = [
-            'to_address' => $address
+            'to_address' => $address,
         ];
         $this->userRepository->updateUserDeliveryInfo($userAccount, $userData);
         
@@ -181,6 +184,37 @@ class PaymentService
         return ['success' => '扣款帳號：' . $bankAccount, 'redirect' => 'pay_show'];
     }
 
+    public function processPayment(Request $request)
+    {
+        $userAccount = Auth::user()->account ?? Auth::user()->email;
+        $order = $this->orderRepository->getLatestOrderByAccount($userAccount);
+
+        // 組建 MerchantTradeNo：SHP + 8碼訂單ID + 9碼時間戳尾碼，共 20 字元
+        $tradeNo = 'SHP'
+            .str_pad((string) $order->id, 8, '0', STR_PAD_LEFT)
+            .substr((string) time(), -9);
+
+        // 組建 ItemName（綠界以 # 分隔，上限 400 字元）
+        $products = $this->parsePurchasedProducts($order->purchased);
+        $itemNames = array_map(
+            fn ($p) => $p['product_name'].' x'.$p['num'],
+            $products
+        );
+        $itemName = implode('#', $itemNames) ?: '商品購買';
+
+        // 建立綠界付款參數並產生自動送出的 HTML Form
+        $params = $this->ecpayService->buildPaymentParams([
+            'trade_no' => $tradeNo,
+            'total' => (int) $order->bill,
+            'desc' => '線上購物',
+            'item_name' => $itemName,
+        ]);
+
+        $form = $this->ecpayService->buildPaymentForm($params);
+
+        return ['form' => $form];
+    }
+
     public function confirmPayment(Request $request)
     {
         if (empty($request->name) || empty($request->bank_account) || empty($request->shop1_addr2)) {
@@ -214,7 +248,7 @@ class PaymentService
                 // Other email error
                 return [
                     'success' => '購買成功，訂單id：' . $latestOrder->id . '。' . $emailResult['message'],
-                    'redirect' => 'home'
+                    'redirect' => 'home',
                 ];
             }
         }

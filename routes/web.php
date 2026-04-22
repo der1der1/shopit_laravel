@@ -12,6 +12,7 @@ use App\Http\Controllers\editCtlr;
 use App\Http\Controllers\MailTestController;
 use App\Http\Controllers\AiApiCtlr;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\EcpayController;
 
 
 // gmail SMTP test
@@ -131,6 +132,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function() {
     Route::delete('/payment-methods/{id}', [AdminController::class, 'deletePaymentMethod'])->name('payment-methods.delete');
     Route::post('/payment-methods/update-order', [AdminController::class, 'updatePaymentMethodOrder'])->name('payment-methods.updateOrder');
 });
+
+// 綠界 ECPay callback 路由（不需登入驗證）
+// ReturnURL：綠界伺服器非同步通知（必須排除 CSRF）
+Route::post('/ecpay/return', [EcpayController::class, 'returnNotify'])->name('ecpay.return');
+// OrderResultURL：付款完成後瀏覽器跳轉
+Route::match(['get', 'post'], '/ecpay/result', [EcpayController::class, 'orderResult'])->name('ecpay.result');
 
 Route::get('/contact', [contactCtlr::class, 'report_show'])->name('report_show');
 Route::post('/contact/store', [contactCtlr::class, 'reporting']) ->name('reporting');
