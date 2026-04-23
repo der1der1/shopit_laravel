@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // 排除綠界非同步通知路由的 CSRF 驗證（ReturnURL 由綠界伺服器呼叫，無 CSRF token）
         $middleware->validateCsrfTokens(except: [
             'ecpay/return',
+            'ecpay/result',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
