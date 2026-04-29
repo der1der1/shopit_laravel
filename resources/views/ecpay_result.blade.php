@@ -75,11 +75,17 @@
         <!-- <div class="icon">✅</div> -->
         <h2>付款成功</h2>
         <p>感謝您的購買！訂單已完成付款。</p>
+        @if(!empty($orderId))
+        <p style="color:#333;font-size:0.9rem;">訂單編號：#{{ $orderId }}</p>
+        @endif
         @else
         <img src="{{ asset('img/icon/crosss.png') }}" alt="Error!" class="icon">
         <!-- <div class="icon">❌</div> -->
         <h2>付款失敗</h2>
         <p>{{ $rtnMsg ?: '交易未完成，請重新嘗試或聯絡客服。' }}</p>
+        @if(!empty($orderId))
+        <p style="color:#333;font-size:0.9rem;">訂單編號：#{{ $orderId }}</p>
+        @endif
         @endif
         <a href="{{ route('home') }}">回首頁</a>
     </div>

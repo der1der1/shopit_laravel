@@ -82,6 +82,33 @@ class EcpayController extends Controller
 
         $success = ($rtnCode === 1);
 
-        return view('ecpay_result', compact('success', 'rtnCode', 'rtnMsg', 'data'));
+        // 解析訂單 ID（MerchantTradeNo 格式：SHP{8碼order_id}{9碼timestamp}）
+        $tradeNo = $data['MerchantTradeNo'] ?? '';
+        $orderId = (int) substr($tradeNo, 3, 8);
+
+        Log::info('[ECPay] OrderResultURL callback', [
+            'order_id' => $orderId,
+            'RtnCode' => $rtnCode,
+            'RtnMsg' => $rtnMsg,
+        ]);
+
+        if ($orderId) {
+            if ($success) {
+                // 付款成功 — 補寫 payed（ReturnURL server callback 可能尚未到達時的 fallback）
+                $this->orderRepository->updateOrderStatus($orderId, ['payed' => '1']);
+            } else {
+                // 付款失敗 — 記錄失敗狀態
+                $this->orderRepository->updateOrderStatus($orderId, ['payed' => '0']);
+                Log::warning('[ECPay] 瀏覽器端回報付款失敗', [
+                    'order_id' => $orderId,
+                    'RtnCode' => $rtnCode,
+                    'RtnMsg' => $rtnMsg,
+                ]);
+            }
+        } else {
+            Log::warning('[ECPay] OrderResultURL 無法解析 MerchantTradeNo', ['trade_no' => $tradeNo]);
+        }
+
+        return view('ecpay_result', compact('success', 'rtnCode', 'rtnMsg', 'data', 'orderId'));
     }
 }
