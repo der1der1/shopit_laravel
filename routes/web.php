@@ -137,7 +137,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function() {
 // ReturnURL：綠界伺服器非同步通知（必須排除 CSRF）
 Route::post('/ecpay/return', [EcpayController::class, 'returnNotify'])->name('ecpay.return');
 // OrderResultURL：付款完成後瀏覽器跳轉
-Route::get('/ecpay/result', [EcpayController::class, 'orderResult'])->name('ecpay.result');
+Route::post('/ecpay/result', [EcpayController::class, 'orderResult'])->name('ecpay.result');
 
 Route::get('/contact', [contactCtlr::class, 'report_show'])->name('report_show');
 Route::post('/contact/store', [contactCtlr::class, 'reporting']) ->name('reporting');

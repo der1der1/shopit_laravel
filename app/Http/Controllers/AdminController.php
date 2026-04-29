@@ -524,7 +524,6 @@ class AdminController extends Controller
                 $purchased_item = explode(',', $purchased_item);
 
             }
-            dump($purchased);
         }
         
         return view('admin.orders', compact('orders'));
