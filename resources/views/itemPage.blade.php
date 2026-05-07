@@ -402,6 +402,23 @@
 
     <!-- JavaScript -->
     <script>
+        // 未登入時攔截加入購物車 / 立即購買，導向登入頁並記住當前商品頁
+        @guest
+        const _isGuest    = true;
+        const _loginUrl   = '{{ route("login") }}';
+        const _currentUrl = '{{ url()->current() }}';
+        @else
+        const _isGuest = false;
+        @endguest
+
+        function _redirectToLogin() {
+            if (_isGuest) {
+                window.location.href = _loginUrl + '?redirect_to=' + encodeURIComponent(_currentUrl);
+                return true;
+            }
+            return false;
+        }
+
         let maxQuantity = {{ $stockQuantity }};
 
         // 品項選擇功能
@@ -512,6 +529,7 @@
 
         // 立即購買：標記後送出表單，控制器將重導向至購物車
         function buyNow() {
+            if (_redirectToLogin()) return;
             document.getElementById('buy_now_flag').value = '1';
             document.getElementById('addToCartForm').submit();
         }
@@ -547,13 +565,18 @@
             }
         });
         
-        // 頁面載入時設定預設品項樣式
+        // 頁面載入時設定預設品項樣式，以及加入購物車表單的 guest 攔截
         document.addEventListener('DOMContentLoaded', function() {
             const activeVariant = document.querySelector('.variant-option.active');
             if (activeVariant) {
                 activeVariant.style.borderColor = '#3498db';
                 activeVariant.style.background = '#e3f2fd';
             }
+
+            // 加入購物車按鈕：未登入則改為導向登入頁
+            document.getElementById('addToCartForm').addEventListener('submit', function(e) {
+                if (_redirectToLogin()) e.preventDefault();
+            });
         });
     </script>
 
