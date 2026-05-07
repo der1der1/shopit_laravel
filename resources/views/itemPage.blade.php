@@ -202,6 +202,7 @@
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $products->id }}">
                     <input type="hidden" name="variant_id" id="selected_variant_id" value="{{ $defaultVariant ? $defaultVariant->id : '' }}">
+                    <input type="hidden" name="buy_now" id="buy_now_flag" value="0">
                     
                     <div class="quantity-selector">
                         <label for="quantity">數量：</label>
@@ -221,12 +222,12 @@
                             </svg>
                             加入購物車
                         </button>
-                        <button type="button" class="btn-buy-now">立即購買</button>
-                        <button type="button" class="btn-wishlist">
+                        <button type="button" class="btn-buy-now" onclick="buyNow()">立即購買</button>
+                        <!-- <button type="button" class="btn-wishlist">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                             </svg>
-                        </button>
+                        </button> -->
                     </div>
                 </form>
 
@@ -507,6 +508,12 @@
             if (value > 1) {
                 input.value = value - 1;
             }
+        }
+
+        // 立即購買：標記後送出表單，控制器將重導向至購物車
+        function buyNow() {
+            document.getElementById('buy_now_flag').value = '1';
+            document.getElementById('addToCartForm').submit();
         }
 
         // 切換 Tab
