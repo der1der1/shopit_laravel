@@ -64,7 +64,16 @@
 <body id="top">
 
     @include('template.header_template')
-
+    <!-- 訊息提示 -->
+    @if(session('error'))
+    <script>
+        alert("{{ session('error') }}");
+    </script>
+    @elseif(session('success'))
+    <script>
+        alert("{{ session('success') }}");
+    </script>
+    @endif
     <main class="product-page">
         <!-- 麵包屑導覽 -->
         <div class="breadcrumb-container">
