@@ -33,7 +33,22 @@
         <div id="cart">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <a href="{{route('check_show')}}"><img src="{{ asset('img/icon/cart-shopping-solid.svg') }}" class="icon" alt="cart icon" title="購物車"></a>
+                @php
+                    $hasCartItems = false;
+                    if (auth()->check()) {
+                        $wantString = auth()->user()->want ?? '';
+                        $cleanedWant = preg_replace('/[^\d,-]/', '', $wantString);
+                        $cleanedWant = (isset($cleanedWant[0]) && $cleanedWant[0] === ',') ? substr($cleanedWant, 1) : $cleanedWant;
+                        $cartIds = array_filter(array_unique(explode(',', $cleanedWant)));
+                        $hasCartItems = !empty($cartIds);
+                    }
+                @endphp
+                @if ($hasCartItems)
+                    <a href="{{route('check_show')}}"><img src="{{ asset('img/icon/cart-something.png') }}" class="icon cart-active" alt="cart icon" title="購物車"></a>
+                @else
+                    <a href="{{route('check_show')}}"><img src="{{ asset('img/icon/cart-shopping-solid.svg') }}" class="icon" alt="cart icon" title="購物車"></a>
+                @endif
+                
                 @if($user)
                 <a href="{{route('member_edit')}}" title="會員資料">&nbsp; Hi! &nbsp; {{ $user->name }}&nbsp;</a>
                 <input type="submit" name="logout" value="登出" title="登出">
@@ -118,6 +133,15 @@ header {
 .icon:hover {
   height: 22px;
   width: 22px;
+}
+
+@keyframes cart-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.cart-active {
+  animation: cart-pulse 1.3s ease-in-out infinite;
 }
 
 button {
