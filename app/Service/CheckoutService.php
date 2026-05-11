@@ -7,7 +7,6 @@ use App\Repository\WishlistRepository;
 use App\Repository\OrderRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Whoops\Util\HtmlDumperOutput;
 
 class CheckoutService
 {
@@ -52,7 +51,7 @@ class CheckoutService
         return [
             'user' => $user,
             'marqee' => $marqee,
-            'wanted_product' => $wantedProducts
+            'wanted_product' => $wantedProducts,
         ];
     }
 
@@ -109,7 +108,7 @@ class CheckoutService
 
         return [
             'merged_arr' => $mergedArr,
-            'purchased_string' => $purchasedString
+            'purchased_string' => $purchasedString,
         ];
     }
 
@@ -121,6 +120,17 @@ class CheckoutService
             $totalPrice += $itemData[1] * $itemData[2]; // quantity * price
         }
         return $totalPrice;
+    }
+
+    public function removeCartItem($productId)
+    {
+        $user = Auth::user();
+        $currentWantString = $this->wishlistRepository->getUserWantList($user->account);
+        $currentWantIds = $this->wishlistRepository->parseWantIds($currentWantString);
+        $newWantList = $this->wishlistRepository->removeItemsFromWantList($currentWantIds, [$productId]);
+        $this->wishlistRepository->updateUserWantList($user->account, $newWantList);
+
+        return ['success' => true];
     }
 
     public function updateUserWantList($userAccount, $purchasedItemIds)

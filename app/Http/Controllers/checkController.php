@@ -41,6 +41,13 @@ class checkController extends Controller
         ]);
     }
 
+    public function removeCartItem(Request $request, $productId)
+    {
+        $result = $this->checkoutService->removeCartItem($productId);
+
+        return response()->json($result);
+    }
+
     public function check_store(Request $request)
     {
         try {

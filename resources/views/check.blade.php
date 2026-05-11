@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -295,17 +296,31 @@
         // 移除商品項目
         function removeItem(productId) {
             if (confirm('確定要移除此商品嗎？')) {
-                const item = document.querySelector(`.cart-item[data-product-id="${productId}"]`);
-                if (item) {
-                    item.remove();
-                    updateCartSummary();
-                    
-                    // 檢查是否還有商品
-                    const remainingItems = document.querySelectorAll('.cart-item');
-                    if (remainingItems.length === 0) {
-                        location.reload();
+                fetch(`/check/remove/${productId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const item = document.querySelector(`.cart-item[data-product-id="${productId}"]`);
+                        if (item) {
+                            item.remove();
+                            updateCartSummary();
+
+                            const remainingItems = document.querySelectorAll('.cart-item');
+                            if (remainingItems.length === 0) {
+                                location.reload();
+                            }
+                        }
+                    } else {
+                        alert('移除失敗，請重試');
                     }
-                }
+                })
+                .catch(() => alert('發生錯誤，請重試'));
             }
         }
 

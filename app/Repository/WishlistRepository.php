@@ -18,7 +18,8 @@ class WishlistRepository
         // 第一個字元如果是逗號則刪除該字元
         $cleanedString = isset($cleanedString[0]) && $cleanedString[0] === ',' ? substr($cleanedString, 1) : $cleanedString;
         // 把該欄位的字串改成陣列
-        $idsArray = explode(",", $cleanedString);
+        $idsArray = explode(',', $cleanedString);
+
         // 過濾空值和重複值
         return array_filter(array_unique($idsArray));
     }
@@ -27,9 +28,10 @@ class WishlistRepository
     {
         $user = User::where('account', $userAccount)->first();
         if ($user) {
-            $user->want = $newWantList . ',';
+            $user->want = $newWantList.',';
             $user->save();
         }
+
         return $user;
     }
 
@@ -37,9 +39,16 @@ class WishlistRepository
     {
         // 原先陣列要單一值也要刪除空值
         $currentWantIds = array_filter(array_unique($currentWantIds));
-        // 刪除原先陣列與itemIds中相同的元素
-        $newWantIds = array_diff($currentWantIds, $itemsToRemove);
+        // 將要刪除的 ID 轉成字串陣列以便比對
+        $itemsToRemove = array_map('strval', $itemsToRemove);
+        // 保留第一段數字（dash 前）不在 $itemsToRemove 中的項目
+        $newWantIds = array_filter($currentWantIds, function ($id) use ($itemsToRemove) {
+            $prefix = explode('-', $id)[0];
+
+            return ! in_array($prefix, $itemsToRemove, true);
+        });
+
         // 將結果轉回字串
-        return implode(",", $newWantIds);
+        return implode(',', $newWantIds);
     }
 }

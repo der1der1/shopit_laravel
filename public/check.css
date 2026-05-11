@@ -149,6 +149,11 @@ a {
   overflow: hidden;
 }
 
+/* 購物車空時只有一個子元素，讓它佔滿整個 grid 寬度 */
+.cart-content-wrapper > .cart-items-section:only-child {
+  grid-column: 1 / -1;
+}
+
 /* Cart Table Header */
 .cart-table-header {
   display: grid;
