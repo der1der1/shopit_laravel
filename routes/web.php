@@ -48,6 +48,7 @@ Route::middleware(['auth'])->group(function() {
 
     Route::get('/check', [checkController::class, 'check_show'])->name('check_show');
     Route::post('/check/store', [checkController::class, 'check_store']) ->name('check_store');
+    Route::post('/check/remove/{productId}', [checkController::class, 'removeCartItem'])->name('cart.remove');
 
     Route::get('/pay', [purchasedCtlr::class, 'pay_show'])->name('pay_show');
     Route::post('/pay/1', [purchasedCtlr::class, 'pay_to_shop'])->name('pay_to_shop');
