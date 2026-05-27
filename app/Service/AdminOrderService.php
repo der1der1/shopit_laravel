@@ -5,13 +5,15 @@ namespace App\Service;
 use App\Repository\OrderRepository;
 use App\Repository\ProductRepository;
 use App\Repository\UserRepository;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminOrderService
 {
     protected $orderRepository;
+
     protected $productRepository;
+
     protected $userRepository;
 
     public function __construct(
@@ -27,22 +29,22 @@ class AdminOrderService
     public function getAdminOrderList()
     {
         $user = Auth::user();
-        
+
         // 檢查權限
-        if ($user->prvilige !== "A") {
+        if ($user->prvilige !== 'A') {
             return ['error' => '您沒有權限執行此操作', 'redirect' => 'home'];
         }
 
         $marqee = $this->productRepository->getAllMarqee();
         $orders = $this->orderRepository->getOrdersForAdmin();
-        
+
         $processedOrders = $this->processOrdersForDisplay($orders);
 
         return [
             'success' => true,
             'user' => $user,
             'marqee' => $marqee,
-            'new_lists' => $processedOrders
+            'new_lists' => $processedOrders,
         ];
     }
 
@@ -52,7 +54,7 @@ class AdminOrderService
 
         foreach ($orders as $order) {
             $purchasedProducts = $this->parsePurchasedItems($order->purchased);
-            
+
             $processedOrders[] = [
                 'id' => $order->id,
                 'account' => $order->account,
@@ -75,7 +77,7 @@ class AdminOrderService
         foreach ($singleProducts as $singleProduct) {
             $productData = explode(',', $singleProduct);
             $product = $this->productRepository->findProductById($productData[0]);
-            
+
             if ($product) {
                 $purchasedProducts[] = [
                     'id' => $product->id,
@@ -96,19 +98,19 @@ class AdminOrderService
 
         // 更新訂單狀態
         $orderUpdates = [
-            'payed' => "1",
-            'delivered' => "1",
-            'show' => "0"
+            'payed' => '1',
+            'delivered' => '1',
+            'show' => '0',
         ];
-        
+
         $order = $this->orderRepository->updateOrderStatus($orderId, $orderUpdates);
 
         // 更新用戶通知
-        $this->userRepository->updateUserNotification($userAccount, "訂購商品已寄出！");
+        $this->userRepository->updateUserNotification($userAccount, '訂購商品已寄出！');
 
         return [
-            'success' => '單號：' . $order->id . '  商品已寄出！',
-            'redirect' => 'list_show'
+            'success' => '單號：'.$order->id.'  商品已寄出！',
+            'redirect' => 'admin.orders',
         ];
     }
 }

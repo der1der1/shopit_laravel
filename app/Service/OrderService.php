@@ -2,10 +2,10 @@
 
 namespace App\Service;
 
+use App\Models\User;
 use App\Repository\OrderRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 
 class OrderService
 {
@@ -14,6 +14,35 @@ class OrderService
     public function __construct(OrderRepository $orderRepository)
     {
         $this->orderRepository = $orderRepository;
+    }
+
+    public function getUserOrdersForPage($user)
+    {
+        $orders = $this->orderRepository->findOrdersByUser($user);
+
+        if ($orders->isEmpty()) {
+            return [];
+        }
+
+        return $this->processOrderData($orders);
+    }
+
+    public function getOrderByIdForGuest($orderId)
+    {
+        if (empty($orderId)) {
+            return null;
+        }
+
+        $order = $this->orderRepository->findOrderByIdOnly($orderId);
+
+        if (! $order) {
+            return null;
+        }
+
+        $orders = collect([$order]);
+        $processed = $this->processOrderData($orders);
+
+        return $processed->first();
     }
 
     public function getUserOrders(Request $request)
@@ -38,29 +67,30 @@ class OrderService
     {
         foreach ($orders as $order) {
             $purchaseds = $order->purchased;
-            if (!$purchaseds) {
+            if (! $purchaseds) {
                 $order->purchased = [];
+
                 continue;
             }
 
             $purchaseds = explode(';', $purchaseds);
             $ordered_purchaseds = [];
-            
+
             foreach ($purchaseds as $purchased) {
                 $purchased = explode(',', $purchased);
                 if (count($purchased) < 3) {
                     continue; // 跳過格式不正確的資料
                 }
-                
+
                 $product = $this->orderRepository->findProductById($purchased[0]);
-                if (!$product) {
+                if (! $product) {
                     continue; // 跳過找不到商品的資料
                 }
-                
+
                 $ordered_purchaseds[] = [
                     'product_name' => $product->product_name,
                     'number' => $purchased[1],
-                    'price' => $purchased[2]
+                    'price' => $purchased[2],
                 ];
             }
             $order->purchased = $ordered_purchaseds;

@@ -12,7 +12,7 @@
             <a href="{{route('home')}}"><img src="{{ asset('img/logo1.png') }}" class="logo" title="home page" alt="go to homepage"></a>
         </div>
         <div id="check_list">
-            <a href="{{route('list_show')}}"><img src="{{ asset('img/icon/check-list.png') }}" class="icon" alt="go to check list" width="20px" height="20px" title="訂單清單。管理者登入才會顯示"></a>
+            <a href="{{route('order_list_show')}}"><img src="{{ asset('img/icon/check-list.png') }}" class="icon" alt="go to order list" width="20px" height="20px" title="訂單查詢"></a>
         </div>
         <!-- 搜索區 -->
         <div id="searchBar">

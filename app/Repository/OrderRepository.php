@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
-use App\Models\purchasedModel as Order;
 use App\Models\productsModel as Product;
+use App\Models\purchasedModel as Order;
 
 class OrderRepository
 {
@@ -29,16 +29,21 @@ class OrderRepository
             'account' => $userAccount,
             'purchased' => $purchasedItems,
             'bill' => $totalBill,
-            'payed' => "0",
-            'delivered' => "0",
-            'recieved' => "0",
-            'show' => "0",
+            'payed' => '0',
+            'delivered' => '0',
+            'recieved' => '0',
+            'show' => '0',
         ]);
     }
 
     public function getOrdersForAdmin()
     {
-        return Order::where('show', "1")->get();
+        return Order::where('show', '1')->get();
+    }
+
+    public function findOrderByIdOnly($orderId)
+    {
+        return Order::where('id', $orderId)->first();
     }
 
     public function getLatestOrderByAccount($userAccount)
@@ -55,6 +60,7 @@ class OrderRepository
             }
             $order->save();
         }
+
         return $order;
     }
 
@@ -67,6 +73,7 @@ class OrderRepository
             }
             $order->save();
         }
+
         return $order;
     }
 }

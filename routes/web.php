@@ -8,8 +8,8 @@ use App\Http\Controllers\contactCtlr;
 use App\Http\Controllers\EcpayController;
 use App\Http\Controllers\editCtlr;
 use App\Http\Controllers\homeApiCtlr;
-use App\Http\Controllers\listController;
 use App\Http\Controllers\MailTestController;
+use App\Http\Controllers\OrderQueryController;
 use App\Http\Controllers\payController;
 use App\Http\Controllers\purchasedCtlr;
 use Illuminate\Support\Facades\Route;
@@ -44,9 +44,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/purchase', [purchasedCtlr::class, 'purchase'])->name('purchase');
 
-    Route::get('/list', [listController::class, 'list_show'])->name('list_show');
-    Route::post('/list_store', [listController::class, 'list_store'])->name('list_store');
-
     Route::get('/edit', [editCtlr::class, 'edit_show'])->name('edit_show');
     Route::post('/edit/edit_product_store', [editCtlr::class, 'edit_product_store'])->name('edit_product_store');
     Route::post('/edit/edit_product_add', [editCtlr::class, 'edit_product_add'])->name('edit_product_add');
@@ -62,6 +59,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/map', [payController::class, 'map'])->name('map');
 
 });
+
+// 訂單查詢：已登入自動顯示訂單，未登入可輸入單號查詢
+Route::get('/list', [OrderQueryController::class, 'show'])->name('order_list_show');
+Route::post('/list', [OrderQueryController::class, 'query'])->name('order_list_query');
 
 // 購物車相關路由：已登入與來賓皆可存取，在 Controller/Service 層判斷身分
 Route::post('/want', [checkController::class, 'want'])->name('want');
