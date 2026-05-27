@@ -58,7 +58,7 @@ class checkController extends Controller
                 return redirect()->route($result['redirect'])->with('error', $result['error']);
             }
 
-            return back()->with('success', $result['success']);
+            return redirect()->route($result['redirect'])->with('success', $result['success']);
 
         } catch (\Exception $e) {
             return back()->withErrors(['msg' => $e->getMessage()]);

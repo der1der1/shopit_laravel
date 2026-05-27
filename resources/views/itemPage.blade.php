@@ -402,22 +402,8 @@
 
     <!-- JavaScript -->
     <script>
-        // 未登入時攔截加入購物車 / 立即購買，導向登入頁並記住當前商品頁
-        @guest
-        const _isGuest    = true;
-        const _loginUrl   = '{{ route("login") }}';
-        const _currentUrl = '{{ url()->current() }}';
-        @else
-        const _isGuest = false;
-        @endguest
-
-        function _redirectToLogin() {
-            if (_isGuest) {
-                window.location.href = _loginUrl + '?redirect_to=' + encodeURIComponent(_currentUrl);
-                return true;
-            }
-            return false;
-        }
+        // 來賓不再需要攔截，加入購物車與立即購買對所有使用者開放
+        // 已登入走資料庫，來賓走 session 存放，流程在後端處理
 
         let maxQuantity = {{ $stockQuantity }};
 
@@ -527,9 +513,8 @@
             }
         }
 
-        // 立即購買：標記後送出表單，控制器將重導向至購物車
+        // 立即購買：標記後送出表單，控制器將重導向至購物車（來賓與已登入皆可使用）
         function buyNow() {
-            if (_redirectToLogin()) return;
             document.getElementById('buy_now_flag').value = '1';
             document.getElementById('addToCartForm').submit();
         }
@@ -565,18 +550,14 @@
             }
         });
         
-        // 頁面載入時設定預設品項樣式，以及加入購物車表單的 guest 攔截
+        // 頁面載入時設定預設品項樣式
         document.addEventListener('DOMContentLoaded', function() {
             const activeVariant = document.querySelector('.variant-option.active');
             if (activeVariant) {
                 activeVariant.style.borderColor = '#3498db';
                 activeVariant.style.background = '#e3f2fd';
             }
-
-            // 加入購物車按鈕：未登入則改為導向登入頁
-            document.getElementById('addToCartForm').addEventListener('submit', function(e) {
-                if (_redirectToLogin()) e.preventDefault();
-            });
+            // 加入購物車不再需要登入驗證，直接允許表單送出
         });
     </script>
 

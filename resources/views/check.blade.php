@@ -213,7 +213,7 @@
                         </div>
 
                         <!-- 結帳按鈕 -->
-                        <button type="submit" class="btn-checkout" id="checkoutBtn">
+                        <button type="button" class="btn-checkout" id="checkoutBtn" onclick="handleCheckout()">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M12 22s8-4 8-10V4l-8-2-8 2v8c0 6 8 10 8 10z"/>
                             </svg>
@@ -255,6 +255,28 @@
     </div>
 
     @include('template.footer_template')
+
+    <!-- 未登入來賓結帳選擇 Modal -->
+    @guest
+    <div id="guestCheckoutModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:12px; padding:36px 32px; max-width:400px; width:90%; box-shadow:0 8px 32px rgba(0,0,0,0.18); text-align:center;">
+            <h3 style="margin:0 0 8px; font-size:1.3rem; color:#2c3e50;">請選擇結帳方式</h3>
+            <p style="color:#666; margin:0 0 28px; font-size:0.95rem;">您目前尚未登入，請選擇繼續的方式</p>
+            <!-- 登入帳號 -->
+            <button type="button" onclick="guestModalLogin()" style="width:100%; padding:14px; margin-bottom:12px; background:#3498db; color:#fff; border:none; border-radius:8px; font-size:1rem; font-weight:600; cursor:pointer;">
+                登入帳號
+            </button>
+            <!-- 來賓結帳 -->
+            <button type="button" onclick="guestModalCheckout()" style="width:100%; padding:14px; margin-bottom:12px; background:#27ae60; color:#fff; border:none; border-radius:8px; font-size:1rem; font-weight:600; cursor:pointer;">
+                來賓結帳
+            </button>
+            <!-- 取消 -->
+            <button type="button" onclick="closeGuestModal()" style="width:100%; padding:10px; background:transparent; color:#999; border:1px solid #ddd; border-radius:8px; font-size:0.9rem; cursor:pointer;">
+                取消
+            </button>
+        </div>
+    </div>
+    @endguest
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -434,17 +456,22 @@
             });
         });
 
-        // 結帳按鈕驗證
-        document.getElementById('checkoutBtn')?.addEventListener('click', function(e) {
+        function applyCoupon() {
+            const couponCode = document.getElementById('couponInput')?.value;
+            if (couponCode) {
+                alert('優惠券功能尚未啟用：' + couponCode);
+            }
+        }
+
+        // 結帳主流程
+        function handleCheckout() {
             const checkedItems = document.querySelectorAll('.item-checkbox:checked');
-            
+
             if (checkedItems.length === 0) {
-                e.preventDefault();
                 alert('請至少選擇一項商品');
                 return false;
             }
-            
-            // 驗證數量
+
             let hasInvalidQty = false;
             checkedItems.forEach(checkbox => {
                 const qtyInput = document.getElementById(checkbox.getAttribute('data-quantity-input'));
@@ -453,19 +480,38 @@
                     hasInvalidQty = true;
                 }
             });
-            
+
             if (hasInvalidQty) {
-                e.preventDefault();
                 alert('請確保所選商品的數量都大於 0');
                 return false;
             }
-        });
 
-        // 優惠券功能 (示例)
-        function applyCoupon() {
-            const couponCode = document.getElementById('couponInput')?.value;
-            if (couponCode) {
-                alert('優惠券功能尚未啟用：' + couponCode);
+            @guest
+            // 未登入：顯示來賓結帳選擇 Modal
+            const modal = document.getElementById('guestCheckoutModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+            @else
+            // 已登入：直接送出表單
+            document.getElementById('cartForm').submit();
+            @endguest
+        }
+
+        // 來賓 Modal 功能
+        function guestModalLogin() {
+            window.location.href = '{{ route('login') }}';
+        }
+
+        function guestModalCheckout() {
+            closeGuestModal();
+            document.getElementById('cartForm').submit();
+        }
+
+        function closeGuestModal() {
+            const modal = document.getElementById('guestCheckoutModal');
+            if (modal) {
+                modal.style.display = 'none';
             }
         }
 

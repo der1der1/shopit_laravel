@@ -1,19 +1,18 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\homeApiCtlr;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\contactCtlr;
-use App\Http\Controllers\checkController;
-use App\Http\Controllers\purchasedCtlr;
-use App\Http\Controllers\payController;
-use App\Http\Controllers\listController;
-use App\Http\Controllers\editCtlr;
-use App\Http\Controllers\MailTestController;
-use App\Http\Controllers\AiApiCtlr;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AiApiCtlr;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\checkController;
+use App\Http\Controllers\contactCtlr;
 use App\Http\Controllers\EcpayController;
-
+use App\Http\Controllers\editCtlr;
+use App\Http\Controllers\homeApiCtlr;
+use App\Http\Controllers\listController;
+use App\Http\Controllers\MailTestController;
+use App\Http\Controllers\payController;
+use App\Http\Controllers\purchasedCtlr;
+use Illuminate\Support\Facades\Route;
 
 // gmail SMTP test
 Route::get('/send-test-mail', [MailTestController::class, 'send']);
@@ -24,10 +23,10 @@ Route::get('/view_mail', [purchasedCtlr::class, 'view_mail'])->name('view_mail')
 Route::get('/testApi_show', [AiApiCtlr::class, 'testApi_show'])->name('testApi_show');
 Route::post('/testApi_request', [AiApiCtlr::class, 'testApi_request'])->name('testApi_request');
 
-Route::middleware(['guest'])->group(function() {
+Route::middleware(['guest'])->group(function () {
     Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
-    
+
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'authenticate']);
 
@@ -40,22 +39,10 @@ Route::middleware(['guest'])->group(function() {
     Route::post('/verification_resend', [AuthController::class, 'verification_resend'])->name('verification_resend');
     Route::post('/verification_to_admin', [AuthController::class, 'verification_to_admin'])->name('verification_to_admin');
 });
-Route::middleware(['auth'])->group(function() {
+Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::post('/want', [checkController::class, 'want'])->name('want');
 
     Route::post('/purchase', [purchasedCtlr::class, 'purchase'])->name('purchase');
-
-    Route::get('/check', [checkController::class, 'check_show'])->name('check_show');
-    Route::post('/check/store', [checkController::class, 'check_store']) ->name('check_store');
-    Route::post('/check/remove/{productId}', [checkController::class, 'removeCartItem'])->name('cart.remove');
-
-    Route::get('/pay', [purchasedCtlr::class, 'pay_show'])->name('pay_show');
-    Route::post('/pay/1', [purchasedCtlr::class, 'pay_to_shop'])->name('pay_to_shop');
-    Route::post('/pay/2', [purchasedCtlr::class, 'pay_to_home'])->name('pay_to_home');
-    Route::post('/pay/3', [purchasedCtlr::class, 'pay_name'])->name('pay_name');
-    Route::post('/pay/4', [purchasedCtlr::class, 'pay_account'])->name('pay_account');
-    Route::post('/pay/5', [purchasedCtlr::class, 'pay_confirm'])->name('pay_confirm');
 
     Route::get('/list', [listController::class, 'list_show'])->name('list_show');
     Route::post('/list_store', [listController::class, 'list_store'])->name('list_store');
@@ -76,12 +63,26 @@ Route::middleware(['auth'])->group(function() {
 
 });
 
+// 購物車相關路由：已登入與來賓皆可存取，在 Controller/Service 層判斷身分
+Route::post('/want', [checkController::class, 'want'])->name('want');
+Route::get('/check', [checkController::class, 'check_show'])->name('check_show');
+Route::post('/check/store', [checkController::class, 'check_store'])->name('check_store');
+Route::delete('/check/remove/{productId}', [checkController::class, 'removeCartItem'])->name('cart.remove');
+
+// 結帳流程路由：已登入與來賓皆可存取
+Route::get('/pay', [purchasedCtlr::class, 'pay_show'])->name('pay_show');
+Route::post('/pay/1', [purchasedCtlr::class, 'pay_to_shop'])->name('pay_to_shop');
+Route::post('/pay/2', [purchasedCtlr::class, 'pay_to_home'])->name('pay_to_home');
+Route::post('/pay/3', [purchasedCtlr::class, 'pay_name'])->name('pay_name');
+Route::post('/pay/4', [purchasedCtlr::class, 'pay_account'])->name('pay_account');
+Route::post('/pay/5', [purchasedCtlr::class, 'pay_confirm'])->name('pay_confirm');
+
 // Admin Routes
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function() {
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::post('/contacts/reply', [\App\Http\Controllers\contactCtlr::class, 'reply']);
     // Dashboard
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
-    
+
     // Users Management
     Route::get('/users', [AdminController::class, 'users'])->name('users');
     Route::get('/users/create', [AdminController::class, 'createUser'])->name('users.create');
@@ -89,7 +90,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function() {
     Route::get('/users/{id}/edit', [AdminController::class, 'editUser'])->name('users.edit');
     Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('users.update');
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
-    
+
     // Products Management
     Route::get('/products', [AdminController::class, 'products'])->name('products');
     Route::get('/products/create', [AdminController::class, 'createProduct'])->name('products.create');
@@ -98,32 +99,34 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function() {
     Route::put('/products/{id}', [AdminController::class, 'updateProduct'])->name('products.update');
     Route::delete('/products/{id}', [AdminController::class, 'deleteProduct'])->name('products.delete');
     Route::post('/products/upload-image', [AdminController::class, 'uploadImage'])->name('products.upload-image');
-    
+
     // Orders Management
     Route::get('/orders', [AdminController::class, 'orders'])->name('orders');
     Route::get('/orders/{id}', [AdminController::class, 'getOrder'])->name('orders.show');
     Route::post('/orders/{id}/status', [AdminController::class, 'updateOrderStatus'])->name('orders.status');
     Route::delete('/orders/{id}', [AdminController::class, 'deleteOrder'])->name('orders.delete');
-    
+
     // Contacts Management
     Route::get('/contacts', [AdminController::class, 'contacts'])->name('contacts');
     Route::get('/contacts/{id}', [AdminController::class, 'getContact'])->name('contacts.show');
     Route::delete('/contacts/{id}', [AdminController::class, 'deleteContact'])->name('contacts.delete');
-    
+
     // Mail List Management
     Route::get('/maillist', [AdminController::class, 'maillist'])->name('maillist');
-    Route::get('/maillist/compose', function() { return view('admin.maillist-compose'); })->name('maillist.compose');
+    Route::get('/maillist/compose', function () {
+        return view('admin.maillist-compose');
+    })->name('maillist.compose');
     Route::post('/maillist/{id}/toggle', [AdminController::class, 'toggleMailStatus'])->name('maillist.toggle');
     Route::post('/maillist/{id}/toggle-stock-notification', [AdminController::class, 'toggleStockNotification'])->name('maillist.toggle-stock-notification');
     Route::delete('/maillist/{id}', [AdminController::class, 'deleteMail'])->name('maillist.delete');
-    
+
     // Marquee Management
     Route::get('/marquee', [AdminController::class, 'marquee'])->name('marquee');
     Route::post('/marquee', [AdminController::class, 'storeMarquee'])->name('marquee.store');
     Route::put('/marquee/{id}', [AdminController::class, 'updateMarquee'])->name('marquee.update');
     Route::post('/marquee/update-order', [AdminController::class, 'updateMarqueeOrder'])->name('marquee.updateOrder');
     Route::delete('/marquee/{id}', [AdminController::class, 'destroyMarquee'])->name('marquee.destroy');
-    
+
     // Payment Methods Management
     Route::get('/payment-methods', [AdminController::class, 'paymentMethods'])->name('payment-methods');
     Route::get('/payment-methods/create', [AdminController::class, 'createPaymentMethod'])->name('payment-methods.create');
@@ -141,17 +144,9 @@ Route::post('/ecpay/return', [EcpayController::class, 'returnNotify'])->name('ec
 Route::post('/ecpay/result', [EcpayController::class, 'orderResult'])->name('ecpay.result');
 
 Route::get('/contact', [contactCtlr::class, 'report_show'])->name('report_show');
-Route::post('/contact/store', [contactCtlr::class, 'reporting']) ->name('reporting');
+Route::post('/contact/store', [contactCtlr::class, 'reporting'])->name('reporting');
 
-Route::get('/', [homeApiCtlr::class, 'tohome'] )->name('home');
-Route::get('/{search}', [homeApiCtlr::class, 'toHome_with_search'] )->name('home_with_search');
-Route::post('/', [homeApiCtlr::class, 'toHome_words_search'] )->name('toHome_words_search');
+Route::get('/', [homeApiCtlr::class, 'tohome'])->name('home');
+Route::get('/{search}', [homeApiCtlr::class, 'toHome_with_search'])->name('home_with_search');
+Route::post('/', [homeApiCtlr::class, 'toHome_words_search'])->name('toHome_words_search');
 Route::get('/itemPage/{id}', [homeApiCtlr::class, 'toItemPage'])->name('itemPage');
-
-
-
-
-
-
-
-
