@@ -81,6 +81,17 @@
                     document.getElementById("choser_login").className = 'none';
                     document.getElementById("choser_sign").className = "show";
                 }
+
+                document.addEventListener("keydown", function(event) {
+                    if (event.key === "Enter") {
+                        var panel = document.getElementById("panel");
+                        if (panel.classList.contains("panel_sign")) {
+                            document.querySelector("#choser_sign input[type='submit']").click();
+                        } else {
+                            document.querySelector("#choser_login input[type='submit']").click();
+                        }
+                    }
+                });
             </script>
         </div>
     </div>
