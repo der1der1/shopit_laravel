@@ -128,6 +128,23 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/marquee/update-order', [AdminController::class, 'updateMarqueeOrder'])->name('marquee.updateOrder');
     Route::delete('/marquee/{id}', [AdminController::class, 'destroyMarquee'])->name('marquee.destroy');
 
+    // Coupons Management
+    Route::get('/coupons', function () {
+        return view('admin.coupons');
+    })->name('coupons');
+    Route::get('/coupons/sitewide', function () {
+        return view('admin.coupons-sitewide');
+    })->name('coupons.sitewide');
+    Route::get('/coupons/category', function () {
+        return view('admin.coupons-category');
+    })->name('coupons.category');
+    Route::get('/coupons/influencer', function () {
+        return view('admin.coupons-influencer');
+    })->name('coupons.influencer');
+    Route::get('/coupons/code', function () {
+        return view('admin.coupons-code');
+    })->name('coupons.code');
+
     // Payment Methods Management
     Route::get('/payment-methods', [AdminController::class, 'paymentMethods'])->name('payment-methods');
     Route::get('/payment-methods/create', [AdminController::class, 'createPaymentMethod'])->name('payment-methods.create');
