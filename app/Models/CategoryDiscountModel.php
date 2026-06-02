@@ -25,31 +25,27 @@ class CategoryDiscountModel extends Model
     ];
 
     /**
-     * 取得目前有效（啟用且在有效期間內）的分類折扣。
-     * 若無則回傳 null。
+     * 取得所有目前有效（啟用且在有效期間內）的分類折扣。
      */
-    public static function getActive(): ?self
+    public static function getActive(): \Illuminate\Database\Eloquent\Collection
     {
         return static::where('is_active', true)
             ->whereDate('start_date', '<=', now())
             ->whereDate('end_date', '>=', now())
-            ->first();
+            ->get();
     }
 
     /**
-     * 取得設定記錄（只會有一筆），不存在則建立預設值。
+     * 取得所有其他折扣單已佔用的分類（排除指定 id）。
      */
-    public static function getSetting(): self
+    public static function categoriesUsedByOthers(int $excludeId): array
     {
-        return static::firstOrCreate(
-            ['id' => 1],
-            [
-                'is_active' => false,
-                'discount_value' => 15,
-                'categories' => [],
-                'start_date' => now()->toDateString(),
-                'end_date' => now()->addDays(7)->toDateString(),
-            ]
-        );
+        return static::where('id', '!=', $excludeId)
+            ->pluck('categories')
+            ->flatten()
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
     }
 }

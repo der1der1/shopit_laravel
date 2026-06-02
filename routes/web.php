@@ -135,7 +135,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/coupons/sitewide', [AdminController::class, 'sitewideDiscount'])->name('coupons.sitewide');
     Route::post('/coupons/sitewide', [AdminController::class, 'updateSitewideDiscount'])->name('coupons.sitewide.update');
     Route::get('/coupons/category', [AdminController::class, 'categoryDiscount'])->name('coupons.category');
-    Route::post('/coupons/category', [AdminController::class, 'updateCategoryDiscount'])->name('coupons.category.update');
+    Route::post('/coupons/category', [AdminController::class, 'storeCategoryDiscount'])->name('coupons.category.store');
+    Route::post('/coupons/category/{id}', [AdminController::class, 'updateCategoryDiscount'])->name('coupons.category.update');
+    Route::delete('/coupons/category/{id}', [AdminController::class, 'deleteCategoryDiscount'])->name('coupons.category.delete');
     Route::get('/coupons/influencer', [AdminController::class, 'influencerCoupons'])->name('coupons.influencer');
     Route::post('/coupons/influencer', [AdminController::class, 'storeInfluencerCoupon'])->name('coupons.influencer.store');
     Route::put('/coupons/influencer/{id}', [AdminController::class, 'updateInfluencerCoupon'])->name('coupons.influencer.update');

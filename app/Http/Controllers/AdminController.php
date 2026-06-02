@@ -938,16 +938,32 @@ class AdminController extends Controller
      */
     public function categoryDiscount()
     {
-        $discount = CategoryDiscountModel::getSetting();
+        $discounts = CategoryDiscountModel::orderBy('id')->get();
         $allCategories = productsModel::distinct()->orderBy('category')->pluck('category')->filter()->values();
 
-        return view('admin.coupons-category', compact('discount', 'allCategories'));
+        return view('admin.coupons-category', compact('discounts', 'allCategories'));
     }
 
     /**
-     * 儲存分類折扣設定
+     * 新增一筆空白折扣單
      */
-    public function updateCategoryDiscount(Request $request)
+    public function storeCategoryDiscount()
+    {
+        CategoryDiscountModel::create([
+            'is_active' => false,
+            'discount_value' => 15,
+            'categories' => [],
+            'start_date' => now()->toDateString(),
+            'end_date' => now()->addDays(7)->toDateString(),
+        ]);
+
+        return redirect()->route('admin.coupons.category')->with('success', '已新增折扣單');
+    }
+
+    /**
+     * 儲存指定折扣單
+     */
+    public function updateCategoryDiscount(Request $request, $id)
     {
         try {
             $request->validate([
@@ -968,7 +984,7 @@ class AdminController extends Controller
                 'end_date.after_or_equal' => '結束日期必須大於或等於開始日期',
             ]);
 
-            $discount = CategoryDiscountModel::getSetting();
+            $discount = CategoryDiscountModel::findOrFail($id);
             $discount->is_active = $request->boolean('is_active');
             $discount->discount_value = $request->integer('discount_value');
             $discount->categories = $request->input('categories', []);
@@ -976,12 +992,22 @@ class AdminController extends Controller
             $discount->end_date = $request->input('end_date');
             $discount->save();
 
-            return redirect()->route('admin.coupons.category')->with('success', '分類折扣設定已儲存');
+            return redirect()->route('admin.coupons.category')->with('success', '折扣單 #'.$id.' 已儲存');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
             return back()->with('error', '儲存失敗：'.$e->getMessage())->withInput();
         }
+    }
+
+    /**
+     * 刪除指定折扣單
+     */
+    public function deleteCategoryDiscount($id)
+    {
+        CategoryDiscountModel::findOrFail($id)->delete();
+
+        return redirect()->route('admin.coupons.category')->with('success', '折扣單已刪除');
     }
 
     /**
