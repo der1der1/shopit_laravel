@@ -116,11 +116,118 @@
     .page-intro {
         color: #7f8c8d;
         font-size: 14px;
-        margin-bottom: 24px;
+        margin-bottom: 16px;
         padding: 14px 18px;
         background: #f8f9fa;
         border-radius: 8px;
         border-left: 4px solid #3498db;
+    }
+
+    /* ── 疊加設定卡片 ── */
+    .stacking-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 16px 22px;
+        margin-bottom: 28px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        gap: 16px;
+    }
+
+    .stacking-card-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .stacking-card-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: #fff8e1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .stacking-card-text h4 {
+        margin: 0 0 4px;
+        font-size: 15px;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+
+    .stacking-card-text p {
+        margin: 0;
+        font-size: 13px;
+        color: #7f8c8d;
+        line-height: 1.5;
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+        position: relative;
+        width: 52px;
+        height: 28px;
+        flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        position: absolute;
+    }
+
+    .toggle-slider {
+        position: absolute;
+        inset: 0;
+        background: #ccc;
+        border-radius: 28px;
+        cursor: pointer;
+        transition: background 0.25s;
+    }
+
+    .toggle-slider::before {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #fff;
+        left: 4px;
+        top: 4px;
+        transition: transform 0.25s;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+        background: #27ae60;
+    }
+
+    .toggle-switch input:checked + .toggle-slider::before {
+        transform: translateX(24px);
+    }
+
+    .stacking-status {
+        font-size: 13px;
+        font-weight: 600;
+        min-width: 36px;
+        text-align: right;
+    }
+
+    .stacking-status.on  { color: #27ae60; }
+    .stacking-status.off { color: #aaa; }
+
+    .stacking-meta {
+        font-size: 12px;
+        color: #aaa;
+        white-space: nowrap;
     }
 </style>
 @endsection
@@ -132,6 +239,34 @@
 
 <div class="page-intro">
     選擇下方功能區塊以設定對應的優惠或折扣方案，點擊卡片或按鈕進入編輯頁面。
+</div>
+
+{{-- 優惠疊加設定 --}}
+<div class="stacking-card">
+    <div class="stacking-card-left">
+        <div class="stacking-card-icon">🔀</div>
+        <div class="stacking-card-text">
+            <h4>是否允許優惠疊加使用？</h4>
+            <p>開啟後，顧客可同時套用多種優惠（全站折扣、分類折扣、折扣碼等）；關閉則每筆訂單僅允許套用單一優惠。</p>
+            @if($couponSetting->updated_at && $couponSetting->updated_by)
+                <p class="stacking-meta">
+                    最後更新：{{ $couponSetting->updated_at->format('Y-m-d H:i') }}
+                    ／{{ optional($couponSetting->updatedByUser)->name ?? '未知管理員' }}
+                </p>
+            @endif
+        </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <span class="stacking-status {{ $couponSetting->allow_stacking ? 'on' : 'off' }}"
+              id="stackingStatusText">
+            {{ $couponSetting->allow_stacking ? '開啟' : '關閉' }}
+        </span>
+        <label class="toggle-switch" title="切換優惠疊加">
+            <input type="checkbox" id="stackingToggle"
+                   {{ $couponSetting->allow_stacking ? 'checked' : '' }}>
+            <span class="toggle-slider"></span>
+        </label>
+    </div>
 </div>
 
 <div class="coupon-grid">
@@ -192,4 +327,46 @@
     </a>
 
 </div>
+@endsection
+
+@section('scripts')
+<script>
+document.getElementById('stackingToggle').addEventListener('change', function () {
+    const checkbox   = this;
+    const statusText = document.getElementById('stackingStatusText');
+    const original   = checkbox.checked ? false : true; // 原始值（反向）
+
+    checkbox.disabled = true;
+
+    fetch('{{ route('admin.coupons.settings.stacking') }}', {
+        method : 'POST',
+        headers: {
+            'Content-Type'    : 'application/json',
+            'X-CSRF-TOKEN'    : '{{ csrf_token() }}',
+            'Accept'          : 'application/json',
+        },
+        body: JSON.stringify({}),
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('請求失敗');
+        return res.json();
+    })
+    .then(data => {
+        const isOn = data.allow_stacking;
+        checkbox.checked        = isOn;
+        statusText.textContent  = isOn ? '開啟' : '關閉';
+        statusText.className    = 'stacking-status ' + (isOn ? 'on' : 'off');
+    })
+    .catch(() => {
+        // 還原狀態
+        checkbox.checked        = original;
+        statusText.textContent  = original ? '開啟' : '關閉';
+        statusText.className    = 'stacking-status ' + (original ? 'on' : 'off');
+        alert('切換失敗，請重試。');
+    })
+    .finally(() => {
+        checkbox.disabled = false;
+    });
+});
+</script>
 @endsection

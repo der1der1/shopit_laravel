@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CategoryDiscountModel;
 use App\Models\contactModel;
 use App\Models\CouponCodeModel;
+use App\Models\CouponSettingModel;
 use App\Models\InfluencerCouponModel;
 use App\Models\mailListModel;
 use App\Models\marqeeModel;
@@ -1008,6 +1009,35 @@ class AdminController extends Controller
         CategoryDiscountModel::findOrFail($id)->delete();
 
         return redirect()->route('admin.coupons.category')->with('success', '折扣單已刪除');
+    }
+
+    // =========================================================
+    // Coupon Hub
+    // =========================================================
+
+    /**
+     * 顯示優惠券管理總覽頁
+     */
+    public function couponsHub()
+    {
+        $couponSetting = CouponSettingModel::getSetting();
+
+        return view('admin.coupons', compact('couponSetting'));
+    }
+
+    /**
+     * 切換優惠疊加開關
+     */
+    public function toggleStackingPermission(Request $request)
+    {
+        $setting = CouponSettingModel::getSetting();
+        $setting->allow_stacking = ! $setting->allow_stacking;
+        $setting->updated_by = Auth::id();
+        $setting->save();
+
+        return response()->json([
+            'allow_stacking' => $setting->allow_stacking,
+        ]);
     }
 
     /**

@@ -129,9 +129,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::delete('/marquee/{id}', [AdminController::class, 'destroyMarquee'])->name('marquee.destroy');
 
     // Coupons Management
-    Route::get('/coupons', function () {
-        return view('admin.coupons');
-    })->name('coupons');
+    Route::get('/coupons', [AdminController::class, 'couponsHub'])->name('coupons');
+    Route::post('/coupons/settings/stacking', [AdminController::class, 'toggleStackingPermission'])->name('coupons.settings.stacking');
     Route::get('/coupons/sitewide', [AdminController::class, 'sitewideDiscount'])->name('coupons.sitewide');
     Route::post('/coupons/sitewide', [AdminController::class, 'updateSitewideDiscount'])->name('coupons.sitewide.update');
     Route::get('/coupons/category', [AdminController::class, 'categoryDiscount'])->name('coupons.category');
