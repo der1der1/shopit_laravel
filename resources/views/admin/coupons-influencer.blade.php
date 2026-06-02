@@ -16,11 +16,16 @@
     }
     .back-link:hover { text-decoration: underline; }
 
-    .preview-badge {
-        display: inline-block; padding: 4px 12px; background: #fff3e0;
-        color: #e65100; border-radius: 20px; font-size: 12px; font-weight: 600;
-        border: 1px solid #ffcc80; margin-left: 10px; vertical-align: middle;
+    /* Flash messages */
+    .alert {
+        padding: 12px 18px;
+        border-radius: 7px;
+        margin-bottom: 18px;
+        font-size: 14px;
+        font-weight: 500;
     }
+    .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+    .alert-error   { background: #fdecea; color: #c62828; border: 1px solid #ef9a9a; }
 
     /* Header toolbar */
     .toolbar {
@@ -143,6 +148,13 @@
     }
 
     .field-group input:focus { border-color: #9c27b0; }
+    .field-group input.is-invalid { border-color: #e74c3c; }
+
+    .field-error {
+        color: #e74c3c;
+        font-size: 12px;
+        margin-top: 3px;
+    }
 
     .date-range {
         display: flex;
@@ -151,6 +163,18 @@
     }
     .date-range span { color: #7f8c8d; font-size: 13px; white-space: nowrap; }
     .date-range input { flex: 1; }
+
+    .date-error {
+        display: none;
+        color: #e74c3c;
+        font-size: 12px;
+        margin-top: 6px;
+        padding: 5px 9px;
+        background: #fdecea;
+        border: 1px solid #ef9a9a;
+        border-radius: 5px;
+    }
+    .date-error.show { display: block; }
 
     .toggle-row {
         display: flex;
@@ -220,6 +244,57 @@
         border: 2px dashed #e0e0e0;
         border-radius: 10px;
     }
+
+    /* 新增表單 modal overlay */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.45);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+        background: #fff;
+        border-radius: 12px;
+        padding: 28px 32px;
+        width: 620px;
+        max-width: 95vw;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    }
+
+    .modal-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #6a1b9a;
+        margin-bottom: 22px;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid #f0e6f6;
+        justify-content: flex-end;
+    }
+
+    .btn-cancel {
+        padding: 9px 20px;
+        background: #fff;
+        color: #555;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .btn-cancel:hover { background: #f5f5f5; }
 </style>
 @endsection
 
@@ -228,145 +303,183 @@
 
 <div style="display:flex; align-items:center; margin-bottom:20px;">
     <h2 style="color:#2c3e50; margin:0;">網紅折扣碼管理</h2>
-    <span class="preview-badge">僅供展示</span>
 </div>
 
+{{-- Flash messages --}}
+@if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+@if(session('error'))
+    <div class="alert alert-error">{{ session('error') }}</div>
+@endif
+
 <div class="toolbar">
-    <span style="font-size:14px; color:#7f8c8d;">共 <strong id="total-count">2</strong> 筆網紅折扣碼</span>
-    <button class="btn-add" onclick="addInfluencer()">+ 新增網紅折扣碼</button>
+    <span style="font-size:14px; color:#7f8c8d;">共 <strong id="total-count">{{ $coupons->count() }}</strong> 筆網紅折扣碼</span>
+    <button class="btn-add" onclick="openAddModal()">+ 新增網紅折扣碼</button>
 </div>
 
 <div class="influencer-list" id="influencer-list">
 
-    <!-- 示範資料 1 -->
-    <div class="influencer-card" id="inf-1">
-        <div class="influencer-card-header" onclick="toggleCard('body-1', 'chevron-1')">
+    @forelse($coupons as $coupon)
+    <div class="influencer-card" id="inf-{{ $coupon->id }}">
+        <div class="influencer-card-header" onclick="toggleCard('body-{{ $coupon->id }}', 'chevron-{{ $coupon->id }}')">
             <div class="name">
-                ⭐ 小明 Instagrammer
-                <span class="status-badge badge-on">啟用中</span>
+                ⭐ {{ $coupon->name }}
+                <span class="status-badge {{ $coupon->is_active ? 'badge-on' : 'badge-off' }}" id="badge-{{ $coupon->id }}">
+                    {{ $coupon->is_active ? '啟用中' : '已停用' }}
+                </span>
             </div>
             <div class="meta">
-                <span>代碼：MING10</span>
-                <span>折扣：9 折</span>
-                <span>2025/06/01 – 2025/08/31</span>
-                <span class="chevron" id="chevron-1">▼</span>
+                <span>代碼：{{ $coupon->code }}</span>
+                <span>折扣：{{ 100 - $coupon->discount_value }} 折</span>
+                <span>{{ $coupon->start_date->format('Y/m/d') }} – {{ $coupon->end_date->format('Y/m/d') }}</span>
+                <span class="chevron" id="chevron-{{ $coupon->id }}">▼</span>
             </div>
         </div>
-        <div class="influencer-card-body open" id="body-1">
+        <div class="influencer-card-body" id="body-{{ $coupon->id }}">
+            <form method="POST" action="{{ route('admin.coupons.influencer.update', $coupon->id) }}">
+                @csrf
+                @method('PUT')
+
+                <div class="form-grid">
+                    <div class="field-group">
+                        <label>姓名 / 帳號名稱 <span style="color:#e74c3c">*</span></label>
+                        <input type="text" name="name" value="{{ old('name', $coupon->name) }}" required>
+                        @error('name')<span class="field-error">{{ $message }}</span>@enderror
+                    </div>
+                    <div class="field-group">
+                        <label>社群連結</label>
+                        <input type="text" name="social_link" value="{{ old('social_link', $coupon->social_link) }}" placeholder="IG / YouTube / TikTok 等連結">
+                        @error('social_link')<span class="field-error">{{ $message }}</span>@enderror
+                    </div>
+                    <div class="field-group">
+                        <label>Email</label>
+                        <input type="email" name="email" value="{{ old('email', $coupon->email) }}">
+                        @error('email')<span class="field-error">{{ $message }}</span>@enderror
+                    </div>
+                    <div class="field-group">
+                        <label>折扣比例（%）<span style="color:#e74c3c">*</span></label>
+                        <input type="number" name="discount_value" value="{{ old('discount_value', $coupon->discount_value) }}" min="1" max="99" required>
+                        <span class="hint">例如 10 = 九折</span>
+                        @error('discount_value')<span class="field-error">{{ $message }}</span>@enderror
+                    </div>
+                    <div class="field-group">
+                        <label>折扣代碼 <span style="color:#e74c3c">*</span></label>
+                        <input type="text" name="code" value="{{ old('code', $coupon->code) }}" style="text-transform:uppercase" required>
+                        <span class="hint">僅限英數字，儲存後自動轉大寫</span>
+                        @error('code')<span class="field-error">{{ $message }}</span>@enderror
+                    </div>
+                    <div class="field-group">
+                        <label>折扣有效期間 <span style="color:#e74c3c">*</span></label>
+                        <div class="date-range">
+                            <input type="date" name="start_date" value="{{ old('start_date', $coupon->start_date->format('Y-m-d')) }}"
+                                onchange="validateCardDateRange(this.closest('.date-range').querySelector('input[name=end_date]'))" required>
+                            <span>至</span>
+                            <input type="date" name="end_date" value="{{ old('end_date', $coupon->end_date->format('Y-m-d')) }}"
+                                onchange="validateCardDateRange(this)" required>
+                        </div>
+                        <div class="date-error">結束日期不能早於開始日期，請重新選擇。</div>
+                        @error('start_date')<span class="field-error">{{ $message }}</span>@enderror
+                        @error('end_date')<span class="field-error">{{ $message }}</span>@enderror
+                    </div>
+                </div>
+
+                <div class="toggle-row">
+                    <span class="toggle-label">啟用此折扣碼</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="is_active" value="1" {{ $coupon->is_active ? 'checked' : '' }}
+                            onchange="updateToggle(this)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-status {{ $coupon->is_active ? 'on' : 'off' }}">
+                        {{ $coupon->is_active ? '已啟用' : '已停用' }}
+                    </span>
+                </div>
+
+                <div class="card-actions">
+                    <button type="submit" class="btn-save-sm">儲存</button>
+                    <button type="button" class="btn-delete-sm"
+                        onclick="deleteInfluencer({{ $coupon->id }}, '{{ addslashes($coupon->name) }}')">刪除</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @empty
+    <div class="empty-state" id="empty-state">
+        <p style="font-size:32px; margin:0 0 10px;">🎯</p>
+        <p style="margin:0; font-size:15px;">尚無網紅折扣碼，點擊右上角「+ 新增」開始建立</p>
+    </div>
+    @endforelse
+
+</div>
+
+{{-- 新增網紅折扣碼 Modal --}}
+<div class="modal-overlay" id="add-modal" onclick="closeModalOnOverlay(event)">
+    <div class="modal-box">
+        <div class="modal-title">+ 新增網紅折扣碼</div>
+        <form method="POST" action="{{ route('admin.coupons.influencer.store') }}" id="add-form">
+            @csrf
             <div class="form-grid">
                 <div class="field-group">
-                    <label>姓名 / 帳號名稱</label>
-                    <input type="text" value="小明 Instagrammer">
+                    <label>姓名 / 帳號名稱 <span style="color:#e74c3c">*</span></label>
+                    <input type="text" name="name" placeholder="請輸入姓名或帳號名稱" required>
                 </div>
                 <div class="field-group">
                     <label>社群連結</label>
-                    <input type="text" value="https://instagram.com/xiaoming" placeholder="IG / YouTube / TikTok 等連結">
+                    <input type="text" name="social_link" placeholder="IG / YouTube / TikTok 等連結">
                 </div>
                 <div class="field-group">
                     <label>Email</label>
-                    <input type="email" value="xiaoming@example.com">
+                    <input type="email" name="email" placeholder="example@email.com">
                 </div>
                 <div class="field-group">
-                    <label>折扣比例（%）</label>
-                    <input type="number" value="10" min="1" max="99">
+                    <label>折扣比例（%）<span style="color:#e74c3c">*</span></label>
+                    <input type="number" name="discount_value" value="10" min="1" max="99" required>
                     <span class="hint">例如 10 = 九折</span>
                 </div>
                 <div class="field-group">
-                    <label>折扣代碼</label>
-                    <input type="text" value="MING10">
+                    <label>折扣代碼 <span style="color:#e74c3c">*</span></label>
+                    <input type="text" name="code" placeholder="英數字，例如 MING10" style="text-transform:uppercase" required>
+                    <span class="hint">儲存後自動轉大寫</span>
                 </div>
                 <div class="field-group">
-                    <label>折扣有效期間</label>
+                    <label>折扣有效期間 <span style="color:#e74c3c">*</span></label>
                     <div class="date-range">
-                        <input type="date" value="2025-06-01">
+                        <input type="date" name="start_date" id="add-start-date"
+                            onchange="validateCardDateRange(document.getElementById('add-end-date'))" required>
                         <span>至</span>
-                        <input type="date" value="2025-08-31">
+                        <input type="date" name="end_date" id="add-end-date"
+                            onchange="validateCardDateRange(this)" required>
                     </div>
+                    <div class="date-error">結束日期不能早於開始日期，請重新選擇。</div>
                 </div>
             </div>
             <div class="toggle-row">
                 <span class="toggle-label">啟用此折扣碼</span>
                 <label class="toggle-switch">
-                    <input type="checkbox" checked onchange="updateToggle(this)">
-                    <span class="toggle-slider"></span>
-                </label>
-                <span class="toggle-status on">已啟用</span>
-            </div>
-            <div class="card-actions">
-                <button class="btn-save-sm" onclick="alert('（展示用）已儲存')">儲存</button>
-                <button class="btn-delete-sm" onclick="deleteCard('inf-1')">刪除</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 示範資料 2 -->
-    <div class="influencer-card" id="inf-2">
-        <div class="influencer-card-header" onclick="toggleCard('body-2', 'chevron-2')">
-            <div class="name">
-                ⭐ 阿花 YouTuber
-                <span class="status-badge badge-off">已停用</span>
-            </div>
-            <div class="meta">
-                <span>代碼：AHUA20</span>
-                <span>折扣：8 折</span>
-                <span>2025/07/01 – 2025/09/30</span>
-                <span class="chevron" id="chevron-2">▼</span>
-            </div>
-        </div>
-        <div class="influencer-card-body" id="body-2">
-            <div class="form-grid">
-                <div class="field-group">
-                    <label>姓名 / 帳號名稱</label>
-                    <input type="text" value="阿花 YouTuber">
-                </div>
-                <div class="field-group">
-                    <label>社群連結</label>
-                    <input type="text" value="https://youtube.com/@ahua" placeholder="IG / YouTube / TikTok 等連結">
-                </div>
-                <div class="field-group">
-                    <label>Email</label>
-                    <input type="email" value="ahua@example.com">
-                </div>
-                <div class="field-group">
-                    <label>折扣比例（%）</label>
-                    <input type="number" value="20" min="1" max="99">
-                    <span class="hint">例如 20 = 八折</span>
-                </div>
-                <div class="field-group">
-                    <label>折扣代碼</label>
-                    <input type="text" value="AHUA20">
-                </div>
-                <div class="field-group">
-                    <label>折扣有效期間</label>
-                    <div class="date-range">
-                        <input type="date" value="2025-07-01">
-                        <span>至</span>
-                        <input type="date" value="2025-09-30">
-                    </div>
-                </div>
-            </div>
-            <div class="toggle-row">
-                <span class="toggle-label">啟用此折扣碼</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" onchange="updateToggle(this)">
+                    <input type="checkbox" name="is_active" value="1" onchange="updateToggle(this)">
                     <span class="toggle-slider"></span>
                 </label>
                 <span class="toggle-status off">已停用</span>
             </div>
-            <div class="card-actions">
-                <button class="btn-save-sm" onclick="alert('（展示用）已儲存')">儲存</button>
-                <button class="btn-delete-sm" onclick="deleteCard('inf-2')">刪除</button>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeAddModal()">取消</button>
+                <button type="submit" class="btn-save-sm">新增</button>
             </div>
-        </div>
+        </form>
     </div>
-
 </div>
+
+{{-- 隱藏的刪除表單 --}}
+<form method="POST" id="delete-form" style="display:none;">
+    @csrf
+    @method('DELETE')
+</form>
 @endsection
 
 @section('scripts')
 <script>
-    let counter = 3;
-
+    /* ── 展開 / 收合卡片 ── */
     function toggleCard(bodyId, chevronId) {
         const body = document.getElementById(bodyId);
         const chevron = document.getElementById(chevronId);
@@ -374,88 +487,59 @@
         chevron.classList.toggle('open');
     }
 
+    /* ── Toggle 開關文字更新 ── */
     function updateToggle(checkbox) {
         const statusEl = checkbox.closest('.toggle-row').querySelector('.toggle-status');
         statusEl.textContent = checkbox.checked ? '已啟用' : '已停用';
         statusEl.className = 'toggle-status ' + (checkbox.checked ? 'on' : 'off');
     }
 
-    function deleteCard(id) {
-        if (!confirm('確定要刪除此網紅折扣碼嗎？')) return;
-        const card = document.getElementById(id);
-        card.remove();
-        updateCount();
+    /* ── 日期區間驗證：傳入結束日期 input ── */
+    function validateCardDateRange(endInput) {
+        const dateRange  = endInput.closest('.date-range');
+        const startInput = dateRange.querySelector('input[type="date"]');
+        const errorEl    = dateRange.closest('.field-group').querySelector('.date-error');
+
+        if (!startInput.value || !endInput.value) return true;
+
+        const invalid = endInput.value < startInput.value;
+        endInput.classList.toggle('is-invalid', invalid);
+        if (errorEl) errorEl.classList.toggle('show', invalid);
+        return !invalid;
     }
 
-    function updateCount() {
-        const count = document.querySelectorAll('#influencer-list .influencer-card').length;
-        document.getElementById('total-count').textContent = count;
+    /* ── 刪除（送出隱藏表單到 DELETE 路由）── */
+    function deleteInfluencer(id, name) {
+        if (!confirm('確定要刪除「' + name + '」的折扣碼嗎？此操作無法復原。')) return;
+
+        const form = document.getElementById('delete-form');
+        form.action = '/admin/coupons/influencer/' + id;
+        form.submit();
     }
 
-    function addInfluencer() {
-        const id = 'inf-' + counter;
-        const bodyId = 'body-' + counter;
-        const chevronId = 'chevron-' + counter;
-        counter++;
-
-        const today = new Date().toISOString().slice(0, 10);
+    /* ── 新增 Modal ── */
+    function openAddModal() {
+        const today     = new Date().toISOString().slice(0, 10);
         const nextMonth = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
-
-        const html = `
-        <div class="influencer-card" id="${id}">
-            <div class="influencer-card-header" onclick="toggleCard('${bodyId}', '${chevronId}')">
-                <div class="name">⭐ 新網紅 <span class="status-badge badge-off">已停用</span></div>
-                <div class="meta"><span>代碼：待填寫</span><span class="chevron open" id="${chevronId}">▼</span></div>
-            </div>
-            <div class="influencer-card-body open" id="${bodyId}">
-                <div class="form-grid">
-                    <div class="field-group">
-                        <label>姓名 / 帳號名稱</label>
-                        <input type="text" placeholder="請輸入姓名或帳號名稱">
-                    </div>
-                    <div class="field-group">
-                        <label>社群連結</label>
-                        <input type="text" placeholder="IG / YouTube / TikTok 等連結">
-                    </div>
-                    <div class="field-group">
-                        <label>Email</label>
-                        <input type="email" placeholder="example@email.com">
-                    </div>
-                    <div class="field-group">
-                        <label>折扣比例（%）</label>
-                        <input type="number" value="10" min="1" max="99">
-                        <span class="hint">例如 10 = 九折</span>
-                    </div>
-                    <div class="field-group">
-                        <label>折扣代碼</label>
-                        <input type="text" placeholder="請輸入折扣代碼（英數字）">
-                    </div>
-                    <div class="field-group">
-                        <label>折扣有效期間</label>
-                        <div class="date-range">
-                            <input type="date" value="${today}">
-                            <span>至</span>
-                            <input type="date" value="${nextMonth}">
-                        </div>
-                    </div>
-                </div>
-                <div class="toggle-row">
-                    <span class="toggle-label">啟用此折扣碼</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" onchange="updateToggle(this)">
-                        <span class="toggle-slider"></span>
-                    </label>
-                    <span class="toggle-status off">已停用</span>
-                </div>
-                <div class="card-actions">
-                    <button class="btn-save-sm" onclick="alert('（展示用）已儲存')">儲存</button>
-                    <button class="btn-delete-sm" onclick="deleteCard('${id}')">刪除</button>
-                </div>
-            </div>
-        </div>`;
-
-        document.getElementById('influencer-list').insertAdjacentHTML('beforeend', html);
-        updateCount();
+        document.getElementById('add-start-date').value = today;
+        document.getElementById('add-end-date').value   = nextMonth;
+        document.getElementById('add-modal').classList.add('open');
     }
+
+    function closeAddModal() {
+        document.getElementById('add-modal').classList.remove('open');
+        document.getElementById('add-form').reset();
+    }
+
+    function closeModalOnOverlay(event) {
+        if (event.target === document.getElementById('add-modal')) {
+            closeAddModal();
+        }
+    }
+
+    /* ── 鍵盤 Esc 關閉 Modal ── */
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeAddModal();
+    });
 </script>
 @endsection

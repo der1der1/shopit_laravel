@@ -64,6 +64,16 @@
         border-color: #3498db;
     }
 
+    .form-row input.is-invalid {
+        border-color: #e74c3c;
+    }
+
+    .invalid-feedback {
+        color: #e74c3c;
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
     .date-range {
         display: flex;
         gap: 12px;
@@ -78,6 +88,21 @@
 
     .date-range input {
         flex: 1;
+    }
+
+    .date-error {
+        display: none;
+        color: #e74c3c;
+        font-size: 12px;
+        margin-top: 6px;
+        padding: 6px 10px;
+        background: #fdecea;
+        border: 1px solid #ef9a9a;
+        border-radius: 5px;
+    }
+
+    .date-error.show {
+        display: block;
     }
 
     /* Toggle Switch */
@@ -186,17 +211,22 @@
 
     .btn-cancel:hover { background: #ebebeb; color: #333; text-decoration: none; }
 
-    .preview-badge {
-        display: inline-block;
-        padding: 4px 12px;
-        background: #fff3e0;
-        color: #e65100;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        border: 1px solid #ffcc80;
-        margin-left: 10px;
-        vertical-align: middle;
+    .alert {
+        padding: 12px 16px;
+        border-radius: 7px;
+        font-size: 14px;
+        margin-bottom: 20px;
+        max-width: 680px;
+    }
+    .alert-success {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #a5d6a7;
+    }
+    .alert-danger {
+        background: #fdecea;
+        color: #c62828;
+        border: 1px solid #ef9a9a;
     }
 </style>
 @endsection
@@ -206,45 +236,97 @@
 
 <div style="display:flex; align-items:center; margin-bottom:20px;">
     <h2 style="color:#2c3e50; margin:0;">全站折扣設定</h2>
-    <span class="preview-badge">僅供展示</span>
 </div>
 
-<div class="form-card">
-    <h3>🌐 全站折扣設定</h3>
+@if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
 
-    <!-- Toggle -->
-    <div class="toggle-row">
-        <span class="toggle-label">啟用全站折扣</span>
-        <label class="toggle-switch">
-            <input type="checkbox" id="sitewide-toggle" checked onchange="updateStatus(this)">
-            <span class="toggle-slider"></span>
-        </label>
-        <span class="toggle-status on" id="sitewide-status">已啟用</span>
+@if(session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+@endif
+
+@if($errors->any())
+    <div class="alert alert-danger">
+        <ul style="margin:0; padding-left:18px;">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
     </div>
+@endif
 
-    <!-- 折扣數字 -->
-    <div class="form-row">
-        <label for="discount-value">折扣比例（%）</label>
-        <input type="number" id="discount-value" name="discount_value" min="1" max="99" value="10" placeholder="例如：10 表示九折">
-        <span class="hint">輸入 1–99 的整數，例如輸入 20 表示打八折（八折 = 80% 原價）。</span>
-    </div>
+<form method="POST" action="{{ route('admin.coupons.sitewide.update') }}">
+    @csrf
+    <div class="form-card">
+        <h3>🌐 全站折扣設定</h3>
 
-    <!-- 日期區間 -->
-    <div class="form-row">
-        <label>折扣有效期間</label>
-        <div class="date-range">
-            <input type="date" id="start-date" name="start_date" value="{{ date('Y-m-d') }}">
-            <span>至</span>
-            <input type="date" id="end-date" name="end_date" value="{{ date('Y-m-d', strtotime('+7 days')) }}">
+        <!-- Toggle -->
+        <div class="toggle-row">
+            <span class="toggle-label">啟用全站折扣</span>
+            <label class="toggle-switch">
+                <input type="checkbox" name="is_active" id="sitewide-toggle"
+                    {{ old('is_active', $discount->is_active) ? 'checked' : '' }}
+                    onchange="updateStatus(this)">
+                <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-status {{ old('is_active', $discount->is_active) ? 'on' : 'off' }}"
+                  id="sitewide-status">
+                {{ old('is_active', $discount->is_active) ? '已啟用' : '已停用' }}
+            </span>
         </div>
-        <span class="hint">選擇折扣活動的開始日期與結束日期，區間以天為單位。</span>
-    </div>
 
-    <div class="form-actions">
-        <button class="btn-save" onclick="alert('（展示用）設定已儲存')">儲存設定</button>
-        <a href="{{ route('admin.coupons') }}" class="btn-cancel">取消</a>
+        <!-- 折扣數字 -->
+        <div class="form-row">
+            <label for="discount-value">折扣比例（%）</label>
+            <input type="number"
+                   id="discount-value"
+                   name="discount_value"
+                   min="1" max="99"
+                   value="{{ old('discount_value', $discount->discount_value) }}"
+                   placeholder="例如：10 表示九折"
+                   class="{{ $errors->has('discount_value') ? 'is-invalid' : '' }}">
+            @error('discount_value')
+                <span class="invalid-feedback">{{ $message }}</span>
+            @enderror
+            <span class="hint">輸入 1–99 的整數，例如輸入 20 表示打八折（八折 = 80% 原價）。</span>
+        </div>
+
+        <!-- 日期區間 -->
+        <div class="form-row">
+            <label>折扣有效期間</label>
+            <div class="date-range">
+                <input type="date"
+                       id="start-date"
+                       name="start_date"
+                       value="{{ old('start_date', $discount->start_date ? $discount->start_date->format('Y-m-d') : date('Y-m-d')) }}"
+                       class="{{ $errors->has('start_date') ? 'is-invalid' : '' }}"
+                       onchange="validateDateRange()">
+                <span>至</span>
+                <input type="date"
+                       id="end-date"
+                       name="end_date"
+                       value="{{ old('end_date', $discount->end_date ? $discount->end_date->format('Y-m-d') : date('Y-m-d', strtotime('+7 days'))) }}"
+                       class="{{ $errors->has('end_date') ? 'is-invalid' : '' }}"
+                       onchange="validateDateRange()">
+            </div>
+            <div class="date-error" id="date-range-error">
+                結束日期不能早於開始日期，請重新選擇。
+            </div>
+            @if($errors->has('start_date') || $errors->has('end_date'))
+                <span class="invalid-feedback" style="display:block;">
+                    {{ $errors->first('start_date') ?: $errors->first('end_date') }}
+                </span>
+            @endif
+            <span class="hint">選擇折扣活動的開始日期與結束日期，區間以天為單位。</span>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-save">儲存設定</button>
+            <a href="{{ route('admin.coupons') }}" class="btn-cancel">取消</a>
+        </div>
     </div>
-</div>
+</form>
 @endsection
 
 @section('scripts')
@@ -259,5 +341,28 @@
             status.className = 'toggle-status off';
         }
     }
+
+    function validateDateRange() {
+        const startInput = document.getElementById('start-date');
+        const endInput   = document.getElementById('end-date');
+        const errorBox   = document.getElementById('date-range-error');
+
+        if (!startInput.value || !endInput.value) return true;
+
+        const invalid = endInput.value < startInput.value;
+
+        endInput.classList.toggle('is-invalid', invalid);
+        errorBox.classList.toggle('show', invalid);
+
+        return !invalid;
+    }
+
+    // 表單送出前攔截
+    document.querySelector('form').addEventListener('submit', function (e) {
+        if (!validateDateRange()) {
+            e.preventDefault();
+            document.getElementById('end-date').focus();
+        }
+    });
 </script>
 @endsection

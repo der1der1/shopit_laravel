@@ -60,6 +60,7 @@
     }
 
     .form-row input:focus { border-color: #4caf50; }
+    .form-row input.is-invalid { border-color: #e74c3c; }
 
     .date-range {
         display: flex;
@@ -68,6 +69,18 @@
     }
     .date-range span { color: #7f8c8d; font-size: 13px; white-space: nowrap; }
     .date-range input { flex: 1; }
+
+    .date-error {
+        display: none;
+        color: #e74c3c;
+        font-size: 12px;
+        margin-top: 6px;
+        padding: 6px 10px;
+        background: #fdecea;
+        border: 1px solid #ef9a9a;
+        border-radius: 5px;
+    }
+    .date-error.show { display: block; }
 
     /* Toggle */
     .toggle-row {
@@ -170,12 +183,6 @@
         display: inline-block; transition: background 0.2s;
     }
     .btn-cancel:hover { background: #ebebeb; color: #333; text-decoration: none; }
-
-    .preview-badge {
-        display: inline-block; padding: 4px 12px; background: #fff3e0;
-        color: #e65100; border-radius: 20px; font-size: 12px; font-weight: 600;
-        border: 1px solid #ffcc80; margin-left: 10px; vertical-align: middle;
-    }
 </style>
 @endsection
 
@@ -184,38 +191,71 @@
 
 <div style="display:flex; align-items:center; margin-bottom:20px;">
     <h2 style="color:#2c3e50; margin:0;">分類商品折扣設定</h2>
-    <span class="preview-badge">僅供展示</span>
 </div>
+
+{{-- 成功訊息 --}}
+@if(session('success'))
+<div style="max-width:720px; margin-bottom:16px; padding:12px 16px; background:#e8f5e9; border:1px solid #a5d6a7; border-radius:7px; color:#2e7d32; font-size:14px;">
+    {{ session('success') }}
+</div>
+@endif
+
+{{-- 錯誤訊息 --}}
+@if(session('error'))
+<div style="max-width:720px; margin-bottom:16px; padding:12px 16px; background:#fdecea; border:1px solid #ef9a9a; border-radius:7px; color:#c62828; font-size:14px;">
+    {{ session('error') }}
+</div>
+@endif
+
+@if($errors->any())
+<div style="max-width:720px; margin-bottom:16px; padding:12px 16px; background:#fdecea; border:1px solid #ef9a9a; border-radius:7px; color:#c62828; font-size:14px;">
+    <ul style="margin:0; padding-left:18px;">
+        @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
+<form method="POST" action="{{ route('admin.coupons.category.update') }}">
+@csrf
 
 <div class="form-card">
     <h3>🏷️ 分類商品折扣設定</h3>
 
-    <!-- Toggle -->
+    {{-- Toggle --}}
+    @php $isActive = old('is_active', $discount->is_active ? '1' : '') === '1' || ($discount->is_active && !session()->hasOldInput()); @endphp
     <div class="toggle-row">
         <span class="toggle-label">啟用分類折扣</span>
         <label class="toggle-switch">
-            <input type="checkbox" id="cat-toggle" onchange="updateStatus(this)">
+            <input type="checkbox" id="cat-toggle" name="is_active" value="1"
+                   onchange="updateStatus(this)"
+                   {{ $isActive ? 'checked' : '' }}>
             <span class="toggle-slider"></span>
         </label>
-        <span class="toggle-status off" id="cat-status">已停用</span>
+        <span class="toggle-status {{ $isActive ? 'on' : 'off' }}" id="cat-status">
+            {{ $isActive ? '已啟用' : '已停用' }}
+        </span>
     </div>
 
-    <!-- 商品分類勾選 -->
+    {{-- 商品分類勾選 --}}
+    @php
+        $savedCategories  = old('categories', $discount->categories ?? []);
+    @endphp
     <div class="form-row">
         <label>套用折扣的商品分類</label>
         <div class="select-actions">
-            <button class="btn-text" onclick="selectAll()">全選</button>
+            <button type="button" class="btn-text" onclick="selectAll()">全選</button>
             <span style="color:#ccc;">|</span>
-            <button class="btn-text" onclick="clearAll()">清除全選</button>
+            <button type="button" class="btn-text" onclick="clearAll()">清除全選</button>
         </div>
         <div class="category-grid" id="category-grid">
-            @php
-                $categories = ['上衣', '褲子', '裙子', '外套', '配件', '鞋子', '包包', '帽子', '首飾', '特賣品'];
-            @endphp
-            @foreach($categories as $cat)
-            <label class="category-item" id="label-{{ $loop->index }}">
+            @foreach($allCategories as $index => $cat)
+            @php $checked = in_array($cat, (array) $savedCategories); @endphp
+            <label class="category-item {{ $checked ? 'checked' : '' }}" id="label-{{ $index }}">
                 <input type="checkbox" name="categories[]" value="{{ $cat }}"
-                    onchange="toggleCategoryStyle(this, 'label-{{ $loop->index }}')">
+                    onchange="toggleCategoryStyle(this, 'label-{{ $index }}')"
+                    {{ $checked ? 'checked' : '' }}>
                 {{ $cat }}
             </label>
             @endforeach
@@ -223,29 +263,52 @@
         <span class="hint">可複選多個分類，折扣將套用至所選分類下的所有商品。</span>
     </div>
 
-    <!-- 折扣數字 -->
+    {{-- 折扣數字 --}}
     <div class="form-row">
         <label for="cat-discount">折扣比例（%）</label>
-        <input type="number" id="cat-discount" name="discount_value" min="1" max="99" value="15" placeholder="例如：15 表示八五折">
+        <input type="number" id="cat-discount" name="discount_value" min="1" max="99"
+               value="{{ old('discount_value', $discount->discount_value) }}"
+               placeholder="例如：15 表示八五折"
+               class="{{ $errors->has('discount_value') ? 'is-invalid' : '' }}">
         <span class="hint">輸入 1–99 的整數，例如輸入 30 代表打七折。</span>
+        @error('discount_value')
+            <span style="color:#e74c3c; font-size:12px;">{{ $message }}</span>
+        @enderror
     </div>
 
-    <!-- 日期區間 -->
+    {{-- 日期區間 --}}
     <div class="form-row">
         <label>折扣有效期間</label>
         <div class="date-range">
-            <input type="date" id="cat-start" name="start_date" value="{{ date('Y-m-d') }}">
+            <input type="date" id="cat-start" name="start_date"
+                   value="{{ old('start_date', $discount->start_date ? $discount->start_date->format('Y-m-d') : date('Y-m-d')) }}"
+                   onchange="validateDateRange()"
+                   class="{{ $errors->has('start_date') ? 'is-invalid' : '' }}">
             <span>至</span>
-            <input type="date" id="cat-end" name="end_date" value="{{ date('Y-m-d', strtotime('+7 days')) }}">
+            <input type="date" id="cat-end" name="end_date"
+                   value="{{ old('end_date', $discount->end_date ? $discount->end_date->format('Y-m-d') : date('Y-m-d', strtotime('+7 days'))) }}"
+                   onchange="validateDateRange()"
+                   class="{{ $errors->has('end_date') ? 'is-invalid' : '' }}">
         </div>
+        <div class="date-error" id="date-range-error">
+            結束日期不能早於開始日期，請重新選擇。
+        </div>
+        @error('start_date')
+            <span style="color:#e74c3c; font-size:12px;">{{ $message }}</span>
+        @enderror
+        @error('end_date')
+            <span style="color:#e74c3c; font-size:12px;">{{ $message }}</span>
+        @enderror
         <span class="hint">選擇折扣活動的開始日期與結束日期。</span>
     </div>
 
     <div class="form-actions">
-        <button class="btn-save" onclick="alert('（展示用）設定已儲存')">儲存設定</button>
+        <button type="submit" class="btn-save">儲存設定</button>
         <a href="{{ route('admin.coupons') }}" class="btn-cancel">取消</a>
     </div>
 </div>
+
+</form>
 @endsection
 
 @section('scripts')
@@ -256,13 +319,26 @@
         status.className = 'toggle-status ' + (checkbox.checked ? 'on' : 'off');
     }
 
+    function validateDateRange() {
+        const startInput = document.getElementById('cat-start');
+        const endInput   = document.getElementById('cat-end');
+        const errorBox   = document.getElementById('date-range-error');
+
+        if (!startInput.value || !endInput.value) return true;
+
+        const invalid = endInput.value < startInput.value;
+        endInput.classList.toggle('is-invalid', invalid);
+        errorBox.classList.toggle('show', invalid);
+        return !invalid;
+    }
+
     function toggleCategoryStyle(checkbox, labelId) {
         const label = document.getElementById(labelId);
         label.classList.toggle('checked', checkbox.checked);
     }
 
     function selectAll() {
-        document.querySelectorAll('#category-grid input[type="checkbox"]').forEach(function(cb, i) {
+        document.querySelectorAll('#category-grid input[type="checkbox"]').forEach(function(cb) {
             cb.checked = true;
             cb.closest('label').classList.add('checked');
         });

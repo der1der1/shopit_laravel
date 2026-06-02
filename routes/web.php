@@ -132,18 +132,20 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/coupons', function () {
         return view('admin.coupons');
     })->name('coupons');
-    Route::get('/coupons/sitewide', function () {
-        return view('admin.coupons-sitewide');
-    })->name('coupons.sitewide');
-    Route::get('/coupons/category', function () {
-        return view('admin.coupons-category');
-    })->name('coupons.category');
-    Route::get('/coupons/influencer', function () {
-        return view('admin.coupons-influencer');
-    })->name('coupons.influencer');
-    Route::get('/coupons/code', function () {
-        return view('admin.coupons-code');
-    })->name('coupons.code');
+    Route::get('/coupons/sitewide', [AdminController::class, 'sitewideDiscount'])->name('coupons.sitewide');
+    Route::post('/coupons/sitewide', [AdminController::class, 'updateSitewideDiscount'])->name('coupons.sitewide.update');
+    Route::get('/coupons/category', [AdminController::class, 'categoryDiscount'])->name('coupons.category');
+    Route::post('/coupons/category', [AdminController::class, 'updateCategoryDiscount'])->name('coupons.category.update');
+    Route::get('/coupons/influencer', [AdminController::class, 'influencerCoupons'])->name('coupons.influencer');
+    Route::post('/coupons/influencer', [AdminController::class, 'storeInfluencerCoupon'])->name('coupons.influencer.store');
+    Route::put('/coupons/influencer/{id}', [AdminController::class, 'updateInfluencerCoupon'])->name('coupons.influencer.update');
+    Route::delete('/coupons/influencer/{id}', [AdminController::class, 'deleteInfluencerCoupon'])->name('coupons.influencer.delete');
+    Route::post('/coupons/influencer/{id}/toggle', [AdminController::class, 'toggleInfluencerCoupon'])->name('coupons.influencer.toggle');
+    Route::get('/coupons/code', [AdminController::class, 'couponCodes'])->name('coupons.code');
+    Route::post('/coupons/code', [AdminController::class, 'storeCouponCode'])->name('coupons.code.store');
+    Route::put('/coupons/code/{id}', [AdminController::class, 'updateCouponCode'])->name('coupons.code.update');
+    Route::delete('/coupons/code/{id}', [AdminController::class, 'deleteCouponCode'])->name('coupons.code.delete');
+    Route::post('/coupons/code/{id}/toggle', [AdminController::class, 'toggleCouponCode'])->name('coupons.code.toggle');
 
     // Payment Methods Management
     Route::get('/payment-methods', [AdminController::class, 'paymentMethods'])->name('payment-methods');

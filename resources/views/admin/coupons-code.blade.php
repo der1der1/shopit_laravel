@@ -16,11 +16,16 @@
     }
     .back-link:hover { text-decoration: underline; }
 
-    .preview-badge {
-        display: inline-block; padding: 4px 12px; background: #fff3e0;
-        color: #e65100; border-radius: 20px; font-size: 12px; font-weight: 600;
-        border: 1px solid #ffcc80; margin-left: 10px; vertical-align: middle;
+    /* Flash messages */
+    .alert {
+        padding: 12px 18px;
+        border-radius: 7px;
+        margin-bottom: 18px;
+        font-size: 14px;
+        font-weight: 500;
     }
+    .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+    .alert-error   { background: #fdecea; color: #c62828; border: 1px solid #ef9a9a; }
 
     .toolbar {
         display: flex;
@@ -138,6 +143,7 @@
     }
 
     .field-group input:focus { border-color: #ff9800; }
+    .field-group input.is-invalid { border-color: #e74c3c; }
 
     .date-range {
         display: flex;
@@ -146,6 +152,18 @@
     }
     .date-range span { color: #7f8c8d; font-size: 13px; white-space: nowrap; }
     .date-range input { flex: 1; }
+
+    .date-error {
+        display: none;
+        color: #e74c3c;
+        font-size: 12px;
+        margin-top: 6px;
+        padding: 5px 9px;
+        background: #fdecea;
+        border: 1px solid #ef9a9a;
+        border-radius: 5px;
+    }
+    .date-error.show { display: block; }
 
     .toggle-row {
         display: flex;
@@ -220,274 +238,293 @@
         font-weight: 700;
         letter-spacing: 1px;
     }
+
+    /* New coupon modal */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+        background: #fff;
+        border-radius: 12px;
+        padding: 28px 32px;
+        width: 560px;
+        max-width: 95vw;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+    .modal-title {
+        font-size: 17px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 22px;
+    }
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        justify-content: flex-end;
+    }
+    .btn-cancel {
+        padding: 9px 20px;
+        background: #f5f5f5;
+        color: #555;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .btn-cancel:hover { background: #eee; }
+
+    /* Validation error list */
+    .error-list {
+        background: #fdecea;
+        border: 1px solid #ef9a9a;
+        border-radius: 6px;
+        padding: 10px 14px;
+        margin-bottom: 16px;
+        font-size: 13px;
+        color: #c62828;
+    }
+    .error-list ul { margin: 0; padding-left: 18px; }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #95a5a6;
+        font-size: 15px;
+    }
 </style>
 @endsection
 
 @section('content')
 <a href="{{ route('admin.coupons') }}" class="back-link">← 返回優惠券管理</a>
 
-<div style="display:flex; align-items:center; margin-bottom:20px;">
-    <h2 style="color:#2c3e50; margin:0;">折扣碼設定</h2>
-    <span class="preview-badge">僅供展示</span>
-</div>
+<h2 style="color:#2c3e50; margin-bottom:20px;">折扣碼設定</h2>
+
+{{-- Flash messages --}}
+@if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+@if(session('error'))
+    <div class="alert alert-error">{{ session('error') }}</div>
+@endif
+
+{{-- Validation errors (from store/update) --}}
+@if($errors->any())
+    <div class="error-list">
+        <ul>
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
 <div class="toolbar">
-    <span style="font-size:14px; color:#7f8c8d;">共 <strong id="total-count">3</strong> 筆折扣碼</span>
-    <button class="btn-add" onclick="addCode()">+ 新增折扣碼</button>
+    <span style="font-size:14px; color:#7f8c8d;">共 <strong>{{ $coupons->count() }}</strong> 筆折扣碼</span>
+    <button class="btn-add" onclick="openNewModal()">+ 新增折扣碼</button>
 </div>
 
-<div class="code-list" id="code-list">
-
-    <!-- 示範資料 1 -->
-    <div class="code-card" id="code-1">
-        <div class="code-card-header" onclick="toggleCard('cbody-1', 'cchevron-1')">
+<div class="code-list">
+    @forelse($coupons as $coupon)
+    <div class="code-card" id="card-{{ $coupon->id }}">
+        <div class="code-card-header" onclick="toggleCard('cbody-{{ $coupon->id }}', 'cchevron-{{ $coupon->id }}')">
             <div class="title">
-                🎟️ 夏季大促銷
-                <span class="status-badge badge-on">啟用中</span>
+                🎟️ {{ $coupon->title }}
+                <span class="status-badge {{ $coupon->is_active ? 'badge-on' : 'badge-off' }}" id="badge-{{ $coupon->id }}">
+                    {{ $coupon->is_active ? '啟用中' : '已停用' }}
+                </span>
             </div>
             <div class="meta">
-                <span>代碼：<span class="code-chip">SUMMER15</span></span>
-                <span>折扣：8.5 折</span>
-                <span>2025/06/01 – 2025/08/31</span>
-                <span class="chevron open" id="cchevron-1">▼</span>
+                <span>代碼：<span class="code-chip">{{ $coupon->code }}</span></span>
+                <span>折扣：{{ 100 - $coupon->discount_value }} 折（{{ $coupon->discount_value }}% off）</span>
+                <span>{{ $coupon->start_date->format('Y/m/d') }} – {{ $coupon->end_date->format('Y/m/d') }}</span>
+                <span class="chevron" id="cchevron-{{ $coupon->id }}">▼</span>
             </div>
         </div>
-        <div class="code-card-body open" id="cbody-1">
-            <div class="form-grid">
-                <div class="field-group">
-                    <label>標題</label>
-                    <input type="text" value="夏季大促銷">
-                </div>
-                <div class="field-group">
-                    <label>折扣代碼</label>
-                    <input type="text" value="SUMMER15">
-                    <span class="hint">顧客結帳時輸入此代碼即可享有折扣。</span>
-                </div>
-                <div class="field-group">
-                    <label>折扣比例（%）</label>
-                    <input type="number" value="15" min="1" max="99">
-                    <span class="hint">例如 15 = 八五折</span>
-                </div>
-                <div class="field-group">
-                    <label>折扣有效期間</label>
-                    <div class="date-range">
-                        <input type="date" value="2025-06-01">
-                        <span>至</span>
-                        <input type="date" value="2025-08-31">
-                    </div>
-                </div>
-            </div>
-            <div class="toggle-row">
-                <span class="toggle-label">啟用此折扣碼</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked onchange="updateToggle(this)">
-                    <span class="toggle-slider"></span>
-                </label>
-                <span class="toggle-status on">已啟用</span>
-            </div>
-            <div class="card-actions">
-                <button class="btn-save-sm" onclick="alert('（展示用）已儲存')">儲存</button>
-                <button class="btn-delete-sm" onclick="deleteCard('code-1')">刪除</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 示範資料 2 -->
-    <div class="code-card" id="code-2">
-        <div class="code-card-header" onclick="toggleCard('cbody-2', 'cchevron-2')">
-            <div class="title">
-                🎟️ 新會員首購
-                <span class="status-badge badge-on">啟用中</span>
-            </div>
-            <div class="meta">
-                <span>代碼：<span class="code-chip">NEWBIE20</span></span>
-                <span>折扣：8 折</span>
-                <span>長期有效</span>
-                <span class="chevron" id="cchevron-2">▼</span>
-            </div>
-        </div>
-        <div class="code-card-body" id="cbody-2">
-            <div class="form-grid">
-                <div class="field-group">
-                    <label>標題</label>
-                    <input type="text" value="新會員首購">
-                </div>
-                <div class="field-group">
-                    <label>折扣代碼</label>
-                    <input type="text" value="NEWBIE20">
-                    <span class="hint">顧客結帳時輸入此代碼即可享有折扣。</span>
-                </div>
-                <div class="field-group">
-                    <label>折扣比例（%）</label>
-                    <input type="number" value="20" min="1" max="99">
-                    <span class="hint">例如 20 = 八折</span>
-                </div>
-                <div class="field-group">
-                    <label>折扣有效期間</label>
-                    <div class="date-range">
-                        <input type="date" value="2025-01-01">
-                        <span>至</span>
-                        <input type="date" value="2099-12-31">
-                    </div>
-                </div>
-            </div>
-            <div class="toggle-row">
-                <span class="toggle-label">啟用此折扣碼</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked onchange="updateToggle(this)">
-                    <span class="toggle-slider"></span>
-                </label>
-                <span class="toggle-status on">已啟用</span>
-            </div>
-            <div class="card-actions">
-                <button class="btn-save-sm" onclick="alert('（展示用）已儲存')">儲存</button>
-                <button class="btn-delete-sm" onclick="deleteCard('code-2')">刪除</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 示範資料 3 -->
-    <div class="code-card" id="code-3">
-        <div class="code-card-header" onclick="toggleCard('cbody-3', 'cchevron-3')">
-            <div class="title">
-                🎟️ 週年慶特賣
-                <span class="status-badge badge-off">已停用</span>
-            </div>
-            <div class="meta">
-                <span>代碼：<span class="code-chip">ANNIV30</span></span>
-                <span>折扣：7 折</span>
-                <span>2024/10/01 – 2024/10/31</span>
-                <span class="chevron" id="cchevron-3">▼</span>
-            </div>
-        </div>
-        <div class="code-card-body" id="cbody-3">
-            <div class="form-grid">
-                <div class="field-group">
-                    <label>標題</label>
-                    <input type="text" value="週年慶特賣">
-                </div>
-                <div class="field-group">
-                    <label>折扣代碼</label>
-                    <input type="text" value="ANNIV30">
-                    <span class="hint">顧客結帳時輸入此代碼即可享有折扣。</span>
-                </div>
-                <div class="field-group">
-                    <label>折扣比例（%）</label>
-                    <input type="number" value="30" min="1" max="99">
-                    <span class="hint">例如 30 = 七折</span>
-                </div>
-                <div class="field-group">
-                    <label>折扣有效期間</label>
-                    <div class="date-range">
-                        <input type="date" value="2024-10-01">
-                        <span>至</span>
-                        <input type="date" value="2024-10-31">
-                    </div>
-                </div>
-            </div>
-            <div class="toggle-row">
-                <span class="toggle-label">啟用此折扣碼</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" onchange="updateToggle(this)">
-                    <span class="toggle-slider"></span>
-                </label>
-                <span class="toggle-status off">已停用</span>
-            </div>
-            <div class="card-actions">
-                <button class="btn-save-sm" onclick="alert('（展示用）已儲存')">儲存</button>
-                <button class="btn-delete-sm" onclick="deleteCard('code-3')">刪除</button>
-            </div>
-        </div>
-    </div>
-
-</div>
-@endsection
-
-@section('scripts')
-<script>
-    let counter = 4;
-
-    function toggleCard(bodyId, chevronId) {
-        const body = document.getElementById(bodyId);
-        const chevron = document.getElementById(chevronId);
-        body.classList.toggle('open');
-        chevron.classList.toggle('open');
-    }
-
-    function updateToggle(checkbox) {
-        const statusEl = checkbox.closest('.toggle-row').querySelector('.toggle-status');
-        statusEl.textContent = checkbox.checked ? '已啟用' : '已停用';
-        statusEl.className = 'toggle-status ' + (checkbox.checked ? 'on' : 'off');
-    }
-
-    function deleteCard(id) {
-        if (!confirm('確定要刪除此折扣碼嗎？')) return;
-        document.getElementById(id).remove();
-        updateCount();
-    }
-
-    function updateCount() {
-        const count = document.querySelectorAll('#code-list .code-card').length;
-        document.getElementById('total-count').textContent = count;
-    }
-
-    function addCode() {
-        const id = 'code-' + counter;
-        const bodyId = 'cbody-' + counter;
-        const chevronId = 'cchevron-' + counter;
-        counter++;
-
-        const today = new Date().toISOString().slice(0, 10);
-        const nextMonth = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
-
-        const html = `
-        <div class="code-card" id="${id}">
-            <div class="code-card-header" onclick="toggleCard('${bodyId}', '${chevronId}')">
-                <div class="title">🎟️ 新折扣碼 <span class="status-badge badge-off">已停用</span></div>
-                <div class="meta"><span>代碼：待填寫</span><span class="chevron open" id="${chevronId}">▼</span></div>
-            </div>
-            <div class="code-card-body open" id="${bodyId}">
+        <div class="code-card-body" id="cbody-{{ $coupon->id }}">
+            <form method="POST" action="{{ route('admin.coupons.code.update', $coupon->id) }}">
+                @csrf
+                @method('PUT')
                 <div class="form-grid">
                     <div class="field-group">
                         <label>標題</label>
-                        <input type="text" placeholder="請輸入折扣碼標題">
+                        <input type="text" name="title" value="{{ $coupon->title }}" required maxlength="100">
                     </div>
                     <div class="field-group">
                         <label>折扣代碼</label>
-                        <input type="text" placeholder="例如：SALE10">
+                        <input type="text" name="code" value="{{ $coupon->code }}" required maxlength="50"
+                               style="text-transform:uppercase"
+                               oninput="this.value=this.value.toUpperCase()">
                         <span class="hint">顧客結帳時輸入此代碼即可享有折扣。</span>
                     </div>
                     <div class="field-group">
                         <label>折扣比例（%）</label>
-                        <input type="number" value="10" min="1" max="99">
-                        <span class="hint">例如 10 = 九折</span>
+                        <input type="number" name="discount_value" value="{{ $coupon->discount_value }}" min="1" max="99" required>
+                        <span class="hint">例如 15 = 八五折</span>
                     </div>
                     <div class="field-group">
                         <label>折扣有效期間</label>
                         <div class="date-range">
-                            <input type="date" value="${today}">
+                            <input type="date" name="start_date" value="{{ $coupon->start_date->format('Y-m-d') }}"
+                                   onchange="validateDateRange(this.closest('.date-range').querySelector('input[name=end_date]'))">
                             <span>至</span>
-                            <input type="date" value="${nextMonth}">
+                            <input type="date" name="end_date" value="{{ $coupon->end_date->format('Y-m-d') }}"
+                                   onchange="validateDateRange(this)">
                         </div>
+                        <div class="date-error">結束日期不能早於開始日期，請重新選擇。</div>
                     </div>
                 </div>
                 <div class="toggle-row">
                     <span class="toggle-label">啟用此折扣碼</span>
                     <label class="toggle-switch">
-                        <input type="checkbox" onchange="updateToggle(this)">
+                        <input type="checkbox" name="is_active" value="1" {{ $coupon->is_active ? 'checked' : '' }}
+                               onchange="updateToggle(this)">
                         <span class="toggle-slider"></span>
                     </label>
-                    <span class="toggle-status off">已停用</span>
+                    <span class="toggle-status {{ $coupon->is_active ? 'on' : 'off' }}">
+                        {{ $coupon->is_active ? '已啟用' : '已停用' }}
+                    </span>
                 </div>
                 <div class="card-actions">
-                    <button class="btn-save-sm" onclick="alert('（展示用）已儲存')">儲存</button>
-                    <button class="btn-delete-sm" onclick="deleteCard('${id}')">刪除</button>
+                    <button type="submit" class="btn-save-sm">儲存</button>
+                    <button type="button" class="btn-delete-sm"
+                            onclick="deleteCode({{ $coupon->id }}, '{{ $coupon->title }}')">刪除</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @empty
+    <div class="empty-state">目前尚無折扣碼，點擊「+ 新增折扣碼」建立第一筆。</div>
+    @endforelse
+</div>
+
+{{-- ===== 新增折扣碼 Modal ===== --}}
+<div class="modal-overlay" id="newModal">
+    <div class="modal-box">
+        <div class="modal-title">新增折扣碼</div>
+        <form method="POST" action="{{ route('admin.coupons.code.store') }}" id="newCouponForm">
+            @csrf
+            <div class="form-grid">
+                <div class="field-group">
+                    <label>標題 <span style="color:#e74c3c">*</span></label>
+                    <input type="text" name="title" placeholder="請輸入折扣碼標題" maxlength="100" required>
+                </div>
+                <div class="field-group">
+                    <label>折扣代碼 <span style="color:#e74c3c">*</span></label>
+                    <input type="text" name="code" placeholder="例如：SALE10" maxlength="50"
+                           style="text-transform:uppercase"
+                           oninput="this.value=this.value.toUpperCase()" required>
+                    <span class="hint">只能使用英數字，系統會自動轉為大寫。</span>
+                </div>
+                <div class="field-group">
+                    <label>折扣比例（%）<span style="color:#e74c3c">*</span></label>
+                    <input type="number" name="discount_value" value="10" min="1" max="99" required>
+                    <span class="hint">例如 10 = 九折</span>
+                </div>
+                <div class="field-group">
+                    <label>折扣有效期間 <span style="color:#e74c3c">*</span></label>
+                    <div class="date-range">
+                        <input type="date" name="start_date" id="new_start_date" required
+                               onchange="validateDateRange(document.getElementById('new_end_date'))">
+                        <span>至</span>
+                        <input type="date" name="end_date" id="new_end_date" required
+                               onchange="validateDateRange(this)">
+                    </div>
+                    <div class="date-error" id="new_date_error">結束日期不能早於開始日期，請重新選擇。</div>
                 </div>
             </div>
-        </div>`;
+            <div class="toggle-row">
+                <span class="toggle-label">啟用此折扣碼</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" name="is_active" value="1" onchange="updateToggle(this)">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-status off">已停用</span>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeNewModal()">取消</button>
+                <button type="submit" class="btn-save-sm">建立折扣碼</button>
+            </div>
+        </form>
+    </div>
+</div>
 
-        document.getElementById('code-list').insertAdjacentHTML('beforeend', html);
-        updateCount();
+{{-- ===== Delete hidden form ===== --}}
+<form id="deleteForm" method="POST" style="display:none">
+    @csrf
+    @method('DELETE')
+</form>
+@endsection
+
+@section('scripts')
+<script>
+    // ── card toggle ──────────────────────────────
+    function toggleCard(bodyId, chevronId) {
+        const body    = document.getElementById(bodyId);
+        const chevron = document.getElementById(chevronId);
+        body.classList.toggle('open');
+        chevron.classList.toggle('open');
     }
+
+    // ── toggle switch label ──────────────────────
+    function updateToggle(checkbox) {
+        const statusEl = checkbox.closest('.toggle-row').querySelector('.toggle-status');
+        statusEl.textContent = checkbox.checked ? '已啟用' : '已停用';
+        statusEl.className   = 'toggle-status ' + (checkbox.checked ? 'on' : 'off');
+    }
+
+    // ── date range validation ────────────────────
+    function validateDateRange(endInput) {
+        const dateRange  = endInput.closest('.date-range');
+        const startInput = dateRange.querySelector('input[type="date"]:first-of-type');
+        const errorEl    = dateRange.closest('.field-group').querySelector('.date-error');
+
+        if (!startInput.value || !endInput.value) return true;
+
+        const invalid = endInput.value < startInput.value;
+        endInput.classList.toggle('is-invalid', invalid);
+        if (errorEl) errorEl.classList.toggle('show', invalid);
+        return !invalid;
+    }
+
+    // ── delete coupon ────────────────────────────
+    function deleteCode(id, title) {
+        if (!confirm('確定要刪除折扣碼「' + title + '」嗎？此操作無法復原。')) return;
+
+        const form = document.getElementById('deleteForm');
+        form.action = '/admin/coupons/code/' + id;
+        form.submit();
+    }
+
+    // ── new modal ────────────────────────────────
+    function openNewModal() {
+        // set default dates
+        const today     = new Date().toISOString().slice(0, 10);
+        const nextMonth = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+        document.getElementById('new_start_date').value = today;
+        document.getElementById('new_end_date').value   = nextMonth;
+
+        document.getElementById('newModal').classList.add('show');
+    }
+
+    function closeNewModal() {
+        document.getElementById('newModal').classList.remove('show');
+    }
+
+    // close modal when clicking outside
+    document.getElementById('newModal').addEventListener('click', function(e) {
+        if (e.target === this) closeNewModal();
+    });
+
+    // ── re-open modal on validation error ──
+    // (errors already shown at top of page via blade errors block)
 </script>
 @endsection
