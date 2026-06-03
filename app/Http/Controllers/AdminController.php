@@ -374,7 +374,7 @@ class AdminController extends Controller
                             $variant->variant_name = $variantData['variant_name'];
                             $variant->price = $variantData['price'];
                             $variant->ori_price = $variantData['ori_price'] ?? null;
-                            $variant->use_oriprice = ! empty($variantData['ori_price']);
+                            $variant->use_oriprice = isset($variantData['use_oriprice']) && $variantData['use_oriprice'] == '1' ? 1 : 0;
                             $variant->quantity = $variantData['quantity'];
                             $variant->min_quantity = $variantData['min_quantity'];
                             $variant->sort_order = $variantData['sort_order'] ?? 0;
@@ -408,7 +408,7 @@ class AdminController extends Controller
                     $newVariant->unicode = 'VAR-'.$product->id.'-'.time().'-'.$index;
                     $newVariant->price = $variantData['price'];
                     $newVariant->ori_price = $variantData['ori_price'] ?? null;
-                    $newVariant->use_oriprice = ! empty($variantData['ori_price']);
+                    $newVariant->use_oriprice = isset($variantData['use_oriprice']) && $variantData['use_oriprice'] == '1' ? 1 : 0;
                     $newVariant->quantity = $variantData['quantity'];
                     $newVariant->min_quantity = $variantData['min_quantity'];
                     $newVariant->sort_order = $variantData['sort_order'] ?? 0;

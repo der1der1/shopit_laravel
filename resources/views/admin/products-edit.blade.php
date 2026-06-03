@@ -525,6 +525,10 @@
                                 <input type="checkbox" name="variants[{{$index}}][is_active]" value="1" {{ $variant->is_active ? 'checked' : '' }} style="width: auto; margin-right: 8px;">
                                 上架此品項
                             </label>
+                            <label style="display: flex; align-items: center; cursor: pointer; user-select: none; margin-top: 10px;">
+                                <input type="checkbox" name="variants[{{$index}}][use_oriprice]" value="1" {{ $variant->use_oriprice ? 'checked' : '' }} style="width: auto; margin-right: 8px;">
+                                使用原價
+                            </label>
                         </div>
                     </div>
                     
@@ -977,6 +981,10 @@
                         <label style="display: flex; align-items: center; cursor: pointer; user-select: none; margin-top: 10px;">
                             <input type="checkbox" name="new_variants[${variantCounter}][is_active]" value="1" checked style="width: auto; margin-right: 8px;">
                             上架此品項
+                        </label>
+                        <label style="display: flex; align-items: center; cursor: pointer; user-select: none; margin-top: 10px;">
+                            <input type="checkbox" name="new_variants[${variantCounter}][use_oriprice]" value="1" style="width: auto; margin-right: 8px;">
+                            使用原價
                         </label>
                     </div>
                 </div>
