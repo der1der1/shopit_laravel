@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Service\CheckoutService;
+use App\Service\CouponService;
 use App\Service\PaymentService;
 use Illuminate\Http\Request;
 
@@ -12,10 +13,16 @@ class checkController extends Controller
 
     protected $paymentService;
 
-    public function __construct(CheckoutService $checkoutService, PaymentService $paymentService)
-    {
+    protected $couponService;
+
+    public function __construct(
+        CheckoutService $checkoutService,
+        PaymentService $paymentService,
+        CouponService $couponService
+    ) {
         $this->checkoutService = $checkoutService;
         $this->paymentService = $paymentService;
+        $this->couponService = $couponService;
     }
 
     public function want(Request $request)
@@ -63,5 +70,16 @@ class checkController extends Controller
         } catch (\Exception $e) {
             return back()->withErrors(['msg' => $e->getMessage()]);
         }
+    }
+
+    /**
+     * AJAX 端點：驗證優惠碼是否有效。
+     */
+    public function validateCoupon(Request $request)
+    {
+        $code = $request->input('coupon_code', '');
+        $result = $this->couponService->validateCode($code);
+
+        return response()->json($result);
     }
 }

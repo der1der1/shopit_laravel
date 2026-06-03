@@ -205,11 +205,35 @@
 
                         <!-- 優惠券區 -->
                         <div class="coupon-section">
-                            <div class="coupon-input-group">
-                                <input type="text" placeholder="請輸入優惠碼" class="coupon-input" id="couponInput">
-                                <button type="button" class="btn-apply-coupon" onclick="applyCoupon()">使用</button>
+                            <!-- 隱藏欄位：已套用的優惠碼，隨表單一起送出 -->
+                            <input type="hidden" name="coupon_code" id="appliedCouponCode" value="">
+
+                            <div class="coupon-input-group" id="couponInputGroup">
+                                <input type="text" placeholder="請輸入優惠碼" class="coupon-input" id="couponInput"
+                                       style="text-transform:uppercase;">
+                                <button type="button" class="btn-apply-coupon" id="btnApplyCoupon"
+                                        onclick="applyCoupon()">使用</button>
                             </div>
-                            <p class="coupon-note">* 優惠券功能待實作</p>
+
+                            <!-- 驗證中提示 -->
+                            <p id="couponLoading" style="display:none; color:#888; font-size:0.85rem; margin:6px 0 0;">
+                                驗證中...
+                            </p>
+
+                            <!-- 套用成功提示 -->
+                            <div id="couponSuccess" style="display:none; margin-top:8px; padding:8px 12px;
+                                 background:#e8f5e9; border:1px solid #a5d6a7; border-radius:6px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span id="couponSuccessMsg" style="color:#2e7d32; font-size:0.88rem; font-weight:600;"></span>
+                                    <button type="button" onclick="removeCoupon()"
+                                            style="background:none; border:none; color:#888; cursor:pointer;
+                                                   font-size:1.1rem; line-height:1; padding:0 2px;"
+                                            title="移除優惠券">✕</button>
+                                </div>
+                            </div>
+
+                            <!-- 驗證失敗提示 -->
+                            <p id="couponError" style="display:none; color:#c0392b; font-size:0.85rem; margin:6px 0 0;"></p>
                         </div>
 
                         <!-- 結帳按鈕 -->
@@ -370,8 +394,9 @@
             const shipping = subtotal >= 1000 ? 0 : 100;
             document.getElementById('shipping-cost').textContent = shipping === 0 ? '免運費' : `NT$ ${shipping}`;
             
-            // 折扣 (示例)
-            const discount = 0;
+            // 優惠碼折扣（前端僅顯示輸入碼折扣比率，實際金額由後端計算）
+            const couponDiscountPct = window._appliedCouponDiscount || 0;
+            const discount = Math.round(subtotal * couponDiscountPct / 100);
             document.getElementById('discount').textContent = discount.toLocaleString('zh-TW');
             
             // 總計
@@ -457,10 +482,69 @@
         });
 
         function applyCoupon() {
-            const couponCode = document.getElementById('couponInput')?.value;
-            if (couponCode) {
-                alert('優惠券功能尚未啟用：' + couponCode);
+            const code = (document.getElementById('couponInput')?.value || '').trim().toUpperCase();
+            if (!code) {
+                showCouponError('請輸入優惠碼');
+                return;
             }
+
+            // 顯示驗證中
+            document.getElementById('couponLoading').style.display = 'block';
+            document.getElementById('couponError').style.display = 'none';
+            document.getElementById('couponSuccess').style.display = 'none';
+            document.getElementById('btnApplyCoupon').disabled = true;
+
+            fetch('{{ route('coupon.validate') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ coupon_code: code }),
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('couponLoading').style.display = 'none';
+                document.getElementById('btnApplyCoupon').disabled = false;
+
+                if (data.valid) {
+                    // 儲存已驗證的優惠碼到隱藏欄位
+                    document.getElementById('appliedCouponCode').value = data.code;
+                    // 儲存折扣比率供前端摘要計算
+                    window._appliedCouponDiscount = data.discount_value;
+
+                    document.getElementById('couponSuccessMsg').textContent =
+                        data.title + '｜' + data.message;
+                    document.getElementById('couponSuccess').style.display = 'block';
+                    document.getElementById('couponInputGroup').style.display = 'none';
+
+                    updateCartSummary();
+                } else {
+                    showCouponError(data.message);
+                }
+            })
+            .catch(() => {
+                document.getElementById('couponLoading').style.display = 'none';
+                document.getElementById('btnApplyCoupon').disabled = false;
+                showCouponError('驗證失敗，請稍後再試');
+            });
+        }
+
+        function removeCoupon() {
+            document.getElementById('appliedCouponCode').value = '';
+            window._appliedCouponDiscount = 0;
+            document.getElementById('couponInput').value = '';
+            document.getElementById('couponSuccess').style.display = 'none';
+            document.getElementById('couponError').style.display = 'none';
+            document.getElementById('couponInputGroup').style.display = 'flex';
+            updateCartSummary();
+        }
+
+        function showCouponError(msg) {
+            const el = document.getElementById('couponError');
+            el.textContent = msg;
+            el.style.display = 'block';
         }
 
         // 結帳主流程

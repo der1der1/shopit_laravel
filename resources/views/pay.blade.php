@@ -296,15 +296,24 @@
                         <div class="price-summary">
                             <div class="price-row subtotal">
                                 <span>商品小計</span>
-                                <span>NT$ {{ $purchased->bill ?? 0 }}</span>
+                                <span>NT$ {{ number_format($original_subtotal) }}</span>
                             </div>
+                            @php
+                                $discountAmount = $original_subtotal - ($purchased->bill ?? $original_subtotal);
+                            @endphp
+                            @if($discountAmount > 0)
+                            <div class="price-row" style="color: #27ae60;">
+                                <span>優惠折扣</span>
+                                <span>- NT$ {{ number_format($discountAmount) }}</span>
+                            </div>
+                            @endif
                             <div class="price-row">
                                 <span>運費</span>
                                 <span>NT$ 60</span>
                             </div>
                             <div class="price-row total">
                                 <span>訂單總額</span>
-                                <span>NT$ {{ ($purchased->bill ?? 0) + 60 }}</span>
+                                <span>NT$ {{ number_format(($purchased->bill ?? 0) + 60) }}</span>
                             </div>
                         </div>
 

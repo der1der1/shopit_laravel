@@ -16,14 +16,18 @@ class CheckoutService
 
     protected $orderRepository;
 
+    protected $couponService;
+
     public function __construct(
         ProductRepository $productRepository,
         WishlistRepository $wishlistRepository,
-        OrderRepository $orderRepository
+        OrderRepository $orderRepository,
+        CouponService $couponService
     ) {
         $this->productRepository = $productRepository;
         $this->wishlistRepository = $wishlistRepository;
         $this->orderRepository = $orderRepository;
+        $this->couponService = $couponService;
     }
 
     public function getCheckoutData()
@@ -88,6 +92,7 @@ class CheckoutService
     {
         $itemIds = $request->input('selected_items', []);
         $quantities = $request->input('quantity', []);
+        $couponCode = trim($request->input('coupon_code', ''));
 
         // 驗證選擇的商品
         if (empty($itemIds)) {
@@ -98,6 +103,14 @@ class CheckoutService
         foreach ($quantities as $quantity) {
             if ($quantity == 0) {
                 return ['error' => '選取的商品數量不可為 0 喔!', 'redirect' => 'check_show'];
+            }
+        }
+
+        // 驗證優惠碼（若有填寫）
+        if (! empty($couponCode)) {
+            $couponValidation = $this->couponService->validateCode($couponCode);
+            if (! $couponValidation['valid']) {
+                return ['error' => '優惠碼無效或已過期，請重新確認', 'redirect' => 'check_show'];
             }
         }
 
@@ -130,9 +143,25 @@ class CheckoutService
             $orderedQuantities[] = (int) ($quantities[$productId] ?? 1);
         }
 
-        // 合併商品資訊並計算總價
+        // 合併商品資訊並計算原始總價
         $purchasedData = $this->preparePurchasedData($itemIds, $orderedQuantities, $prices);
-        $totalPrice = $this->calculateTotalPrice($purchasedData['merged_arr']);
+        $subtotal = $this->calculateTotalPrice($purchasedData['merged_arr']);
+
+        // 建立供分類折扣計算用的購物車項目陣列
+        $cartItems = array_map(function ($productId, $quantity, $price) {
+            return ['productId' => $productId, 'quantity' => $quantity, 'price' => $price];
+        }, $itemIds, $orderedQuantities, $prices);
+
+        // 計算折扣
+        $discountResult = $this->couponService->calculateDiscount(
+            (float) $subtotal,
+            $cartItems,
+            $couponCode ?: null
+        );
+        $discountAmount = $discountResult['discount_amount'];
+
+        // 最終帳單金額（不低於 0）
+        $totalPrice = max(0, $subtotal - $discountAmount);
 
         if (Auth::check()) {
             // 已登入：使用現有的使用者帳號

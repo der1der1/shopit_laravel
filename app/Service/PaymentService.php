@@ -62,12 +62,16 @@ class PaymentService
 
         unset($latestOrder->purchased);  // 已經整理在products
 
-        // 更新價格合計
-        $finalBill = 0;
+        // 計算原始商品小計（未扣折扣），保留 DB 已存的折扣後帳單
+        $originalSubtotal = 0;
         foreach ($products as $product) {
-            $finalBill += $product['num'] * $product['price'];
+            $originalSubtotal += $product['num'] * $product['price'];
         }
-        $latestOrder->bill = $finalBill;
+        // 不覆寫 $latestOrder->bill，維持 processCheckout() 存入的折扣後金額
+        // 若 bill 因某原因為 0 或未設定，則 fallback 至原始小計
+        if (empty($latestOrder->bill)) {
+            $latestOrder->bill = $originalSubtotal;
+        }
 
         return [
             'user' => $user,
@@ -75,6 +79,7 @@ class PaymentService
             'products' => $products,
             'ppl_info' => $userInfo,
             'purchased' => $latestOrder,
+            'original_subtotal' => $originalSubtotal,
         ];
     }
 

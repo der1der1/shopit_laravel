@@ -69,6 +69,7 @@ Route::post('/want', [checkController::class, 'want'])->name('want');
 Route::get('/check', [checkController::class, 'check_show'])->name('check_show');
 Route::post('/check/store', [checkController::class, 'check_store'])->name('check_store');
 Route::delete('/check/remove/{productId}', [checkController::class, 'removeCartItem'])->name('cart.remove');
+Route::post('/check/validate-coupon', [checkController::class, 'validateCoupon'])->name('coupon.validate');
 
 // 結帳流程路由：已登入與來賓皆可存取
 Route::get('/pay', [purchasedCtlr::class, 'pay_show'])->name('pay_show');
