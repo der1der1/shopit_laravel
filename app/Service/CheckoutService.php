@@ -137,14 +137,17 @@ class CheckoutService
         // 依 itemIds 順序取得 variant 價格與對齊的數量
         $prices = [];
         $orderedQuantities = [];
+        $variantIds = [];
         foreach ($itemIds as $productId) {
             $variantId = $productVariantMap[$productId] ?? null;
+            $variantIds[] = $variantId;
             $prices[] = $variantId ? ((int) $this->productRepository->getVariantPrice($variantId)) : 0;
             $orderedQuantities[] = (int) ($quantities[$productId] ?? 1);
         }
 
         // 合併商品資訊並計算原始總價
-        $purchasedData = $this->preparePurchasedData($itemIds, $orderedQuantities, $prices);
+        // purchased string 第一欄儲存 variantId（供 parsePurchasedProducts 正確查詢品項）
+        $purchasedData = $this->preparePurchasedData($variantIds, $orderedQuantities, $prices);
         $subtotal = $this->calculateTotalPrice($purchasedData['merged_arr']);
 
         // 建立供分類折扣計算用的購物車項目陣列

@@ -111,8 +111,8 @@ class PaymentService
 
     public function addToWishlist(Request $request)
     {
-        // 儲存品項ID與數量的組合字串，格式：variantId-quantity
-        $prod_vari = $request->variant_id.'-'.$request->quantity;
+        // 儲存商品ID與品項ID的組合字串，格式：productId-variantId
+        $prod_vari = $request->product_id.'-'.$request->variant_id;
 
         if (Auth::check()) {
             // 已登入：儲存至資料庫
